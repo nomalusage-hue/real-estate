@@ -1,0 +1,345 @@
+/* PropertyCardSimple.css */
+.mini-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.mini-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    border-color: rgba(44, 122, 123, 0.2);
+}
+
+.thumb {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    height: 200px;
+}
+
+.thumb img {
+    transition: transform 0.6s ease;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.thumb:hover img {
+    transform: scale(1.05);
+}
+
+.labels-container {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 2;
+}
+
+.label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(4px);
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.label i {
+    font-size: 0.7rem;
+}
+
+.label.hot {
+    background: linear-gradient(135deg, #ff4757, #ff3838);
+}
+
+.label.new {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.label.featured {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+.label.exclusive {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+.label.for-sale {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.label.for-rent {
+    background: linear-gradient(135deg, #2c7a7b, #38b2ac);
+}
+
+.label.sold {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+}
+
+.thumb-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(44, 122, 123, 0.9), transparent 40%);
+    opacity: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 20px;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.thumb:hover .thumb-overlay {
+    opacity: 1;
+}
+
+.overlay-text {
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transform: translateY(10px);
+    transition: transform 0.3s ease;
+}
+
+.thumb:hover .overlay-text {
+    transform: translateY(0);
+}
+
+.mini-body {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.mini-title {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.mini-title a {
+    color: #2d3436;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.mini-title a:hover {
+    color: #2c7a7b;
+}
+
+.mini-loc {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #636e72;
+    margin-bottom: 16px;
+}
+
+.mini-loc i {
+    color: #2c7a7b;
+    font-size: 0.9rem;
+}
+
+.loc-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mini-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f1f2f6;
+}
+
+.spec-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: #2d3436;
+}
+
+.spec-item i {
+    color: #2c7a7b;
+    font-size: 0.9rem;
+}
+
+.spec-text {
+    font-weight: 500;
+}
+
+.mini-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.mini-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2d3436;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 70%;
+}
+
+.mini-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: #2c7a7b;
+    color: white;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.mini-btn:hover {
+    background: #235c5d;
+    transform: translateY(-1px);
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(44, 122, 123, 0.3);
+}
+
+.mini-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+.mini-card:hover .mini-actions {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mini-action-btn {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.mini-action-btn:hover {
+    background: #2c7a7b;
+    color: white;
+    border-color: #2c7a7b;
+    transform: translateY(-2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .mini-card {
+        margin-bottom: 20px;
+    }
+    
+    .mini-title {
+        font-size: 1rem;
+    }
+    
+    .mini-price {
+        font-size: 1.1rem;
+    }
+    
+    .mini-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .labels-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    
+    .label {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    .thumb {
+        height: 180px;
+    }
+    
+    .mini-body {
+        padding: 16px;
+    }
+    
+    .mini-specs {
+        gap: 8px;
+    }
+    
+    .spec-item {
+        font-size: 0.75rem;
+    }
+}
+
+/* Accessibility improvements */
+.mini-btn:focus,
+.mini-action-btn:focus,
+.mini-title a:focus {
+    outline: 2px solid #2c7a7b;
+    outline-offset: 2px;
+}
+
+/* Loading skeleton animation */
+.mini-card.loading {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}

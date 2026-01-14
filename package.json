@@ -9,12 +9,25 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "next": "16.0.8",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.90.1",
+    "@upstash/redis": "^1.36.1",
+    "aos": "^2.3.4",
+    "bootstrap-icons": "^1.13.1",
+    "dropzone": "^6.0.0-beta.2",
+    "firebase": "^12.6.0",
+    "firebase-admin": "^13.6.0",
+    "libphonenumber-js": "^1.12.33",
+    "lottie-react": "^2.4.1",
+    "next": "^16.0.10",
     "react": "19.2.1",
-    "react-dom": "19.2.1"
+    "react-dom": "19.2.1",
+    "react-international-phone": "^4.6.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/aos": "^3.0.7",
+    "@types/dropzone": "^5.7.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

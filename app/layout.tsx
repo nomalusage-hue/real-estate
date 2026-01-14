@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import "../public/vendor/bootstrap/css/bootstrap.min.css";
+import "../public/vendor/bootstrap-icons/bootstrap-icons.css";
+import "../public/vendor/aos/aos.css";
+import "../public/vendor/glightbox/css/glightbox.min.css";
+import "../public/vendor/swiper/swiper-bundle.min.css";
+import "../public/vendor/drift-zoom/drift-basic.css";
+import "../public/css/main.css";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import Script from "next/script";
+import Header from "@/components/common/Header";
+import Footer from "@/components/common/Footer";
+import AOSWrapper from "@/components/layout/AOSWrapper";
+import NoSSrWrapper from '@/components/layout/NoSSRWrapper';
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,12 +23,172 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // const strategy: "afterInteractive” | "lazyonload" | "beforeInteractive” | "worker" | undefined = "";
+
+  // useEffect(() => {
+  //   import("aos").then((AOS) => {
+  //     AOS.init({
+  //       duration: 800,
+  //       easing: "ease-in-out",
+  //       once: true,
+  //       mirror: false,
+  //     });
+  //   });
+  // });
+
   return (
+    // <html lang="en">
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <head>
+        <meta charSet="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>Index - TheProperty Bootstrap Template</title>
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />
+
+        {/* <!-- Favicons --> */}
+        <link href="../public/img/favicon.png" rel="icon" />
+        <link
+          href="../public/img/apple-touch-icon.png"
+          rel="apple-touch-icon"
+        />
+
+        {/* <!-- Fonts --> */}
+        <link href="https://fonts.googleapis.com" rel="preconnect" />
+        <link
+          href="https://fonts.gstatic.com"
+          rel="preconnect"
+          crossOrigin=""
+        />
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
+
+        {/* <!-- Vendor CSS Files --> */}
+        {/* <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"/> */}
+        {/* <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet"/> */}
+        {/* <link href="assets/vendor/aos/aos.css" rel="stylesheet"/> */}
+        {/* <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet"/> */}
+        {/* <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet"/> */}
+        {/* <link href="assets/vendor/drift-zoom/drift-basic.css" rel="stylesheet"/> */}
+        {/* <!-- Main CSS File --> */}
+        {/* <link href="assets/css/main.css" rel="stylesheet"/> */}
+      </head>
+      <body className="index-page">
+
+        {/* <AOSWrapper /> */}
+
+        <Header></Header>
+
+        <AOSWrapper>
+
+          <NoSSrWrapper>
+
+            {children}
+
+            <Footer></Footer>
+
+          </NoSSrWrapper>
+
+
+        </AOSWrapper>
+
+
+        <a href="#" id="scroll-top" className="scroll-top d-flex align-items-center justify-content-center"><i className="bi bi-arrow-up-short"></i></a>
+
+
+        <Script
+          src="/vendor/bootstrap/js/bootstrap.bundle.min.js"
+          strategy="lazyOnload"
+        />
+        <Script
+          src="/vendor/php-email-form/validate.js"
+          strategy="lazyOnload"
+        />
+        <Script
+          src="/vendor/purecounter/purecounter_vanilla.js"
+          strategy="lazyOnload"
+        />
+        <Script
+          src="/vendor/glightbox/js/glightbox.min.js"
+          strategy="lazyOnload"
+        />
+        <Script
+          src="/vendor/swiper/swiper-bundle.min.js"
+          strategy="lazyOnload"
+        />
+        <Script
+          src="/vendor/drift-zoom/Drift.min.js"
+          strategy="lazyOnload"
+        />
+
+        <Script src="/js/main.js" strategy="lazyOnload" />
+        <Script src="/js/my-script.js" strategy="lazyOnload" />
+
+        {/* <Script
+          src="https://js.driftt.com/include/YOUR_DRIFT_ID.js"
+          strategy="afterInteractive"
+        /> */}
+
+
+        {/* Removed duplicate plain <script> tags and the AOS <Script> to
+            avoid running AOS before React hydration. AOS is initialized
+            inside the client `AOSWrapper` component after hydration. */}
+
+
+
+
+        {/* <Script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" strategy="afterInteractive" />
+        <Script src="/vendor/aos/aos.js" strategy="afterInteractive" />
+        <Script src="/vendor/glightbox/js/glightbox.min.js" strategy="afterInteractive" />
+        <Script src="/vendor/swiper/swiper-bundle.min.js" strategy="afterInteractive" />
+        <Script src="/vendor/drift-zoom/Drift.min.js" strategy="afterInteractive" />
+        <Script src="/js/main.js" strategy="afterInteractive" /> */}
+
+
+
+        {/* Load scripts once at the end of body */}
+        {/* <Script
+          src="/vendor/bootstrap/js/bootstrap.bundle.min.js"
+          strategy="lazyOnload"
+          id="bootstrap-script"
+        />
+        <Script
+          src="/vendor/aos/aos.js"
+          strategy="lazyOnload"
+          id="aos-script"
+        />
+        <Script
+          src="/vendor/purecounter/purecounter_vanilla.js"
+          strategy="lazyOnload"
+          id="purecounter-script"
+        />
+        <Script
+          src="/vendor/glightbox/js/glightbox.min.js"
+          strategy="lazyOnload"
+          id="glightbox-script"
+        />
+        <Script
+          src="/vendor/swiper/swiper-bundle.min.js"
+          strategy="lazyOnload"
+          id="swiper-script"
+        />
+        <Script
+          src="/vendor/drift-zoom/Drift.min.js"
+          strategy="lazyOnload"
+          id="drift-script"
+        />
+        <Script
+          src="/js/main.js"
+          strategy="lazyOnload"
+          id="main-script"
+          onLoad={() => {
+            // Re-initialize components after scripts load
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new Event('load'));
+            }
+          }}
+        /> */}
+
+
       </body>
     </html>
   );

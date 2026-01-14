@@ -1,0 +1,21 @@
+.featured-properties .mini-list.expand-image .mini-card{
+    grid-template-columns: 220px 1fr;
+}
+
+button.btn-outline-primary{
+    border-color: var(--accent-color) !important;
+    padding: 12px 20px !important;
+    font-weight: 600 !important;
+    color:var(--accent-color);
+}
+button.btn-outline-primary:hover{
+    background-color: var(--accent-color) !important;
+
+}
+
+@media (max-width: 992px) {
+    .featured-properties .mini-list.list {
+        grid-template-rows: none !important;
+        grid-template-columns: 1fr !important;
+    }
+}
