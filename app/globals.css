@@ -31,3 +31,20 @@ input[type="checkbox"]:checked {
     transform: translateY(-3px);
     color: white;
 }
+
+
+
+
+/* Import vendor CSS */
+@import "../public/vendor/bootstrap/css/bootstrap.min.css";
+@import "../public/vendor/bootstrap-icons/bootstrap-icons.css";
+@import "../public/vendor/aos/aos.css";
+@import "../public/vendor/glightbox/css/glightbox.min.css";
+@import "../public/vendor/swiper/swiper-bundle.min.css";
+@import "../public/vendor/drift-zoom/drift-basic.css";
+
+/* Import main CSS */
+@import "../public/css/main.css";
+
+/* Your custom styles */
+/* ... */

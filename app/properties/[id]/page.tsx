@@ -885,7 +885,7 @@ export default function PropertyPage() {
     };
   }, [property]);
 
-  const driftInstanceRef = useRef(null);
+  const driftInstanceRef = useRef<any>(null);
 
   function initImageGallery() {
     const thumbnailItems = document.querySelectorAll(".thumbnail-item");

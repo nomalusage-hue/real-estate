@@ -43,35 +43,70 @@
 
 
 // services/FirebaseDataSource.ts
-import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, DocumentData } from 'firebase/firestore';
 import { firestore } from '@/config/firebase';
 
-export class FirebaseDataSource<T> {
+// export class FirebaseDataSource<T> {
+//   constructor(private collectionName: string) {}
+
+//   async create(data: T): Promise<string> {
+//     const docRef = await addDoc(collection(firestore, this.collectionName), data);
+//     return docRef.id;
+//   }
+
+//   async getAll(): Promise<T[]> {
+//     const snapshot = await getDocs(collection(firestore, this.collectionName));
+//     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
+//   }
+
+//   async getById(id: string): Promise<T | null> {
+//     const docRef = doc(firestore, this.collectionName, id);
+//     const docSnap = await getDoc(docRef);
+//     return docSnap.exists() ? ({ id: docSnap.id, ...docSnap.data() } as T) : null;
+//   }
+
+//   async update(id: string, data: Partial<T>): Promise<void> {
+//     const docRef = doc(firestore, this.collectionName, id);
+//     await updateDoc(docRef, data);
+//   }
+
+//   async delete(id: string): Promise<void> {
+//     const docRef = doc(firestore, this.collectionName, id);
+//     await deleteDoc(docRef);
+//   }
+// }
+
+
+type WithId<T> = T & { id: string };
+
+export class FirebaseDataSource<T extends DocumentData> {
   constructor(private collectionName: string) {}
 
   async create(data: T): Promise<string> {
-    const docRef = await addDoc(collection(firestore, this.collectionName), data);
+    const docRef = await addDoc(
+      collection(firestore, this.collectionName),
+      data
+    );
     return docRef.id;
   }
 
-  async getAll(): Promise<T[]> {
+  async getAll(): Promise<WithId<T>[]> {
     const snapshot = await getDocs(collection(firestore, this.collectionName));
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
+    return snapshot.docs.map(d => ({
+      id: d.id,
+      ...(d.data() as T),
+    }));
   }
 
-  async getById(id: string): Promise<T | null> {
+  async getById(id: string): Promise<WithId<T> | null> {
     const docRef = doc(firestore, this.collectionName, id);
     const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? ({ id: docSnap.id, ...docSnap.data() } as T) : null;
-  }
 
-  async update(id: string, data: Partial<T>): Promise<void> {
-    const docRef = doc(firestore, this.collectionName, id);
-    await updateDoc(docRef, data);
-  }
+    if (!docSnap.exists()) return null;
 
-  async delete(id: string): Promise<void> {
-    const docRef = doc(firestore, this.collectionName, id);
-    await deleteDoc(docRef);
+    return {
+      id: docSnap.id,
+      ...(docSnap.data() as T),
+    };
   }
 }

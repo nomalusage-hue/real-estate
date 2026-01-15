@@ -33,10 +33,10 @@ export default function PropertyCardSimple({ data }: { data: PropertyData }) {
                     <ul className="stack-specs">
                         <li><i className="bi bi-door-open"></i> 4</li>
                         <li><i className="bi bi-droplet"></i> 3</li>
-                        <li><i className="bi bi-aspect-ratio"></i> {formatArea(data.areaSize, data.areaUnit)}</li>
+                        <li><i className="bi bi-aspect-ratio"></i> {formatArea(data.landSize, data.sizeUnit)}</li>
                     </ul>
                     <div className="stack-foot">
-                        <span className="stack-price">${formatNumber(data.price)}</span>
+                        <span className="stack-price">${formatNumber(data.salePrice)}</span>
 
                         <Link href={`/properties/${data.id}`} className="stack-link">View</Link>
                     </div>

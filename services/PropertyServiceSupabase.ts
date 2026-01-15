@@ -36,7 +36,7 @@ export interface PaginatedResult<T> {
   items: T[];
   total: number;
   hasMore: boolean;
-  lastDoc?: any;
+  lastDoc?: unknown;
   page: number;
   pageSize: number;
 }
@@ -98,19 +98,52 @@ export class PropertyServiceSupabase {
   ): Promise<PaginatedResult<PropertyData>> {
     console.log("getPaginated - Filters received:", filters);
 
-    // Handle status filter separately if multiple statuses are selected
-    let statusFilter: "For Sale" | "For Rent" | "Sold" | undefined;
-    let additionalStatusFilter: string[] = [];
+    // // Handle status filter separately if multiple statuses are selected
+    // let statusFilter: "For Sale" | "For Rent" | "Sold" | undefined;
+    // let additionalStatusFilter: string[] = [];
+
+    type PropertyStatus = "For Sale" | "For Rent" | "Sold";
+    let statusFilter: PropertyStatus | undefined;
+    let additionalStatusFilter: PropertyStatus[] = [];
+
+
+
+    // if (filters.status && filters.status.length > 0) {
+    //   // Use first status for Supabase query
+    //   statusFilter = filters.status[0] as "For Sale" | "For Rent" | "Sold";
+
+    //   // Store additional statuses for client-side filtering
+    //   if (filters.status.length > 1) {
+    //     additionalStatusFilter = filters.status.slice(1);
+    //   }
+    // }
 
     if (filters.status && filters.status.length > 0) {
-      // Use first status for Supabase query
-      statusFilter = filters.status[0] as "For Sale" | "For Rent" | "Sold";
+      statusFilter = filters.status[0] as PropertyStatus;
 
-      // Store additional statuses for client-side filtering
       if (filters.status.length > 1) {
-        additionalStatusFilter = filters.status.slice(1);
+        additionalStatusFilter = filters.status.slice(1) as PropertyStatus[];
       }
     }
+
+
+    // const options = {
+    //   page,
+    //   pageSize,
+    //   city: filters.cities?.[0],
+    //   propertyType: filters.propertyTypes?.[0] as PropertyData["propertyType"],
+    //   status: statusFilter,
+    //   minPrice: filters.minSalePrice || filters.minRentPrice,
+    //   maxPrice: filters.maxSalePrice || filters.maxRentPrice,
+    //   featured: filters.featured,
+    //   orderBy:
+    //     filters.sortBy === "created_at"
+    //       ? "created_at"
+    //       : filters.sortBy === "price"
+    //       ? "salePrice"
+    //       : "created_at",
+    //   ascending: filters.sortOrder === "asc",
+    // };
 
     const options = {
       page,
@@ -121,16 +154,19 @@ export class PropertyServiceSupabase {
       minPrice: filters.minSalePrice || filters.minRentPrice,
       maxPrice: filters.maxSalePrice || filters.maxRentPrice,
       featured: filters.featured,
-      orderBy:
-        filters.sortBy === "created_at"
-          ? "created_at"
-          : filters.sortBy === "price"
-          ? "salePrice"
-          : "created_at",
+      orderBy:  filters.sortBy as "created_at" | "salePrice" | "rentPrice" | "views",
+      // orderBy:
+      //   filters.sortBy === "created_at"
+      //     ? "created_at"
+      //     : filters.sortBy === "price"
+      //     ? "salePrice"
+      //     : "created_at",
       ascending: filters.sortOrder === "asc",
     };
 
-    console.log("getPaginated - Options for repository:", options);
+    // "created_at" | "salePrice" | "rentPrice" | "views"
+
+    // console.log("getPaginated - Options for repository:", options);
 
     let result;
     try {
@@ -316,7 +352,7 @@ export class PropertyServiceSupabase {
       .filter((p) => p.featured && p.published && !p.draft)
       .sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime()
       )
       .slice(0, limitCount);
   }
@@ -327,7 +363,7 @@ export class PropertyServiceSupabase {
       .filter((p) => p.hot && p.published && !p.draft)
       .sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime()
       )
       .slice(0, limitCount);
   }
@@ -338,7 +374,7 @@ export class PropertyServiceSupabase {
       .filter((p) => p.published && !p.draft)
       .sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime()
       )
       .slice(0, limitCount);
   }

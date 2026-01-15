@@ -509,7 +509,7 @@ export default function Properties() {
       refreshWithFilters(newFilters);
 
       // Update URL based on status
-      const newSearchParams = new URLSearchParams(searchParams);
+      const newSearchParams = new URLSearchParams(searchParams || undefined);
       if (newFilters.status) {
         if (newFilters.status.includes('For Sale') && !newFilters.status.includes('For Rent')) {
           newSearchParams.set('type', 'sale');
@@ -612,7 +612,7 @@ export default function Properties() {
       newFilters.status = ['For Rent'];
     } else if (type) {
       // wrong type, remove it
-      const newSearchParams = new URLSearchParams(searchParams);
+      const newSearchParams = new URLSearchParams(searchParams || undefined);
       newSearchParams.delete('type');
       router.replace(`?${newSearchParams.toString()}`, { scroll: false });
       newFilters.status = undefined;
@@ -624,7 +624,7 @@ export default function Properties() {
       newFilters.propertyTypes = [propertyType];
     } else if (propertyType) {
       // wrong propertyType, remove it
-      const newSearchParams = new URLSearchParams(searchParams);
+      const newSearchParams = new URLSearchParams(searchParams || undefined);
       newSearchParams.delete('propertyType');
       router.replace(`?${newSearchParams.toString()}`, { scroll: false });
       newFilters.propertyTypes = undefined;

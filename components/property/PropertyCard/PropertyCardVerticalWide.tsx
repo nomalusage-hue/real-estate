@@ -35,7 +35,7 @@ export default function PropertyCardSimpleWide({ data }: { data: PropertyData })
                     <span><i className="bi bi-door-open"></i> {data.bedrooms} Beds</span>
                     <span><i className="bi bi-droplet"></i> {data.bathrooms} Baths</span>
                     {/* <span><i className="bi bi-aspect-ratio"></i> {formatNumber(data.areaSize ? data.areaSize : 0)} {data.areaUnit}</span> */}
-                    <span><i className="bi bi-aspect-ratio"></i> {formatArea(data.areaSize, data.areaUnit)}</span>
+                    <span><i className="bi bi-aspect-ratio"></i> {formatArea(data.landSize, data.sizeUnit)}</span>
                 </div>
             </div>
             <div className="content">
@@ -44,7 +44,7 @@ export default function PropertyCardSimpleWide({ data }: { data: PropertyData })
                         <h3><Link href={`/properties/${data.id}`}>{data.title}</Link></h3>
                         <div className="loc"><i className="bi bi-geo-alt-fill"></i> {data.address}</div>
                     </div>
-                    <div className="price">${formatNumber(data.price)}</div>
+                    <div className="price">${formatNumber(data.salePrice)}</div>
                 </div>
                 <p className="excerpt">{data.description}</p>
                 <div className="cta">

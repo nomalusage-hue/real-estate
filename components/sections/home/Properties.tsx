@@ -30,13 +30,15 @@ export default function Properties() {
                         showAddress: false,
                         bathrooms: 2,
                         bedrooms: 2,
-                        areaSize: 1450,
-                        areaUnit: "ft2",
-                        price: 3760000,
                         description: "Praesent commodo cursus magna, fusce dapibus tellus ac cursus commodo, vestibulum id ligula porta felis euismod semper.",
 
+                        landSize: 1450,
+                        buildingSize: 450,
+                        sizeUnit: "ft2",
+                        salePrice: 689000,
+
                         propertyType: "apartment",
-                        status: "For Sale",
+                        status: ["For Sale"],
 
                         showAgent: false,
 
@@ -84,13 +86,14 @@ export default function Properties() {
                             showAddress: false,
                             bathrooms: 2,
                             bedrooms: 2,
-                            areaSize: 1450,
-                            areaUnit: "ft2",
-                            price: 689000,
+                            landSize: 1450,
+                            buildingSize: 450,
+                            sizeUnit: "ft2",
+                            salePrice: 689000,
                             description: "",
 
                             propertyType: "apartment",
-                            status: "For Sale",
+                            status: ["For Sale"],
 
                             showAgent: false,
 

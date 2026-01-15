@@ -1,10 +1,27 @@
+// import type { NextConfig } from "next";
+
+// const nextConfig: NextConfig = {
+//   /* config options here */
+// };
+
+// module.exports = {
+//   async redirects() {
+//     return [
+//       {
+//         source: '/admin',
+//         destination: '/admin/properties/new',
+//         permanent: true,
+//       },
+//     ]
+//   }
+// }
+
+// export default nextConfig;
+
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-module.exports = {
   async redirects() {
     return [
       {
@@ -14,10 +31,9 @@ module.exports = {
       },
     ]
   }
-}
+};
 
 export default nextConfig;
-
 
 
 

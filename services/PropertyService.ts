@@ -770,6 +770,20 @@ export interface PropertyStats {
   cityCounts: Record<string, number>;
 }
 
+
+const allowedStatus = ["For Sale", "For Rent", "Sold"] as const;
+type PropertyStatus = typeof allowedStatus[number];
+
+function normalizeStatus(value: unknown): PropertyStatus[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.filter(
+    (v): v is PropertyStatus => allowedStatus.includes(v)
+  );
+}
+
+
+
 export class PropertyService {
   private readonly collectionName = "properties";
   private readonly defaultPageSize = 12;
@@ -811,7 +825,7 @@ export class PropertyService {
 
       const data = docSnap.data() as PropertyData;
       return {
-        id: docSnap.id,
+        // id: docSnap.id,
         ...data,
         status: data.status || [],
         interiorFeatures: data.interiorFeatures || [],
@@ -857,14 +871,26 @@ export class PropertyService {
       );
 
       const snapshot = await getDocs(q);
-      return snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as PropertyData),
-        status: (doc.data().status || []) as string[],
-        interiorFeatures: doc.data().interiorFeatures || [],
-        exteriorFeatures: doc.data().exteriorFeatures || [],
-        customFeatures: doc.data().customFeatures || [],
-      }));
+      // return snapshot.docs.map((doc) => ({
+      //   // id: doc.id,
+      //   ...(doc.data() as PropertyData),
+      //   status: (doc.data().status || []) as string[],
+      //   interiorFeatures: doc.data().interiorFeatures || [],
+      //   exteriorFeatures: doc.data().exteriorFeatures || [],
+      //   customFeatures: doc.data().customFeatures || [],
+      // }));
+      return snapshot.docs.map((doc) => {
+        const data = doc.data();
+
+        return {
+          ...(data as PropertyData),
+          status: normalizeStatus(data.status),
+          interiorFeatures: data.interiorFeatures ?? [],
+          exteriorFeatures: data.exteriorFeatures ?? [],
+          customFeatures: data.customFeatures ?? [],
+        };
+      });
+
     } catch (error) {
       console.error("Error getting all properties:", error);
       throw error;
@@ -931,7 +957,7 @@ export class PropertyService {
         .map((docSnap) => {
           const data = docSnap.data() as PropertyData;
           return {
-            id: docSnap.id,
+            // id: docSnap.id,
             ...data,
             status: data.status || [],
             interiorFeatures: data.interiorFeatures || [],
@@ -978,7 +1004,7 @@ export class PropertyService {
 
       const snapshot = await getDocs(q);
       return snapshot.docs.map((doc) => ({
-        id: doc.id,
+        // id: doc.id,
         ...(doc.data() as PropertyData),
         status: doc.data().status || [],
         interiorFeatures: doc.data().interiorFeatures || [],
@@ -1003,7 +1029,7 @@ export class PropertyService {
 
       const snapshot = await getDocs(q);
       return snapshot.docs.map((doc) => ({
-        id: doc.id,
+        // id: doc.id,
         ...(doc.data() as PropertyData),
         status: doc.data().status || [],
         interiorFeatures: doc.data().interiorFeatures || [],
@@ -1027,7 +1053,7 @@ export class PropertyService {
 
       const snapshot = await getDocs(q);
       return snapshot.docs.map((doc) => ({
-        id: doc.id,
+        // id: doc.id,
         ...(doc.data() as PropertyData),
         status: doc.data().status || [],
         interiorFeatures: doc.data().interiorFeatures || [],
@@ -1159,7 +1185,7 @@ export class PropertyService {
 
         if (searchableText.includes(term.toLowerCase())) {
           results.push({
-            id: docSnap.id,
+            // id: docSnap.id,
             ...data,
             status: data.status || [],
             interiorFeatures: data.interiorFeatures || [],
