@@ -13,16 +13,17 @@ input[type="checkbox"]:checked {
 
 
 .custom-button {
-    background-color: var(--accent-color);
-    color: var(--contrast-color);
-    letter-spacing: 1px;
-    box-shadow: 0 5px 15px color-mix(in srgb, var(--accent-color), transparent 70%);
-    border: none;
-    border-radius: 8px;
-    padding: 12px 30px;
-    font-size: 16px;
-    font-weight: 600;
-    transition: all .3s;
+    background-color: var(--accent-color) !important;
+    color: var(--contrast-color) !important;
+    letter-spacing: 1px !important;
+    box-shadow: 0 5px 15px color-mix(in srgb, var(--accent-color), transparent 70%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 12px 30px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    transition: all .3s !important;
+    color: white !important;
 }
 
 .custom-button:hover {
