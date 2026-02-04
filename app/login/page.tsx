@@ -534,32 +534,62 @@ export default function LoginPage() {
   }, [supabase, router, searchParams]);
 
 
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     setIsLoggingIn(true);
+  //     setError(null);
+
+  //     const callbackUrl = searchParams?.get('redirect') || searchParams?.get('callbackUrl') || `${location.origin}/`;
+
+  //     const { error } = await supabase.auth.signInWithOAuth({
+  //       provider: "google",
+  //       options: {
+  //         redirectTo: `${location.origin}/auth/callback?redirect=${encodeURIComponent(callbackUrl)}`,
+  //         queryParams: {
+  //           access_type: 'offline',
+  //           prompt: 'consent',
+  //         }
+  //       },
+  //     });
+
+  //     if (error) {
+  //       throw error;
+  //     }
+  //   } catch (err: any) {
+  //     setError(err.message || "Failed to sign in with Google. Please try again.");
+  //     setIsLoggingIn(false);
+  //   }
+  // };
+
   const handleGoogleLogin = async () => {
     try {
       setIsLoggingIn(true);
       setError(null);
 
-      const callbackUrl = searchParams?.get('redirect') || searchParams?.get('callbackUrl') || `${location.origin}/`;
+      // Where you want the user to go AFTER successful login
+      // const finalRedirect = searchParams?.get('redirect') || searchParams?.get('callbackUrl') || '/';
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${location.origin}/auth/callback?redirect=${encodeURIComponent(callbackUrl)}`,
+          redirectTo: `${location.origin}/auth/callback`, // no query here
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
-          }
+          },
         },
       });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
+
+      // Supabase will redirect the user to /auth/callback?code=...
+      // Your /auth/callback/page.tsx can read 'finalRedirect' from state or searchParams
     } catch (err: any) {
       setError(err.message || "Failed to sign in with Google. Please try again.");
       setIsLoggingIn(false);
     }
   };
+
 
   // const handleLogout = async () => {
   //   try {
