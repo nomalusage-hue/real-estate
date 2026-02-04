@@ -471,7 +471,7 @@ import { usePropertyStats } from "@/hooks/usePropertyStats";
 import PropertyCardPremium from "@/components/property/PropertyCard/PropertyCardPremium";
 import PropertyFilters from "@/components/property/PropertyFilters";
 // import { PropertyFilterOptions } from "@/services/PropertyService";
-import { propertyService, PropertyFilterOptions, PaginatedResult } from '@/services/PropertyServiceSupabase';
+import { PropertyFilterOptions } from '@/services/PropertyServiceSupabase';
 import Link from "next/link";
 import AppLoader from "@/components/ui/AppLoader/AppLoader";
 import PropertyCardHorizontal from "@/components/property/PropertyCard/PropertyCardHorizontal";
@@ -501,7 +501,6 @@ export default function Properties() {
 
   // const { isFavorited, toggleFavorite } = useFavorites();
 
-  console.log(total, properties.length, properties);
 
   const handleFilterChange = useCallback(
     (newFilters: PropertyFilterOptions) => {
@@ -509,25 +508,49 @@ export default function Properties() {
       refreshWithFilters(newFilters);
 
       // Update URL based on status
+      // const newSearchParams = new URLSearchParams(searchParams || undefined);
+      // if (newFilters.status) {
+      //   if (newFilters.status.includes('For Sale') && !newFilters.status.includes('For Rent')) {
+      //     newSearchParams.set('type', 'sale');
+      //   } else if (newFilters.status.includes('For Rent') && !newFilters.status.includes('For Sale')) {
+      //     newSearchParams.set('type', 'rent');
+      //   } else {
+      //     newSearchParams.delete('type');
+      //   }
+      // } else {
+      //   newSearchParams.delete('type');
+      // }
+
       const newSearchParams = new URLSearchParams(searchParams || undefined);
-      if (newFilters.status) {
-        if (newFilters.status.includes('For Sale') && !newFilters.status.includes('For Rent')) {
-          newSearchParams.set('type', 'sale');
-        } else if (newFilters.status.includes('For Rent') && !newFilters.status.includes('For Sale')) {
-          newSearchParams.set('type', 'rent');
-        } else {
-          newSearchParams.delete('type');
-        }
+
+      // Update URL based on status (array)
+      if (newFilters.status && newFilters.status.length > 0) {
+        newSearchParams.set(
+          "status",
+          newFilters.status.join(",")
+        );
       } else {
-        newSearchParams.delete('type');
+        newSearchParams.delete("status");
       }
 
+
+      // // Update URL based on propertyTypes
+      // if (newFilters.propertyTypes && newFilters.propertyTypes.length === 1) {
+      //   newSearchParams.set('propertyType', newFilters.propertyTypes[0].toLowerCase());
+      // } else {
+      //   newSearchParams.delete('propertyType');
+      // }
+
       // Update URL based on propertyTypes
-      if (newFilters.propertyTypes && newFilters.propertyTypes.length === 1) {
-        newSearchParams.set('propertyType', newFilters.propertyTypes[0].toLowerCase());
+      if (newFilters.propertyTypes && newFilters.propertyTypes.length > 0) {
+        newSearchParams.set(
+          'propertyType',
+          newFilters.propertyTypes.map(t => t.toLowerCase()).join(',')
+        );
       } else {
         newSearchParams.delete('propertyType');
       }
+
 
       // Update URL based on other filters
       if (newFilters.searchTerm) {
@@ -565,15 +588,32 @@ export default function Properties() {
     [refreshWithFilters, searchParams, router]
   );
 
+  // const handleSortChange = useCallback(
+  //   (sortBy: string) => {
+  //     const newFilters: PropertyFilterOptions = {
+  //       ...filters,
+  //       sortBy: sortBy as any,
+  //       sortOrder:
+  //         sortBy.startsWith("-") || sortBy === "created_at"
+  //           ? "desc"
+  //           : "asc",
+  //     };
+
+  //     setFilters(newFilters);
+  //     refreshWithFilters(newFilters);
+  //   },
+  //   [filters, refreshWithFilters]
+  // );
+
   const handleSortChange = useCallback(
     (sortBy: string) => {
+      const isDesc = sortBy.startsWith("-");
+      const key = isDesc ? sortBy.slice(1) : sortBy;
+
       const newFilters: PropertyFilterOptions = {
         ...filters,
-        sortBy: sortBy as any,
-        sortOrder:
-          sortBy.startsWith("-") || sortBy === "createdAt"
-            ? "desc"
-            : "asc",
+        sortBy: key as any,
+        sortOrder: isDesc ? "desc" : "asc",
       };
 
       setFilters(newFilters);
@@ -581,6 +621,7 @@ export default function Properties() {
     },
     [filters, refreshWithFilters]
   );
+
 
   const handleViewToggle = (view: "grid" | "list") => {
     setViewType(view);
@@ -597,7 +638,7 @@ export default function Properties() {
 
   // Handle URL params for type and propertyType
   useEffect(() => {
-    const type = searchParams?.get('type');
+    // const type = searchParams?.get('type');
     const propertyType = searchParams?.get('propertyType')?.toLowerCase();
     const searchTerm = searchParams?.get('searchTerm');
     const minSalePrice = searchParams?.get('minSalePrice');
@@ -606,29 +647,84 @@ export default function Properties() {
     const minBathrooms = searchParams?.get('minBathrooms');
     const newFilters = { ...filters };
 
-    if (type === 'sale') {
-      newFilters.status = ['For Sale'];
-    } else if (type === 'rent') {
-      newFilters.status = ['For Rent'];
-    } else if (type) {
-      // wrong type, remove it
-      const newSearchParams = new URLSearchParams(searchParams || undefined);
-      newSearchParams.delete('type');
-      router.replace(`?${newSearchParams.toString()}`, { scroll: false });
-      newFilters.status = undefined;
+    // if (type === 'sale') {
+    //   newFilters.status = ['For Sale'];
+    // } else if (type === 'rent') {
+    //   newFilters.status = ['For Rent'];
+    // } else if (type) {
+    //   // wrong type, remove it
+    //   const newSearchParams = new URLSearchParams(searchParams || undefined);
+    //   newSearchParams.delete('type');
+    //   router.replace(`?${newSearchParams.toString()}`, { scroll: false });
+    //   newFilters.status = undefined;
+    // }
+
+    const statusParam = searchParams?.get("status");
+
+    if (statusParam) {
+      const validStatuses = ["For Sale", "For Rent", "Sold"] as const;
+
+      const parsedStatuses = statusParam
+        .split(",")
+        .map(s => s.trim())
+        .filter(
+          (s): s is typeof validStatuses[number] =>
+            validStatuses.includes(s as any)
+        );
+
+      if (parsedStatuses.length > 0) {
+        newFilters.status = parsedStatuses;
+      } else {
+        // Invalid values → clean URL
+        const newSearchParams = new URLSearchParams(searchParams || undefined);
+        newSearchParams.delete("status");
+        router.replace(`?${newSearchParams.toString()}`, { scroll: false });
+        newFilters.status = undefined;
+      }
     }
 
+
     // Valid property types
-    const validPropertyTypes = ['house', 'apartment', 'villa', 'commercial', 'land'];
-    if (propertyType && validPropertyTypes.includes(propertyType)) {
-      newFilters.propertyTypes = [propertyType];
-    } else if (propertyType) {
-      // wrong propertyType, remove it
-      const newSearchParams = new URLSearchParams(searchParams || undefined);
-      newSearchParams.delete('propertyType');
-      router.replace(`?${newSearchParams.toString()}`, { scroll: false });
-      newFilters.propertyTypes = undefined;
+    // const validPropertyTypes = ['house', 'apartment', 'villa', 'commercial', 'land'];
+    // if (propertyType && validPropertyTypes.includes(propertyType)) {
+    //   newFilters.propertyTypes = [propertyType];
+    // } else if (propertyType) {
+    //   // wrong propertyType, remove it
+    //   const newSearchParams = new URLSearchParams(searchParams || undefined);
+    //   newSearchParams.delete('propertyType');
+    //   router.replace(`?${newSearchParams.toString()}`, { scroll: false });
+    //   newFilters.propertyTypes = undefined;
+    // }
+    const validPropertyTypes = [
+      'house',
+      'apartment',
+      'villa',
+      'commercial',
+      'land',
+    ] as const;
+
+    type ValidPropertyType = typeof validPropertyTypes[number];
+
+    if (propertyType) {
+      const parsedTypes = propertyType
+        .split(',')
+        .map(t => t.toLowerCase().trim())
+        .filter(
+          (t): t is ValidPropertyType =>
+            validPropertyTypes.includes(t as ValidPropertyType)
+        );
+
+      if (parsedTypes.length > 0) {
+        newFilters.propertyTypes = parsedTypes;
+      } else {
+        // All values invalid → clean URL
+        const newSearchParams = new URLSearchParams(searchParams || undefined);
+        newSearchParams.delete('propertyType');
+        router.replace(`?${newSearchParams.toString()}`, { scroll: false });
+        newFilters.propertyTypes = undefined;
+      }
     }
+
 
     if (searchTerm) {
       newFilters.searchTerm = searchTerm;
@@ -657,10 +753,27 @@ export default function Properties() {
   // ✅ SINGLE SOURCE OF TRUTH FOR RENDERING
   const hasVisibleProperties = properties.length > 0;
 
+
+  const getActiveStatusText = () => {
+    if (!filters.status || filters.status.length === 0) return "All Properties";
+
+    const statusText = filters.status
+      .map(s => {
+        if (s === "For Sale") return "For Sale";
+        if (s === "For Rent") return "For Rent";
+        if (s === "Sold") return "Sold";
+        return s;
+      })
+      .join(" & ");
+
+    return `${statusText} Properties`;
+  };
+
+
   return (
     <main className="main">
       {/* Page Title */}
-      <div className="page-title">
+      {/* <div className="page-title">
         <div className="heading">
           <div className="container">
             <div className="row d-flex justify-content-center text-center">
@@ -682,6 +795,43 @@ export default function Properties() {
                 <Link href="/">Home</Link>
               </li>
               <li className="current">Properties</li>
+            </ol>
+          </div>
+        </nav>
+      </div> */}
+
+      <div className="page-title">
+        <div className="heading">
+          <div className="container">
+            <div className="row d-flex justify-content-center text-center">
+              <div className="col-lg-8">
+                <h1 className="heading-title">{getActiveStatusText()}</h1>
+                {/* Keep the existing description or make it dynamic */}
+                <p className="mb-0">
+                  Browse our collection of {filters.status && filters.status.length > 0
+                    ? filters.status.map(s => s.toLowerCase()).join(' and ')
+                    : 'premium'} properties. Find your perfect home, investment opportunity,
+                  or rental property from our curated selection.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <nav className="breadcrumbs">
+          <div className="container">
+            <ol>
+              <li><Link href="/">Home</Link></li>
+              {/* <li>
+                <Link href="/properties">Properties</Link>
+              </li> */}
+              <li className="current">Properties</li>
+              {filters.status && filters.status.length > 0 && (
+                <li className="current">
+                  {filters.status.length === 1
+                    ? filters.status[0]
+                    : `${filters.status.length} Types`}
+                </li>
+              )}
             </ol>
           </div>
         </nav>
@@ -727,17 +877,20 @@ export default function Properties() {
                     </span>
 
                     <select
-                      className="form-select form-select-sm"
-                      value={filters.sortBy || "createdAt"}
+                      id="sort-filter"
+                      name="sortBy"
+                      className="form-select form-select-sm order-by-select"
+                      value={filters.sortBy || "created_at"}
                       onChange={(e) => handleSortChange(e.target.value)}
                     >
-                      <option value="createdAt">Sort by: Newest</option>
-                      <option value="salePrice">Price: Low to High</option>
-                      <option value="-salePrice">Price: High to Low</option>
-                      <option value="buildingSize">
+                      <option value="-created_at">Sort by: Newest</option>
+                      {/* <option value="-created_at">Sort by: Oldest</option> */}
+                      <option value="sale_price">Price: Low to High</option>
+                      <option value="-sale_price">Price: High to Low</option>
+                      <option value="building_size">
                         Size: Small to Large
                       </option>
-                      <option value="-buildingSize">
+                      <option value="-building_size">
                         Size: Large to Small
                       </option>
                     </select>

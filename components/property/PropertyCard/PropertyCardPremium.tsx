@@ -10,7 +10,6 @@
 // import { useState } from "react";
 // import Toast from "../../ui/Toast";
 
-
 // export default function PropertyCardPremium({ data, isFavorited: propIsFavorited, toggleFavorite: propToggleFavorite, lgClass = 'col-lg-6' }: { data: PropertyData, isFavorited?: (id: string) => boolean, toggleFavorite?: (id: string) => Promise<boolean>, lgClass?: string }) {
 //     const { isFavorited: hookIsFavorited, toggleFavorite: hookToggleFavorite, user } = useFavorites();
 //     const router = useRouter();
@@ -95,7 +94,6 @@
 
 //     const primaryBadge = getPrimaryBadge();
 //     const isPropertyFavorited = isFavorited(data.id);
-
 
 //     return (
 //         <div className={`${lgClass} col-md-6`}>
@@ -253,278 +251,426 @@
 
 
 
+
+// "use client";
+
+// import Image from "next/image";
+// import { PropertyData } from "../../../types/property";
+// import Link from "next/link";
+// import { formatPrice } from "@/utils/format";
+// import { useFavorites } from "@/hooks/useFavorites";
+// import { useEffect, useState } from "react";
+// import LoginRequiredModal from "@/components/modules/LoginRequiredModal";
+// import ImageGalleryModal from "@/components/modules/ImageGalleryModal";
+// import { getDisplayDate } from "@/src/utils/dateUtils";
+// // import "../css/PropertyCardPremium.css";
+// // import "./css/PropertyCardPremium.css";
+
+// export default function PropertyCardPremium({
+//     data,
+//     isFavorited: propIsFavorited,
+//     toggleFavorite: propToggleFavorite,
+//     lgClass = "col-lg-6",
+// }: {
+//     data: PropertyData;
+//     isFavorited?: (id: string) => boolean;
+//     toggleFavorite?: (id: string) => Promise<boolean>;
+//     lgClass?: string;
+// }) {
+//     const {
+//         isFavorited: hookIsFavorited,
+//         toggleFavorite: hookToggleFavorite,
+//         user,
+//     } = useFavorites();
+
+//     const isFavorited = propIsFavorited || hookIsFavorited;
+//     const toggleFavorite = propToggleFavorite || hookToggleFavorite;
+
+//     const [galleryOpen, setGalleryOpen] = useState(false);
+//     const [galleryIndex, setGalleryIndex] = useState(0);
+
+//     const [showLoginModal, setShowLoginModal] = useState(false);
+
+//     const images =
+//         data.images && data.images.length > 0
+//             ? data.images
+//             : ["/img/placeholder-property.jpg"];
+
+//     const [usdRate, setUsdRate] = useState<number | null>(null);
+//     const [usdLoading, setUsdLoading] = useState(false);
+//     const price = data.salePrice ?? data.rentPrice;
+//     const currency = data.salePrice ? data.saleCurrency : data.rentCurrency;
+//     const isRent = Boolean(data.rentPrice);
+//     // useEffect(() => {
+//     //     if (!price || !currency || currency === "USD") return;
+
+//     //     async function fetchRate() {
+//     //         try {
+//     //             const res = await fetch(`/api/exchange?base=${currency}`);
+//     //             const json = await res.json();
+//     //             if (json?.rates?.USD) {
+//     //                 setUsdRate(json.rates.USD);
+//     //             }
+//     //         } catch {
+//     //             setUsdRate(null);
+//     //         }
+//     //     }
+
+//     //     fetchRate();
+//     // }, [price, currency]);
+
+//     useEffect(() => {
+//         if (!price || !currency || currency === "USD") return;
+
+//         async function fetchRate() {
+//             setUsdLoading(true);
+//             setUsdRate(null);
+
+//             try {
+//                 const res = await fetch(`/api/exchange?base=${currency}`);
+//                 const json = await res.json();
+
+//                 if (json?.rates?.USD) {
+//                     setUsdRate(json.rates.USD);
+//                 }
+//             } catch {
+//                 setUsdRate(null);
+//             } finally {
+//                 setUsdLoading(false);
+//             }
+//         }
+
+//         fetchRate();
+//     }, [price, currency]);
+
+//     const handleFavoriteClick = async (e: React.MouseEvent) => {
+//         e.preventDefault();
+//         e.stopPropagation();
+
+//         if (!user) {
+//             setShowLoginModal(true);
+//             return;
+//         }
+
+//         await toggleFavorite(data.id);
+//     };
+
+//     const openGallery = (index = 0) => {
+//         setGalleryIndex(index);
+//         setGalleryOpen(true);
+//     };
+
+//     const nextImage = () => setGalleryIndex((prev) => (prev + 1) % images.length);
+//     const prevImage = () =>
+//         setGalleryIndex((prev) => (prev - 1 + images.length) % images.length);
+
+//     const primaryBadge = data.status?.includes("Sold")
+//         ? "Sold"
+//         : data.status?.[0] || null;
+//     const isPropertyFavorited = isFavorited(data.id);
+
+//     const displayDate = getDisplayDate(data.createdAt);
+
+//     return (
+//         <div className={`${lgClass} col-md-6`}>
+//             <div className="property-card">
+//                 <div className="property-image">
+//                     <Image
+//                         src={images[0]}
+//                         alt={data.title}
+//                         className="img-fluid"
+//                         width={0}
+//                         height={0}
+//                         unoptimized
+//                         style={{ width: "100%", height: "300px", objectFit: "cover" }}
+//                         loading="eager"
+//                         priority
+//                     />
+
+//                     <div className="property-badges">
+//                         {primaryBadge && (
+//                             <span
+//                                 className={`badge ${primaryBadge.toLowerCase().replace(" ", "-")}`}
+//                             >
+//                                 {primaryBadge}
+//                             </span>
+//                         )}
+//                         {data.hot && <span className="badge hot">Hot</span>}
+//                         {data.newListing && <span className="badge new">New</span>}
+//                         {data.featured && <span className="badge featured">Featured</span>}
+//                         {data.exclusive && (
+//                             <span className="badge exclusive">Exclusive</span>
+//                         )}
+//                     </div>
+
+//                     <div className="property-overlay premium">
+//                         <button
+//                             className={`favorite-btn ${isPropertyFavorited ? "favorited" : ""}`}
+//                             onClick={handleFavoriteClick}
+//                             title={
+//                                 isPropertyFavorited
+//                                     ? "Remove from favorites"
+//                                     : "Add to favorites"
+//                             }
+//                         >
+//                             <i
+//                                 className={`bi ${isPropertyFavorited ? "bi-heart-fill" : "bi-heart"}`}
+//                             ></i>
+//                         </button>
+
+//                         <button
+//                             className="gallery-btn"
+//                             onClick={() => openGallery(0)}
+//                             data-count={images.length}
+//                         >
+//                             <i className="bi bi-images"></i>
+//                         </button>
+//                     </div>
+//                 </div>
+
+//                 <div className="property-content d-flex flex-column align-items-start" style={{"height": "46%"}}>
+//                     <div className="property-price">
+//                         {!price || !currency ? (
+//                             "Price on request" + " " + price + " " + currency
+//                         ) : (
+//                             <>
+//                                 <div>
+//                                     {formatPrice(price, currency)}
+//                                     {isRent && "/month"}
+//                                 </div>
+//                                 {currency !== "USD" && (
+//                                     <div className="price-usd">
+//                                         {usdLoading ? (
+//                                             <span className="usd-loading">
+//                                                 ≈ USD loading…
+//                                                 <i className="bi bi-arrow-repeat ms-1 spin" />
+//                                             </span>
+//                                         ) : (
+//                                             usdRate && (
+//                                                 <>
+//                                                     ≈ {formatPrice(Math.round(price * usdRate), "USD")}
+//                                                     <i
+//                                                         className="bi bi-info-circle ms-1"
+//                                                         title="Approximate USD value based on current exchange rates"
+//                                                     />
+//                                                     {isRent && "/month"}
+//                                                 </>
+//                                             )
+//                                         )}
+//                                     </div>
+//                                 )}
+//                             </>
+//                         )}
+//                     </div>
+
+//                     <h4 className="property-title">{data.title}</h4>
+//                     <p className="property-location">
+//                         <i className="bi bi-geo-alt"></i>
+//                         {data.showAddress ? data.address : data.city}
+//                     </p>
+                    
+//                     <div style={{"width": "100%", "marginTop": "auto"}}>
+//                         <p className="property-location">
+//                             {/* {data.createdAt} */}
+//                             { displayDate }
+//                         </p>
+
+//                         <Link
+//                             href={`/properties/${data.id}`}
+//                             className="btn btn-primary w-100 mt-3 mt-auto"
+//                         >
+//                             View Details
+//                         </Link>
+//                     </div>
+//                 </div>
+//             </div>
+
+//             <ImageGalleryModal
+//                 open={galleryOpen}
+//                 images={images}
+//                 index={galleryIndex}
+//                 onClose={() => {setGalleryOpen(false)}}
+//                 onNext={nextImage}
+//                 onPrev={prevImage}
+//             />
+
+//             {/* Login Required Modal */}
+//             <LoginRequiredModal
+//                 open={showLoginModal}
+//                 onClose={() => setShowLoginModal(false)}
+//             />
+//         </div>
+//     );
+// }
+
+
+
+
+
 "use client";
 
 import Image from "next/image";
 import { PropertyData } from "../../../types/property";
 import Link from "next/link";
-import { formatArea, formatNumber } from "@/utils/format";
-import "../css/PropertyCardPremium.css";
+import { formatPrice } from "@/utils/format";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import LoginRequiredModal from "@/components/modules/LoginRequiredModal";
+import ImageGalleryModal from "@/components/modules/ImageGalleryModal";
+import { getDisplayDate } from "@/src/utils/dateUtils";
+import { convertToUSD } from "@/utils/convertToUSD"; // <--- import our new helper
 
-export default function PropertyCardPremium({ data, isFavorited: propIsFavorited, toggleFavorite: propToggleFavorite, lgClass = 'col-lg-6' }: { data: PropertyData, isFavorited?: (id: string) => boolean, toggleFavorite?: (id: string) => Promise<boolean>, lgClass?: string }) {
-    const { isFavorited: hookIsFavorited, toggleFavorite: hookToggleFavorite, user } = useFavorites();
-    const router = useRouter();
+export default function PropertyCardPremium({
+  data,
+  isFavorited: propIsFavorited,
+  toggleFavorite: propToggleFavorite,
+  lgClass = "col-lg-6",
+}: {
+  data: PropertyData;
+  isFavorited?: (id: string) => boolean;
+  toggleFavorite?: (id: string) => Promise<boolean>;
+  lgClass?: string;
+}) {
+  const { isFavorited: hookIsFavorited, toggleFavorite: hookToggleFavorite, user } = useFavorites();
 
-    const isFavorited = propIsFavorited || hookIsFavorited;
-    const toggleFavorite = propToggleFavorite || hookToggleFavorite;
+  const isFavorited = propIsFavorited || hookIsFavorited;
+  const toggleFavorite = propToggleFavorite || hookToggleFavorite;
 
-    const [galleryOpen, setGalleryOpen] = useState(false);
-    const [galleryIndex, setGalleryIndex] = useState(0);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [usdValue, setUsdValue] = useState<number | null>(null);
+  const [usdLoading, setUsdLoading] = useState(false);
 
-    const images = data.images && data.images.length > 0 ? data.images : ["/img/placeholder-property.jpg"];
+  const images = data.images && data.images.length > 0 ? data.images : ["/img/placeholder-property.jpg"];
+  const price = data.salePrice ?? data.rentPrice;
+  const currency = data.salePrice ? data.saleCurrency : data.rentCurrency;
+  const isRent = Boolean(data.rentPrice);
+  const displayDate = getDisplayDate(data.createdAt);
 
-    const handleFavoriteClick = async (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
+  // Fetch USD value whenever price or currency changes
+  if (price && currency && currency !== "USD" && usdValue === null && !usdLoading) {
+    setUsdLoading(true);
+    convertToUSD(price, currency)
+      .then((value) => setUsdValue(value))
+      .finally(() => setUsdLoading(false));
+  }
 
-        if (!user) {
-            alert('Please login first to save favorites!');
-            router.push('/login');
-            return;
-        }
+  const handleFavoriteClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+    await toggleFavorite(data.id);
+  };
 
-        await toggleFavorite(data.id);
-    };
+  const openGallery = (index = 0) => setGalleryIndex(index) || setGalleryOpen(true);
+  const nextImage = () => setGalleryIndex((prev) => (prev + 1) % images.length);
+  const prevImage = () => setGalleryIndex((prev) => (prev - 1 + images.length) % images.length);
 
-    const openGallery = (index = 0) => {
-        setGalleryIndex(index);
-        setGalleryOpen(true);
-    };
+  const primaryBadge = data.status?.includes("Sold") ? "Sold" : data.status?.[0] || null;
+  const isPropertyFavorited = isFavorited(data.id);
 
-    const closeGallery = () => setGalleryOpen(false);
+  return (
+    <div className={`${lgClass} col-md-6`}>
+      <div className="property-card">
+        <div className="property-image">
+          <Image
+            src={images[0]}
+            alt={data.title}
+            className="img-fluid"
+            width={0}
+            height={0}
+            unoptimized
+            style={{ width: "100%", height: "300px", objectFit: "cover" }}
+            loading="eager"
+            priority
+          />
 
-    const nextImage = () => setGalleryIndex((prev) => (prev + 1) % images.length);
-    const prevImage = () => setGalleryIndex((prev) => (prev - 1 + images.length) % images.length);
-
-    const primaryBadge = data.status?.includes('Sold') ? 'Sold' : data.status?.[0] || null;
-    const isPropertyFavorited = isFavorited(data.id);
-
-    return (
-        <div className={`${lgClass} col-md-6`}>
-            <div className="property-card">
-                <div className="property-image">
-                    <Image
-                        src={images[0]}
-                        alt={data.title}
-                        className="img-fluid"
-                        width={0}
-                        height={0}
-                        unoptimized
-                        style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
-                    />
-
-                    <div className="property-badges">
-                        {primaryBadge && <span className={`badge ${primaryBadge.toLowerCase().replace(' ', '-')}`}>{primaryBadge}</span>}
-                        {data.hot && <span className="badge hot">Hot</span>}
-                        {data.newListing && <span className="badge new">New</span>}
-                        {data.featured && <span className="badge featured">Featured</span>}
-                        {data.exclusive && <span className="badge exclusive">Exclusive</span>}
-                    </div>
-
-                    <div className="property-overlay">
-                        <button
-                            className={`favorite-btn ${isPropertyFavorited ? 'favorited' : ''}`}
-                            onClick={handleFavoriteClick}
-                            title={isPropertyFavorited ? 'Remove from favorites' : 'Add to favorites'}
-                        >
-                            <i className={`bi ${isPropertyFavorited ? 'bi-heart-fill' : 'bi-heart'}`}></i>
-                        </button>
-
-                        <button className="gallery-btn" onClick={() => openGallery(0)} data-count={images.length}>
-                            <i className="bi bi-images"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div className="property-content">
-                    <div className="property-price">
-                        {data.salePrice ? `$${formatNumber(data.salePrice)}` : data.rentPrice ? `$${formatNumber(data.rentPrice)}/month` : 'Price on request'}
-                    </div>
-
-                    <h4 className="property-title">{data.title}</h4>
-                    <p className="property-location">
-                        <i className="bi bi-geo-alt"></i>
-                        {data.showAddress ? data.address : data.city}
-                    </p>
-
-                    <Link href={`/properties/${data.id}`} className="btn btn-primary w-100 mt-3">
-                        View Details
-                    </Link>
-                </div>
-            </div>
-
-            {/* Gallery Modal */}
-            {/* {galleryOpen && (
-                <div className="gallery-modal">
-                    <div className="gallery-overlay" onClick={closeGallery}></div>
-                    <div className="gallery-content">
-                        <button className="close-btn" onClick={closeGallery}>&times;</button>
-                        <button className="prev-btn" onClick={prevImage}>&lt;</button>
-                        <Image
-                            src={images[galleryIndex]}
-                            alt={`Image ${galleryIndex + 1}`}
-                            width={800}
-                            height={600}
-                            unoptimized
-                            style={{ width: '100%', maxHeight: '80vh', objectFit: 'contain' }}
-                        />
-                        <button className="next-btn" onClick={nextImage}>&gt;</button>
-                        <div className="gallery-counter">{galleryIndex + 1} / {images.length}</div>
-                    </div>
-                </div>
+          <div className="property-badges">
+            {primaryBadge && (
+              <span className={`badge ${primaryBadge.toLowerCase().replace(" ", "-")}`}>
+                {primaryBadge}
+              </span>
             )}
+            {data.hot && <span className="badge hot">Hot</span>}
+            {data.newListing && <span className="badge new">New</span>}
+            {data.featured && <span className="badge featured">Featured</span>}
+            {data.exclusive && <span className="badge exclusive">Exclusive</span>}
+          </div>
 
-            <style jsx>{`
-                .gallery-modal {
-                    position: fixed;
-                    top: 0; left: 0;
-                    width: 100vw;
-                    height: 100vh;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    z-index: 9999;
-                }
-                .gallery-overlay {
-                    position: absolute;
-                    top: 0; left: 0;
-                    width: 100%; height: 100%;
-                    background: rgba(0,0,0,0.7);
-                }
-                .gallery-content {
-                    position: relative;
-                    max-width: 90%;
-                    max-height: 90%;
-                    z-index: 10000;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                }
-                .gallery-content img {
-                    max-width: 100%;
-                    max-height: 80vh;
-                    object-fit: contain;
-                }
-                .close-btn, .prev-btn, .next-btn {
-                    position: absolute;
-                    background: rgba(0,0,0,0.5);
-                    color: white;
-                    border: none;
-                    font-size: 2rem;
-                    padding: 0.5rem 1rem;
-                    cursor: pointer;
-                    z-index: 10001;
-                }
-                .close-btn { top: 10px; right: 10px; }
-                .prev-btn { left: 10px; top: 50%; transform: translateY(-50%); }
-                .next-btn { right: 10px; top: 50%; transform: translateY(-50%); }
-                .gallery-counter {
-                    margin-top: 10px;
-                    color: white;
-                    font-weight: bold;
-                }
-            `}</style> */}
+          <div className="property-overlay premium">
+            <button
+              className={`favorite-btn ${isPropertyFavorited ? "favorited" : ""}`}
+              onClick={handleFavoriteClick}
+              title={isPropertyFavorited ? "Remove from favorites" : "Add to favorites"}
+            >
+              <i className={`bi ${isPropertyFavorited ? "bi-heart-fill" : "bi-heart"}`}></i>
+            </button>
 
-            {galleryOpen && (
-                <div className="gallery-modal">
-                    <div className="gallery-overlay" onClick={closeGallery}></div>
-                    <div className="gallery-content">
-                        <button className="close-btn" onClick={closeGallery}>&times;</button>
-                        <button className="prev-btn" onClick={prevImage}>&lt;</button>
-                        <Image
-                            key={galleryIndex} // Key ensures transition works when changing images
-                            src={images[galleryIndex]}
-                            alt={`Image ${galleryIndex + 1}`}
-                            width={0}
-                            height={0}
-                            unoptimized
-                            style={{
-                                width: '100%',
-                                maxWidth: '90vw',
-                                maxHeight: '80vh',
-                                objectFit: 'contain',
-                                transition: 'transform 0.4s ease, opacity 0.4s ease',
-                                transform: 'scale(1)',
-                                opacity: 1,
-                                height: "auto"
-                            }}
-                        />
-                        <button className="next-btn" onClick={nextImage}>&gt;</button>
-                        <div className="gallery-counter">{galleryIndex + 1} / {images.length}</div>
-                    </div>
-                </div>
-            )}
-
-            {/* <style jsx>{`
-    .gallery-modal {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100vw; height: 100vh;
-        display: flex; justify-content: center; align-items: center;
-        z-index: 9999;
-        animation: fadeIn 0.3s ease;
-    }
-    .gallery-overlay {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0,0,0,0.7);
-        backdrop-filter: blur(2px);
-        animation: fadeIn 0.3s ease;
-    }
-    .gallery-content {
-        position: relative;
-        width: 90%;
-        max-width: 900px;
-        max-height: 90%;
-        z-index: 10000;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        animation: scaleIn 0.3s ease;
-    }
-    .close-btn, .prev-btn, .next-btn {
-        position: absolute;
-        background: rgba(0,0,0,0.5);
-        color: white;
-        border: none;
-        font-size: 2rem;
-        padding: 0.5rem 1rem;
-        cursor: pointer;
-        z-index: 10001;
-        transition: background 0.2s;
-    }
-    .close-btn:hover, .prev-btn:hover, .next-btn:hover {
-        background: rgba(0,0,0,0.8);
-    }
-    .close-btn { top: 10px; right: 10px; }
-    .prev-btn { left: 10px; top: 50%; transform: translateY(-50%); }
-    .next-btn { right: 10px; top: 50%; transform: translateY(-50%); }
-    .gallery-counter {
-        margin-top: 10px;
-        color: white;
-        font-weight: bold;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    @keyframes scaleIn {
-        from { transform: scale(0.8); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
-
-    @media (max-width: 768px) {
-        .gallery-content { max-width: 95%; }
-    }
-`}</style> */}
-
-
+            <button className="gallery-btn" onClick={() => openGallery(0)} data-count={images.length}>
+              <i className="bi bi-images"></i>
+            </button>
+          </div>
         </div>
-    );
+
+        <div className="property-content d-flex flex-column align-items-start" style={{ height: "46%" }}>
+          <div className="property-price">
+            {!price || !currency ? (
+              "Price on request"
+            ) : (
+              <>
+                <div>
+                  {formatPrice(price, currency)}
+                  {isRent && "/month"}
+                </div>
+                {currency !== "USD" && (
+                  <div className="price-usd">
+                    {usdLoading ? (
+                      <span className="usd-loading">
+                        ≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" />
+                      </span>
+                    ) : (
+                      usdValue && (
+                        <>
+                          ≈ {formatPrice(Math.round(usdValue), "USD")}
+                          {isRent && "/month"}
+                        </>
+                      )
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <h4 className="property-title">{data.title}</h4>
+          <p className="property-location">
+            <i className="bi bi-geo-alt"></i>
+            {data.showAddress ? data.address : data.city}
+          </p>
+
+          <div style={{ width: "100%", marginTop: "auto" }}>
+            <p className="property-location">{displayDate}</p>
+            <Link href={`/properties/${data.id}`} className="btn btn-primary w-100 mt-3 mt-auto">
+              View Details
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <ImageGalleryModal
+        open={galleryOpen}
+        images={images}
+        index={galleryIndex}
+        onClose={() => setGalleryOpen(false)}
+        onNext={nextImage}
+        onPrev={prevImage}
+      />
+
+      <LoginRequiredModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
+    </div>
+  );
 }

@@ -180,20 +180,3 @@
         margin-bottom: 15px;
     }
 }
-
-/* Optional: Add accent color to form elements in other parts of your site */
-.form-control:focus,
-.form-select:focus {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 0.25rem rgba(44, 122, 123, 0.25);
-}
-
-.btn-primary {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-}
-
-.btn-primary:hover {
-    background-color: #235c5d;
-    border-color: #1e5152;
-}

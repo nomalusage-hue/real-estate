@@ -1,5 +1,6 @@
 .featured-properties .mini-list.expand-image .mini-card{
-    grid-template-columns: 220px 1fr;
+    /* grid-template-columns: 220px 1fr; */
+    grid-template-columns: minmax(100px, 220px) 1fr;
 }
 
 button.btn-outline-primary{

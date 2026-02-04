@@ -134,7 +134,7 @@
 //   const supabase = createClient();
 //   const router = useRouter();
 //   const searchParams = useSearchParams();
-  
+
 //   const [loading, setLoading] = useState(true);
 //   const [isLoggingIn, setIsLoggingIn] = useState(false);
 //   const [error, setError] = useState<string | null>(null);
@@ -144,7 +144,7 @@
 //     const checkAuth = async () => {
 //       try {
 //         const { data: { user } } = await supabase.auth.getUser();
-        
+
 //         if (user) {
 //           // Get user role to determine redirect
 //           const { data: profile } = await supabase
@@ -155,7 +155,7 @@
 
 //           // Get redirect URL from query params or use default based on role
 //           const callbackUrl = searchParams?.get('redirect') || searchParams?.get('callbackUrl');
-          
+
 //           if (callbackUrl) {
 //             router.push(callbackUrl);
 //           } else if (profile?.role === 'admin') {
@@ -164,7 +164,7 @@
 //             // Redirect to previous page or dashboard
 //             const referrer = document.referrer;
 //             const isFromSameOrigin = referrer && new URL(referrer).origin === window.location.origin;
-            
+
 //             if (isFromSameOrigin && !referrer.includes('/login')) {
 //               router.back();
 //             } else {
@@ -192,7 +192,7 @@
 //           .single()
 //           .then(({ data: profile }) => {
 //             const callbackUrl = searchParams?.get('redirect') || searchParams?.get('callbackUrl');
-            
+
 //             if (callbackUrl) {
 //               router.push(callbackUrl);
 //             } else if (profile?.role === 'admin') {
@@ -213,7 +213,7 @@
 //       setError(null);
 
 //       const callbackUrl = searchParams?.get('redirect') || searchParams?.get('callbackUrl') || `${location.origin}/dashboard`;
-      
+
 //       const { error } = await supabase.auth.signInWithOAuth({
 //         provider: "google",
 //         options: {
@@ -430,7 +430,7 @@
 //           </div>
 //         </div>
 //       </section>
-      
+
 //     </main>
 //   );
 // }
@@ -457,19 +457,19 @@ export default function LoginPage() {
   const supabase = createClient();
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   const [loading, setLoading] = useState(true);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+  // const [user, setUser] = useState<any>(null);
 
   // Check if user is already logged in and redirect
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        setUser(user);
-        
+        // setUser(user);
+
         if (user) {
           // Get user role to determine redirect
           const { data: profile } = await supabase
@@ -480,7 +480,7 @@ export default function LoginPage() {
 
           // Get redirect URL from query params or use default based on role
           const callbackUrl = searchParams?.get('redirect') || searchParams?.get('callbackUrl');
-          
+
           if (callbackUrl) {
             router.push(callbackUrl);
           } else if (profile?.role === 'admin') {
@@ -489,7 +489,7 @@ export default function LoginPage() {
             // Redirect to previous page or dashboard
             const referrer = document.referrer;
             const isFromSameOrigin = referrer && new URL(referrer).origin === window.location.origin;
-            
+
             if (isFromSameOrigin && !referrer.includes('/login')) {
               router.back();
             } else {
@@ -508,7 +508,7 @@ export default function LoginPage() {
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
+      // setUser(session?.user || null);
       if (session?.user) {
         // User just logged in, redirect based on role
         supabase
@@ -518,7 +518,7 @@ export default function LoginPage() {
           .single()
           .then(({ data: profile }) => {
             const callbackUrl = searchParams?.get('redirect') || searchParams?.get('callbackUrl');
-            
+
             if (callbackUrl) {
               router.push(callbackUrl);
             } else if (profile?.role === 'admin') {
@@ -561,19 +561,19 @@ export default function LoginPage() {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      setError(null);
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) throw error;
-      
-      // After logout, redirect to login page with a message
-      router.push("/login?message=You have been logged out successfully");
-    } catch (err: any) {
-      setError(err.message || "Failed to log out. Please try again.");
-    }
-  };
+  // const handleLogout = async () => {
+  //   try {
+  //     setError(null);
+  //     const { error } = await supabase.auth.signOut();
+
+  //     if (error) throw error;
+
+  //     // After logout, redirect to login page with a message
+  //     router.push("/login?message=You have been logged out successfully");
+  //   } catch (err: any) {
+  //     setError(err.message || "Failed to log out. Please try again.");
+  //   }
+  // };
 
   // Show loading while checking auth
   if (loading) {
@@ -584,138 +584,138 @@ export default function LoginPage() {
     );
   }
 
-  // Show logout interface if user is already authenticated
-  if (user) {
-    return (
-      <main className="main">
-        <div className="page-title">
-          <div className="heading">
-            <div className="container">
-              <div className="row d-flex justify-content-center text-center">
-                <div className="col-lg-8">
-                  <h1 className="heading-title">Already Logged In</h1>
-                  <p className="mb-0">
-                    You are currently signed in to your account.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <nav className="breadcrumbs">
-            <div className="container">
-              <ol>
-                <li>
-                  <Link href="/">Home</Link>
-                </li>
-                <li className="current">Account</li>
-              </ol>
-            </div>
-          </nav>
-        </div>
+  // // Show logout interface if user is already authenticated
+  // if (user) {
+  //   return (
+  //     <main className="main">
+  //       <div className="page-title">
+  //         <div className="heading">
+  //           <div className="container">
+  //             <div className="row d-flex justify-content-center text-center">
+  //               <div className="col-lg-8">
+  //                 <h1 className="heading-title">Already Logged In</h1>
+  //                 <p className="mb-0">
+  //                   You are currently signed in to your account.
+  //                 </p>
+  //               </div>
+  //             </div>
+  //           </div>
+  //         </div>
+  //         <nav className="breadcrumbs">
+  //           <div className="container">
+  //             <ol>
+  //               <li>
+  //                 <Link href="/">Home</Link>
+  //               </li>
+  //               <li className="current">Account</li>
+  //             </ol>
+  //           </div>
+  //         </nav>
+  //       </div>
 
-        <section className="login-section section">
-          <div className="container" data-aos="fade-up">
-            <div className="row justify-content-center">
-              <div className="col-lg-6 col-md-8 col-sm-10">
-                <div className="login-card">
-                  <div className="login-header text-center mb-5">
-                    <div className="login-icon mb-4">
-                      <div className="login-icon-circle bg-success">
-                        <i className="bi bi-person-check-fill text-white"></i>
-                      </div>
-                    </div>
-                    <h2 className="login-title">Welcome Back!</h2>
-                    <p className="text-muted mb-0">
-                      You are already signed in as <strong>{user.email}</strong>
-                    </p>
-                  </div>
+  //       <section className="login-section section">
+  //         <div className="container" data-aos="fade-up">
+  //           <div className="row justify-content-center">
+  //             <div className="col-lg-6 col-md-8 col-sm-10">
+  //               <div className="login-card">
+  //                 <div className="login-header text-center mb-5">
+  //                   <div className="login-icon mb-4">
+  //                     <div className="login-icon-circle bg-success">
+  //                       <i className="bi bi-person-check-fill text-white"></i>
+  //                     </div>
+  //                   </div>
+  //                   <h2 className="login-title">Welcome Back!</h2>
+  //                   <p className="text-muted mb-0">
+  //                     You are already signed in as <strong>{user.email}</strong>
+  //                   </p>
+  //                 </div>
 
-                  {error && (
-                    <div className="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-                      <div className="d-flex align-items-center">
-                        <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                        <span>{error}</span>
-                      </div>
-                      <button
-                        type="button"
-                        className="btn-close"
-                        onClick={() => setError(null)}
-                        aria-label="Close"
-                      ></button>
-                    </div>
-                  )}
+  //                 {error && (
+  //                   <div className="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+  //                     <div className="d-flex align-items-center">
+  //                       <i className="bi bi-exclamation-triangle-fill me-2"></i>
+  //                       <span>{error}</span>
+  //                     </div>
+  //                     <button
+  //                       type="button"
+  //                       className="btn-close"
+  //                       onClick={() => setError(null)}
+  //                       aria-label="Close"
+  //                     ></button>
+  //                   </div>
+  //                 )}
 
-                  <div className="login-body" data-aos="fade-up" data-aos-delay="100">
-                    <div className="d-grid gap-3">
-                      <button
-                        className="btn btn-primary w-100 py-3"
-                        onClick={() => router.push("/dashboard")}
-                      >
-                        <div className="d-flex align-items-center justify-content-center">
-                          <i className="bi bi-speedometer2 me-2"></i>
-                          <span className="fw-semibold">Go to Dashboard</span>
-                        </div>
-                      </button>
-                      
-                      <button
-                        className="btn btn-outline-primary w-100 py-3"
-                        onClick={() => router.push("/")}
-                      >
-                        <div className="d-flex align-items-center justify-content-center">
-                          <i className="bi bi-house me-2"></i>
-                          <span className="fw-semibold">Return to Homepage</span>
-                        </div>
-                      </button>
+  //                 <div className="login-body" data-aos="fade-up" data-aos-delay="100">
+  //                   <div className="d-grid gap-3">
+  //                     <button
+  //                       className="btn btn-primary w-100 py-3"
+  //                       onClick={() => router.push("/dashboard")}
+  //                     >
+  //                       <div className="d-flex align-items-center justify-content-center">
+  //                         <i className="bi bi-speedometer2 me-2"></i>
+  //                         <span className="fw-semibold">Go to Dashboard</span>
+  //                       </div>
+  //                     </button>
 
-                      <button
-                        className="btn btn-danger w-100 py-3"
-                        onClick={handleLogout}
-                      >
-                        <div className="d-flex align-items-center justify-content-center">
-                          <i className="bi bi-box-arrow-right me-2"></i>
-                          <span className="fw-semibold">Sign Out</span>
-                        </div>
-                      </button>
-                    </div>
+  //                     <button
+  //                       className="btn btn-outline-primary w-100 py-3"
+  //                       onClick={() => router.push("/")}
+  //                     >
+  //                       <div className="d-flex align-items-center justify-content-center">
+  //                         <i className="bi bi-house me-2"></i>
+  //                         <span className="fw-semibold">Return to Homepage</span>
+  //                       </div>
+  //                     </button>
 
-                    <div className="divider d-flex align-items-center my-4">
-                      <span className="divider-line flex-grow-1"></span>
-                      <span className="divider-text px-3 text-muted small">Account Management</span>
-                      <span className="divider-line flex-grow-1"></span>
-                    </div>
+  //                     <button
+  //                       className="btn btn-danger w-100 py-3"
+  //                       onClick={handleLogout}
+  //                     >
+  //                       <div className="d-flex align-items-center justify-content-center">
+  //                         <i className="bi bi-box-arrow-right me-2"></i>
+  //                         <span className="fw-semibold">Sign Out</span>
+  //                       </div>
+  //                     </button>
+  //                   </div>
 
-                    <div className="features-list mb-4">
-                      <div className="feature-item d-flex align-items-center mb-3">
-                        <i className="bi bi-check-circle-fill text-success me-3"></i>
-                        <span>Access your property listings and saved favorites</span>
-                      </div>
-                      <div className="feature-item d-flex align-items-center mb-3">
-                        <i className="bi bi-check-circle-fill text-success me-3"></i>
-                        <span>Manage your profile and preferences</span>
-                      </div>
-                      <div className="feature-item d-flex align-items-center">
-                        <i className="bi bi-check-circle-fill text-success me-3"></i>
-                        <span>Connect with agents and track inquiries</span>
-                      </div>
-                    </div>
-                  </div>
+  //                   <div className="divider d-flex align-items-center my-4">
+  //                     <span className="divider-line flex-grow-1"></span>
+  //                     <span className="divider-text px-3 text-muted small">Account Management</span>
+  //                     <span className="divider-line flex-grow-1"></span>
+  //                   </div>
 
-                  <div className="login-footer mt-4 pt-4 border-top text-center">
-                    <p className="small text-muted mb-0">
-                      Need help?{" "}
-                      <Link href="/contact" className="text-decoration-underline">
-                        Contact Support
-                      </Link>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-    );
-  }
+  //                   <div className="features-list mb-4">
+  //                     <div className="feature-item d-flex align-items-center mb-3">
+  //                       <i className="bi bi-check-circle-fill text-success me-3"></i>
+  //                       <span>Access your property listings and saved favorites</span>
+  //                     </div>
+  //                     <div className="feature-item d-flex align-items-center mb-3">
+  //                       <i className="bi bi-check-circle-fill text-success me-3"></i>
+  //                       <span>Manage your profile and preferences</span>
+  //                     </div>
+  //                     <div className="feature-item d-flex align-items-center">
+  //                       <i className="bi bi-check-circle-fill text-success me-3"></i>
+  //                       <span>Connect with agents and track inquiries</span>
+  //                     </div>
+  //                   </div>
+  //                 </div>
+
+  //                 <div className="login-footer mt-4 pt-4 border-top text-center">
+  //                   <p className="small text-muted mb-0">
+  //                     Need help?{" "}
+  //                     <Link href="/contact" className="text-decoration-underline">
+  //                       Contact Support
+  //                     </Link>
+  //                   </p>
+  //                 </div>
+  //               </div>
+  //             </div>
+  //           </div>
+  //         </div>
+  //       </section>
+  //     </main>
+  //   );
+  // }
 
   // Show login page if not authenticated
   return (
@@ -803,6 +803,7 @@ export default function LoginPage() {
                           <Image
                             // src="/img/google-logo.svg"
                             src="/img/google-logo.png"
+                            // src="/img/google-black-icon.jpg"
                             alt="Google"
                             width={20}
                             height={20}
@@ -811,7 +812,7 @@ export default function LoginPage() {
                               // Fallback if Google logo doesn't exist
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
-                              target.parentElement!.insertAdjacentHTML('beforeend', 
+                              target.parentElement!.insertAdjacentHTML('beforeend',
                                 '<i class="bi bi-google me-3"></i>'
                               );
                             }}
@@ -824,9 +825,9 @@ export default function LoginPage() {
 
                   {/* Divider */}
                   <div className="divider d-flex align-items-center my-4">
-                    <span className="divider-line flex-grow-1"></span>
+                    <span className="divider-line grow"></span>
                     <span className="divider-text px-3 text-muted small">Secure authentication</span>
-                    <span className="divider-line flex-grow-1"></span>
+                    <span className="divider-line grow"></span>
                   </div>
 
                   {/* Features List */}
@@ -853,16 +854,13 @@ export default function LoginPage() {
                   </p>
                   <p className="small text-muted mb-0">
                     By signing in, you agree to our{" "}
-                    <Link href="/terms" className="text-decoration-underline">
-                      Terms of Service
-                    </Link>{" "}
-                    and{" "}
                     <Link href="/privacy" className="text-decoration-underline">
                       Privacy Policy
                     </Link>
                     .
                   </p>
                 </div>
+
               </div>
 
               {/* Info Cards */}

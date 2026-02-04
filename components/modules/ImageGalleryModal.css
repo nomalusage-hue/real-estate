@@ -1,0 +1,21 @@
+.gallery-image-wrapper {
+    position: relative;
+    width: 90vw;
+    height: 80vh;
+}
+
+.gallery-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background: rgba(0, 0, 0, 0.4); */
+    z-index: 2;
+}
+
+
+button:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}

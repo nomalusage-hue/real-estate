@@ -177,8 +177,11 @@
 
 "use client";
 
+import { CONTACT } from "@/src/config/contact";
 import { openWhatsApp } from "@/src/utils/whatsapp";
 import Link from "next/link";
+import "./css/Footer.css"
+import { SITE } from "@/src/config/site";
 
 export default function Footer() {
     return (
@@ -190,7 +193,7 @@ export default function Footer() {
                     <div className="col-lg-4">
                         <div className="footer-content">
                             <div className="logo mb-3">
-                                <span className="sitename">TheProperty</span>
+                                <span className="sitename">{SITE.name}</span>
                             </div>
 
                             <p className="mb-3">
@@ -219,7 +222,7 @@ export default function Footer() {
                             <h4>Contact</h4>
 
 
-                            <div className="contact-item">
+                            <div className="contact-item flex2column">
                                 <div className="contact-icon">
                                     <i className="bi bi-telephone"></i>
                                 </div>
@@ -240,15 +243,15 @@ export default function Footer() {
                                 </div>
                             </div>
 
-                            <div className="contact-item">
+                            <div className="contact-item flex2column">
                                 <div className="contact-icon">
                                     <i className="bi bi-envelope"></i>
                                 </div>
                                 <div className="contact-info">
                                     <a
                                         style={{ "display": "flex", "alignItems": "center", "height": "40px" }}
-                                        href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`}>
-                                        {process.env.NEXT_PUBLIC_CONTACT_EMAIL}
+                                        href={`mailto:${CONTACT.email}`}>
+                                        {CONTACT.email}
                                     </a>
                                 </div>
                             </div>
@@ -283,9 +286,9 @@ export default function Footer() {
                             </p> */}
 
                             <div className="social-links mt-3">
-                                <a href="#"><i className="bi bi-facebook"></i></a>
-                                <a href="#"><i className="bi bi-instagram"></i></a>
-                                <a href="#"><i className="bi bi-youtube"></i></a>
+                                <Link href={CONTACT.social.instagram} target="_blank"><i className="bi bi-instagram"></i></Link>
+                                <Link href={CONTACT.social.facebook} target="_blank"><i className="bi bi-facebook"></i></Link>
+                                {/* <a href="#"><i className="bi bi-youtube"></i></a> */}
                             </div>
                         </div>
                     </div>
@@ -295,9 +298,6 @@ export default function Footer() {
 
             {/* Bottom */}
             <div className="footer-bottom text-center mt-4 bg-white">
-                {/* <small>
-                    © {new Date().getFullYear()} TheProperty. All rights reserved.
-                </small> */}
             </div>
         </footer>
     );

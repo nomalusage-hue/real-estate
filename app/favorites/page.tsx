@@ -8,6 +8,33 @@ import PropertyCardPremium from '@/components/property/PropertyCard/PropertyCard
 import { PropertyData } from '@/types/property';
 import AppLoader from '@/components/ui/AppLoader/AppLoader';
 
+export function convertToCamelCase<T = any>(obj: any): T {
+  if (obj === null || obj === undefined) return obj;
+
+  if (Array.isArray(obj)) {
+    return obj.map(item => convertToCamelCase(item)) as any;
+  }
+
+  if (typeof obj !== 'object') {
+    return obj;
+  }
+
+  const newObj: any = {};
+
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const camelKey = key.replace(/_([a-z])/g, (_, letter) =>
+        letter.toUpperCase()
+      );
+
+      newObj[camelKey] = convertToCamelCase(obj[key]);
+    }
+  }
+
+  return newObj;
+}
+
+
 export default function FavoritesPage() {
   const [user, setUser] = useState<any>(null);
   const [favorites, setFavorites] = useState<PropertyData[]>([]);
@@ -72,11 +99,19 @@ export default function FavoritesPage() {
 
       if (propertiesError) throw propertiesError;
 
-      setFavorites(
-        propertyIds
-          .map(id => propertiesData?.find(p => p.id === id))
-          .filter(Boolean) as PropertyData[]
-      );
+      // setFavorites(
+      //   propertyIds
+      //     .map(id => propertiesData?.find(p => p.id === id))
+      //     .filter(Boolean) as PropertyData[]
+      // );
+      const normalizedFavorites = propertyIds
+        .map(id => propertiesData?.find(p => p.id === id))
+        .filter(Boolean)
+        .map(p => convertToCamelCase(p));
+
+      setFavorites(normalizedFavorites as PropertyData[]);
+
+
     } catch (err: any) {
       setError(err.message || 'Failed to load favorites');
     } finally {

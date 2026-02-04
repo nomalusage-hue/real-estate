@@ -117,9 +117,9 @@ export default function Hero() {
                           name="location"
                           value={formData.location}
                           onChange={handleInputChange}
-
+                          // placeholder="Search by title, description, location..."
                         />
-                        <label htmlFor="location">Location</label>
+                        <label htmlFor="location">Search by title, description, location...</label>
                       </div>
                     </div>
 
@@ -308,7 +308,8 @@ export default function Hero() {
                 <div className="main-image">
                   <Image
                     // src="/img/real-estate/property-exterior-3.webp"
-                    src="/img/home/ian-macdonald-W8z6aiwfi1E-unsplash (1).jpg"
+                    // src="/img/home/ian-macdonald-W8z6aiwfi1E-unsplash (1).jpg"
+                    src="/properties-images/image-1.jpeg"
                     alt="Luxury Property"
                     className="img-fluid"
                     width={0}
@@ -324,8 +325,9 @@ export default function Hero() {
 
                 <div className="secondary-image">
                   <Image
-                    src="/img/real-estate/property-interior-7.webp"
+                    src="/properties-images/kitchens/kitchen-1.jpeg"
                     // src="/img/home/webaliser-_TPTXZd9mOo-unsplash.jpg"
+                    // src="/properties-images/image-2.jpeg"
                     alt="Property Interior"
                     className="img-fluid"
                     width={0}

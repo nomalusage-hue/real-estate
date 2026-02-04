@@ -144,12 +144,34 @@ export function useFavorites() {
   }, [supabase]);
 
   // ---- LOAD FAVORITES ONCE ----
+  // useEffect(() => {
+  //   if (!user) {
+  //     setFavoriteIds(new Set());
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   const loadFavorites = async () => {
+  //     setLoading(true);
+
+  //     const { data, error } = await supabase
+  //       .from("favorites")
+  //       .select("property_id")
+  //       .eq("user_id", user.id);
+
+  //     if (!error && data) {
+  //       setFavoriteIds(new Set(data.map(f => f.property_id)));
+  //     }
+
+  //     setLoading(false);
+  //   };
+
+  //   loadFavorites();
+  // }, [user, supabase]);
   useEffect(() => {
-    if (!user) {
-      setFavoriteIds(new Set());
-      setLoading(false);
-      return;
-    }
+    if (!user) return;
+
+    let cancelled = false;
 
     const loadFavorites = async () => {
       setLoading(true);
@@ -159,20 +181,33 @@ export function useFavorites() {
         .select("property_id")
         .eq("user_id", user.id);
 
-      if (!error && data) {
+      if (!cancelled && !error && data) {
         setFavoriteIds(new Set(data.map(f => f.property_id)));
       }
 
-      setLoading(false);
+      if (!cancelled) setLoading(false);
     };
 
     loadFavorites();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user, supabase]);
 
+
+
   // ---- PURE CHECK (NO SIDE EFFECTS) ----
+  // const isFavorited = useCallback(
+  //   (propertyId: string) => favoriteIds.has(propertyId),
+  //   [favoriteIds]
+  // );
   const isFavorited = useCallback(
-    (propertyId: string) => favoriteIds.has(propertyId),
-    [favoriteIds]
+    (propertyId: string) => {
+      if (!user) return false;
+      return favoriteIds.has(propertyId);
+    },
+    [favoriteIds, user]
   );
 
   // ---- TOGGLE FAVORITE ----
@@ -208,9 +243,17 @@ export function useFavorites() {
     [user, favoriteIds, supabase]
   );
 
+  const effectiveLoading = user ? loading : false;
+
+  // return {
+  //   user,
+  //   loading,
+  //   isFavorited,
+  //   toggleFavorite,
+  // };
   return {
     user,
-    loading,
+    loading: effectiveLoading,
     isFavorited,
     toggleFavorite,
   };

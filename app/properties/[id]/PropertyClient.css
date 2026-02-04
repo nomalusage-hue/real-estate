@@ -1,0 +1,30 @@
+.property-details.favorite-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.property-details.favorite-btn i {
+  color: #e63946;
+  font-size: 1.7rem;
+}
+
+.property-details.favorite-btn:hover {
+  transform: scale(1.08);
+}
+
+.property-details.favorite-btn.favorited {
+    background: #e63946;
+}
+
+.property-details.favorite-btn.favorited i {
+    font-size: 1.3rem;
+  color: #fff;
+}

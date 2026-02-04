@@ -14,29 +14,41 @@
 --------------------------------------------------------------*/
 /* Fonts */
 :root {
-  --default-font: "Roboto",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --heading-font: "Raleway",  sans-serif;
-  --nav-font: "Montserrat",  sans-serif;
+  --default-font: "Roboto", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --heading-font: "Raleway", sans-serif;
+  --nav-font: "Montserrat", sans-serif;
 }
 
 /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
-:root { 
-  --background-color: #ffffff; /* Background color for the entire website, including individual sections */
-  --default-color: #323b3b; /* Default color used for the majority of the text content across the entire website */
-  --heading-color: #163535; /* Color for headings, subheadings and title throughout the website */
-  --accent-color: #2c7a7b; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
-  --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
-  --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
+:root {
+  --background-color: #ffffff;
+  /* Background color for the entire website, including individual sections */
+  --default-color: #323b3b;
+  /* Default color used for the majority of the text content across the entire website */
+  --heading-color: #163535;
+  /* Color for headings, subheadings and title throughout the website */
+  --accent-color: #2c7a7b;
+  /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
+  --surface-color: #ffffff;
+  /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
+  --contrast-color: #ffffff;
+  /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
 }
 
 /* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
 :root {
-  --nav-color: #323b3b;  /* The default color of the main navmenu links */
-  --nav-hover-color: #2c7a7b; /* Applied to main navmenu links when they are hovered over or active */
-  --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
-  --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
-  --nav-dropdown-color: #323b3b; /* Used for navigation links of the dropdown items in the navigation menu. */
-  --nav-dropdown-hover-color: #2c7a7b; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
+  --nav-color: #323b3b;
+  /* The default color of the main navmenu links */
+  --nav-hover-color: #2c7a7b;
+  /* Applied to main navmenu links when they are hovered over or active */
+  --nav-mobile-background-color: #ffffff;
+  /* Used as the background color for mobile navigation menu */
+  --nav-dropdown-background-color: #ffffff;
+  /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
+  --nav-dropdown-color: #323b3b;
+  /* Used for navigation links of the dropdown items in the navigation menu. */
+  --nav-dropdown-hover-color: #2c7a7b;
+  /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
 }
 
 /* Color Presets - These classes override global colors when applied to any section or element, providing reuse of the sam color scheme. */
@@ -1661,7 +1673,8 @@ section,
 --------------------------------------------------------------*/
 .featured-properties .grid-featured {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  /* grid-template-columns: 2fr 1fr; */
+  grid-template-columns: 10fr 8fr;
   gap: 24px;
 }
 
@@ -1918,7 +1931,7 @@ section,
 
 .featured-properties .mini-list .mini-card {
   display: grid;
-  grid-template-columns: 120px 1fr;
+  grid-template-columns: 160px 1fr;
   gap: 14px;
   background: var(--surface-color);
   border-radius: 14px;
@@ -1940,7 +1953,8 @@ section,
 
 .featured-properties .mini-list .mini-card .thumb img {
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
+  height: 210px;
   object-fit: cover;
 }
 
@@ -2052,7 +2066,8 @@ section,
 @media (max-width: 992px) {
   .featured-properties .mini-list {
     grid-template-rows: none;
-    grid-template-columns: 1fr 1fr;
+    /* grid-template-columns: 1fr 1fr; */
+    grid-template-columns: 1fr;
   }
 }
 
@@ -2062,7 +2077,8 @@ section,
   }
 
   .featured-properties .mini-list .mini-card {
-    grid-template-columns: 100px 1fr;
+    /* grid-template-columns: 100px 1fr; */
+    grid-template-columns: minmax(70px, 150px) 1fr;
   }
 }
 
@@ -4312,7 +4328,7 @@ section,
   color: white;
 }
 
-.properties .property-card .property-image .property-overlay {
+.property-overlay.premium {
   position: absolute;
   top: 15px;
   right: 15px;
@@ -4323,7 +4339,20 @@ section,
   transition: opacity 0.3s ease;
 }
 
-.properties .property-card .property-image .property-overlay button {
+.property-overlay {
+  display: flex;
+  align-items: center;
+  /* justify-content: end; */
+  justify-content: space-between;
+}
+
+.property-overlay .heart-gallery {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.property-overlay button {
   width: 35px;
   height: 35px;
   border-radius: 50%;
@@ -4337,12 +4366,12 @@ section,
   transition: all 0.3s ease;
 }
 
-.properties .property-card .property-image .property-overlay button:hover {
+.property-overlay button:hover {
   background-color: var(--accent-color);
   color: white;
 }
 
-.properties .property-card .property-image .property-overlay button.favorite-btn:hover {
+.property-overlay button.favorite-btn:hover {
   background-color: #ef4444;
   color: white;
 }

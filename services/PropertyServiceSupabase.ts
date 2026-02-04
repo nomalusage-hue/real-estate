@@ -96,14 +96,14 @@ export class PropertyServiceSupabase {
     pageSize: number = 12,
     filters: PropertyFilterOptions = {}
   ): Promise<PaginatedResult<PropertyData>> {
-    console.log("getPaginated - Filters received:", filters);
+    // console.log("getPaginated - Filters received:", filters);
 
     // // Handle status filter separately if multiple statuses are selected
     // let statusFilter: "For Sale" | "For Rent" | "Sold" | undefined;
     // let additionalStatusFilter: string[] = [];
 
     type PropertyStatus = "For Sale" | "For Rent" | "Sold";
-    let statusFilter: PropertyStatus | undefined;
+    let statusFilter: PropertyStatus[] | undefined;
     let additionalStatusFilter: PropertyStatus[] = [];
 
 
@@ -119,10 +119,10 @@ export class PropertyServiceSupabase {
     // }
 
     if (filters.status && filters.status.length > 0) {
-      statusFilter = filters.status[0] as PropertyStatus;
+      statusFilter = filters.status as PropertyStatus[];
 
       if (filters.status.length > 1) {
-        additionalStatusFilter = filters.status.slice(1) as PropertyStatus[];
+        additionalStatusFilter = filters.status as PropertyStatus[];
       }
     }
 
@@ -149,8 +149,10 @@ export class PropertyServiceSupabase {
       page,
       pageSize,
       city: filters.cities?.[0],
-      propertyType: filters.propertyTypes?.[0] as PropertyData["propertyType"],
-      status: statusFilter,
+      // propertyType: filters.propertyTypes?.[0] as PropertyData["propertyType"],
+      propertyTypes: filters.propertyTypes as PropertyData["propertyType"][],
+      // status: statusFilter,
+      status: filters.status as PropertyStatus[],
       minPrice: filters.minSalePrice || filters.minRentPrice,
       maxPrice: filters.maxSalePrice || filters.maxRentPrice,
       featured: filters.featured,
@@ -323,12 +325,12 @@ export class PropertyServiceSupabase {
       });
     }
 
-    console.log("getPaginated - After filtering:", {
-      originalCount: result.data.length,
-      filteredCount: filteredData.length,
-      page,
-      pageSize,
-    });
+    // console.log("getPaginated - After filtering:", {
+    //   originalCount: result.data.length,
+    //   filteredCount: filteredData.length,
+    //   page,
+    //   pageSize,
+    // });
 
     // Calculate hasMore based on filtered results
     const startIndex = (page - 1) * pageSize;
@@ -379,67 +381,71 @@ export class PropertyServiceSupabase {
       .slice(0, limitCount);
   }
 
-  // Statistics
+  // // Statistics
+  // async getStats(): Promise<PropertyStats> {
+  //   const allProperties = await this.repository.getAll();
+  //   const publishedProperties = allProperties.filter(
+  //     (p) => p.published && !p.draft
+  //   );
+
+  //   const cityCounts: Record<string, number> = {};
+  //   const propertyTypes: Record<string, number> = {};
+
+  //   let totalProperties = 0;
+  //   let forSaleCount = 0;
+  //   let forRentCount = 0;
+  //   let soldCount = 0;
+  //   let totalSalePrice = 0;
+  //   let saleCount = 0;
+  //   let totalRentPrice = 0;
+  //   let rentCount = 0;
+  //   const cities = new Set<string>();
+
+  //   publishedProperties.forEach((property) => {
+  //     totalProperties++;
+
+  //     if (property.status?.includes("For Sale")) forSaleCount++;
+  //     if (property.status?.includes("For Rent")) forRentCount++;
+  //     if (property.status?.includes("Sold")) soldCount++;
+
+  //     if (property.salePrice && property.status?.includes("For Sale")) {
+  //       totalSalePrice += property.salePrice;
+  //       saleCount++;
+  //     }
+
+  //     if (property.rentPrice && property.status?.includes("For Rent")) {
+  //       totalRentPrice += property.rentPrice;
+  //       rentCount++;
+  //     }
+
+  //     if (property.city) {
+  //       cities.add(property.city);
+  //       cityCounts[property.city] = (cityCounts[property.city] || 0) + 1;
+  //     }
+
+  //     if (property.propertyType) {
+  //       propertyTypes[property.propertyType] =
+  //         (propertyTypes[property.propertyType] || 0) + 1;
+  //     }
+  //   });
+
+  //   return {
+  //     totalProperties,
+  //     forSaleCount,
+  //     forRentCount,
+  //     soldCount,
+  //     averageSalePrice:
+  //       saleCount > 0 ? Math.round(totalSalePrice / saleCount) : 0,
+  //     averageRentPrice:
+  //       rentCount > 0 ? Math.round(totalRentPrice / rentCount) : 0,
+  //     cities: Array.from(cities).sort(),
+  //     cityCounts,
+  //     propertyTypes,
+  //   };
+  // }
   async getStats(): Promise<PropertyStats> {
-    const allProperties = await this.repository.getAll();
-    const publishedProperties = allProperties.filter(
-      (p) => p.published && !p.draft
-    );
-
-    const cityCounts: Record<string, number> = {};
-    const propertyTypes: Record<string, number> = {};
-
-    let totalProperties = 0;
-    let forSaleCount = 0;
-    let forRentCount = 0;
-    let soldCount = 0;
-    let totalSalePrice = 0;
-    let saleCount = 0;
-    let totalRentPrice = 0;
-    let rentCount = 0;
-    const cities = new Set<string>();
-
-    publishedProperties.forEach((property) => {
-      totalProperties++;
-
-      if (property.status?.includes("For Sale")) forSaleCount++;
-      if (property.status?.includes("For Rent")) forRentCount++;
-      if (property.status?.includes("Sold")) soldCount++;
-
-      if (property.salePrice && property.status?.includes("For Sale")) {
-        totalSalePrice += property.salePrice;
-        saleCount++;
-      }
-
-      if (property.rentPrice && property.status?.includes("For Rent")) {
-        totalRentPrice += property.rentPrice;
-        rentCount++;
-      }
-
-      if (property.city) {
-        cities.add(property.city);
-        cityCounts[property.city] = (cityCounts[property.city] || 0) + 1;
-      }
-
-      if (property.propertyType) {
-        propertyTypes[property.propertyType] =
-          (propertyTypes[property.propertyType] || 0) + 1;
-      }
-    });
-
-    return {
-      totalProperties,
-      forSaleCount,
-      forRentCount,
-      soldCount,
-      averageSalePrice:
-        saleCount > 0 ? Math.round(totalSalePrice / saleCount) : 0,
-      averageRentPrice:
-        rentCount > 0 ? Math.round(totalRentPrice / rentCount) : 0,
-      cities: Array.from(cities).sort(),
-      cityCounts,
-      propertyTypes,
-    };
+    const allProperties = await this.repository.getStats();
+    return allProperties;
   }
 
   // View counting

@@ -103,6 +103,9 @@ export interface PropertyData {
   salePrice?: number;  // Only when status includes "For Sale"
   rentPrice?: number;  // Only when status includes "For Rent"
   // Note: No price needed for "Sold" status
+
+  saleCurrency?: string;
+  rentCurrency?: string;
   
   // Location
   address: string;
