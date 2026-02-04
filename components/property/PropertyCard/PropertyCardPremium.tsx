@@ -468,7 +468,7 @@
 //                         <i className="bi bi-geo-alt"></i>
 //                         {data.showAddress ? data.address : data.city}
 //                     </p>
-                    
+
 //                     <div style={{"width": "100%", "marginTop": "auto"}}>
 //                         <p className="property-location">
 //                             {/* {data.createdAt} */}
@@ -566,7 +566,11 @@ export default function PropertyCardPremium({
     await toggleFavorite(data.id);
   };
 
-  const openGallery = (index = 0) => setGalleryIndex(index) || setGalleryOpen(true);
+  // const openGallery = (index = 0) => setGalleryIndex(index) || setGalleryOpen(true);
+  const openGallery = (index = 0) => {
+    setGalleryIndex(index);
+    setGalleryOpen(true);
+  };
   const nextImage = () => setGalleryIndex((prev) => (prev + 1) % images.length);
   const prevImage = () => setGalleryIndex((prev) => (prev - 1 + images.length) % images.length);
 

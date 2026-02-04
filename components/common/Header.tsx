@@ -23,7 +23,6 @@ export default function Header() {
     { href: "/admin/configuration", label: "Manage Configs" },
   ];
   const isActive = links.some(link => pathname?.startsWith(link.href));
-  console.log(isActive, pathname);
 
   const toggleMobileNav = useCallback(() => {
     setMobileOpen((prev) => !prev);
