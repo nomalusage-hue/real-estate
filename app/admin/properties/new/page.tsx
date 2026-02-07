@@ -2411,7 +2411,7 @@ export default function NewPropertyPage() {
     title: '',
     description: '',
     propertyType: 'house',
-    price: 0,
+    // price: 0,
     // salePrice: 0,
     // rentPrice: 0,
     salePrice: 0,
