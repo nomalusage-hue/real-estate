@@ -482,11 +482,15 @@ export default function PropertyCardSimple({
           </span>
         )}
 
-        {labels.filter((label) => label.show).map((label, idx) => (
+        {/* {labels.filter((label) => label.show).map((label, idx) => (
           <span key={idx} className={`label ${label.className}`} style={{ left: "70px" }}>
             <i className={`bi ${label.icon}`}></i> {label.text}
           </span>
-        ))}
+        ))} */}
+        
+        <span className={`label ${labels[0].className}`} style={{ left: "70px" }}>
+          <i className={`bi ${labels[0].icon}`}></i> {labels[0].text}
+        </span>
       </div>
 
       <div className="mini-body">

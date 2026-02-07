@@ -246,6 +246,8 @@ export default function PropertyCardSimple({ data }: { data: PropertyData }) {
   const nextImage = () => setGalleryIndex((prev) => (prev + 1) % data.images.length);
   const prevImage = () => setGalleryIndex((prev) => (prev - 1 + data.images.length) % data.images.length);
 
+  const primaryBadge = data.status?.includes("Sold") ? "Sold" : data.status?.[0] || null;
+
   return (
     <div className="col-lg-4" data-aos="fade-up" data-aos-delay="300">
       <article className="stack-card">
@@ -262,8 +264,13 @@ export default function PropertyCardSimple({ data }: { data: PropertyData }) {
             style={{ cursor: "pointer" }}
           />
           <figcaption>
+            {primaryBadge && (
+              <span className={`chip new ${primaryBadge.toLowerCase().replace(" ", "-")}`} style={{"marginLeft": "10px"}}>
+                {primaryBadge}
+              </span>
+            )}
             {labels.filter((l) => l.show).map((label, idx) => (
-              <span key={idx} className={`chip ${label.className}`}>{label.text}</span>
+              <span key={idx} className={`chip ${label.className == "featured" ? "new" : label.className}`}>{label.text}</span>
             ))}
           </figcaption>
 

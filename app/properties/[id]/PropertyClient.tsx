@@ -952,24 +952,6 @@ export default function PropertyPage({ id }: Props) {
     await toggleFavorite(id);
   };
 
-  // export default function PropertyClient({ id }: Props) {
-  //   const [property, setProperty] = useState<PropertyData | null>(null);
-  //   const [loading, setLoading] = useState(true);
-  //   const [error, setError] = useState<string | null>(null);
-
-  //   const supabase = createClient();
-  //   const propertiesRepo = new PropertiesRepository();
-
-  //   const [phone, setPhone] = useState("");
-  //   const [formData, setFormData] = useState({
-  //     name: "",
-  //     email: "",
-  //     message: "",
-  //   });
-  //   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  //   useTemplateScripts();
-
   useEffect(() => {
     async function fetchProperty() {
       try {
@@ -1229,23 +1211,6 @@ Could you please let me know available dates and times? Thank you.`;
     return `${size.toLocaleString()} ${unit || "m²"}`;
   };
 
-  // // Calculate acreage from square meters/feet
-  // const calculateAcreage = (landSize?: number, sizeUnit?: string) => {
-  //   if (!landSize) return "";
-
-  //   let acres = 0;
-  //   if (sizeUnit === 'm2' || sizeUnit === 'sqm') {
-  //     acres = landSize / 4046.86; // square meters to acres
-  //   } else if (sizeUnit === 'ft2' || sizeUnit === 'sqft') {
-  //     acres = landSize / 43560; // square feet to acres
-  //   } else if (sizeUnit === 'acre') {
-  //     acres = landSize;
-  //   } else if (sizeUnit === 'hectare') {
-  //     acres = landSize * 2.47105; // hectares to acres
-  //   }
-
-  //   return acres.toFixed(2);
-  // };
 
   const isPropertyFavorited = isFavorited(id);
 
@@ -1387,7 +1352,7 @@ Could you please let me know available dates and times? Thank you.`;
                   data-aos-delay="300"
                 >
                   <h3>About This Property</h3>
-                  <p>
+                  <p style={{ whiteSpace: "pre-line" }}>
                     {property.description ||
                       "No description available for this property."}
                   </p>

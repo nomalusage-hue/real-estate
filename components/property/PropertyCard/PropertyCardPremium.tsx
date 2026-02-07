@@ -580,7 +580,7 @@ export default function PropertyCardPremium({
   return (
     <div className={`${lgClass} col-md-6`}>
       <div className="property-card">
-        <div className="property-image">
+        <div className="property-image" style={{ height: "50%" }}>
           <Image
             src={images[0]}
             alt={data.title}
@@ -602,7 +602,7 @@ export default function PropertyCardPremium({
             {data.hot && <span className="badge hot">Hot</span>}
             {data.newListing && <span className="badge new">New</span>}
             {data.featured && <span className="badge featured">Featured</span>}
-            {data.exclusive && <span className="badge exclusive">Exclusive</span>}
+            {data.exclusive && <span className="badge for-sale">Exclusive</span>}
           </div>
 
           <div className="property-overlay premium">
@@ -620,7 +620,7 @@ export default function PropertyCardPremium({
           </div>
         </div>
 
-        <div className="property-content d-flex flex-column align-items-start" style={{ height: "46%" }}>
+        <div className="property-content d-flex flex-column align-items-start" style={{ height: "50%" }}>
           <div className="property-price">
             {!price || !currency ? (
               "Price on request"

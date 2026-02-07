@@ -102,7 +102,7 @@ export default function ImageGalleryModal({
 
     return (
         <Portal>
-            <div className="gallery-modal">
+            {/* <div className="gallery-modal">
                 <div className="gallery-overlay" onClick={onClose} />
 
                 <div className="gallery-content">
@@ -119,21 +119,14 @@ export default function ImageGalleryModal({
                     </button>
 
                     <div className="gallery-image-wrapper">
-                        {/* {isLoading && (
+                        {isLoading && (
                             <div className="gallery-loader">
-                                Loading...
+                                <AppLoader />
                             </div>
-                        )} */}
-
-{isLoading && (
-    <div className="gallery-loader">
-        <AppLoader />
-    </div>
-)}
-
+                        )}
 
                         <Image
-                            key={images[index]} // forces re-render
+                            key={images[index]}
                             src={images[index]}
                             alt={`Image ${index + 1}`}
                             fill
@@ -159,7 +152,71 @@ export default function ImageGalleryModal({
                         {index + 1} / {images.length}
                     </div>
                 </div>
-            </div>
+            </div> */}
+<div className="gallery-modal">
+  <div className="gallery-overlay" onClick={onClose} />
+
+  <div
+    className="gallery-content"
+    onClick={(e) => e.stopPropagation()}
+  >
+    <button className="close-btn" onClick={onClose}>
+      &times;
+    </button>
+
+    <button
+      className="prev-btn"
+      onClick={onPrev}
+      disabled={isLoading}
+    >
+      &lt;
+    </button>
+
+    <div className="gallery-image-wrapper" onClick={onClose}>
+      {isLoading && (
+        <div className="gallery-loader">
+          <AppLoader />
+        </div>
+      )}
+
+      <Image
+        key={images[index]}
+        src={images[index]}
+        alt={`Image ${index + 1}`}
+        // fill
+        width={0}
+        height={0}
+        unoptimized
+        onLoad={() => setIsLoading(false)}
+        style={{
+          objectFit: "contain",
+          opacity: isLoading ? 0 : 1,
+          transition: "opacity 0.3s ease",
+          width: "auto",
+          height: "100%",
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      />
+    </div>
+
+    <button
+      className="next-btn"
+      onClick={onNext}
+      disabled={isLoading}
+    >
+      &gt;
+    </button>
+
+    <div className="gallery-counter">
+      {index + 1} / {images.length}
+    </div>
+  </div>
+</div>
+
         </Portal>
     );
 }
