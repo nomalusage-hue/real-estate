@@ -102,7 +102,9 @@ export interface PropertyData {
   // Separate prices for different statuses
   salePrice?: number;  // Only when status includes "For Sale"
   rentPrice?: number;  // Only when status includes "For Rent"
-  // Note: No price needed for "Sold" status
+
+  rentPeriod?: "daily" | "weekly" | "monthly" | "yearly" | "custom";
+  rentPeriodLabel?: string;
 
   saleCurrency?: string;
   rentCurrency?: string;

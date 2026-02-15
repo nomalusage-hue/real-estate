@@ -80,31 +80,6 @@ export default function Properties() {
 
                 <div className="grid-featured" data-aos="zoom-in" data-aos-delay="150">
 
-                    {/* <PropertyCardVerticalWide data={{
-                        id: "prop-002",
-                        images: ["/img/real-estate/property-exterior-6.webp"],
-                        title: "Seaside Villa with Infinity Pool",
-                        address: "Coronado, CA 92118",
-                        city: "Coronado",
-                        showAddress: false,
-                        bathrooms: 2,
-                        bedrooms: 2,
-                        description: "Praesent commodo cursus magna, fusce dapibus tellus ac cursus commodo, vestibulum id ligula porta felis euismod semper.",
-
-                        saleCurrency: "IDR",
-
-                        landSize: 1450,
-                        buildingSize: 450,
-                        sizeUnit: "ft2",
-                        salePrice: 12000000000,
-
-                        propertyType: "apartment",
-                        status: ["For Sale"],
-
-                        showAgent: false,
-
-                        hot: true,
-                    }} /> */}
                     {wide && <PropertyCardVerticalWide key={wide.id} data={wide} />}
 
                     <div className="mini-list">
@@ -112,77 +87,6 @@ export default function Properties() {
                         {mini.map((property) => (
                             <PropertyCardHorizontal key={property.id} data={property} />
                         ))}
-
-                        {/* <PropertyCardHorizontal data={{
-                            id: "prop-002",
-                            images: ["/img/real-estate/property-interior-2.webp"],
-                            title: "Urban Loft with Skyline Views",
-                            address: "Denver, CO 80203",
-                            city: "Denver",
-                            showAddress: false,
-                            bathrooms: 2,
-                            bedrooms: 2,
-                            landSize: 1450,
-                            buildingSize: 450,
-                            sizeUnit: "ft2",
-                            salePrice: 689000,
-                            saleCurrency: "IDR",
-                            description: "",
-
-                            propertyType: "apartment",
-                            status: ["For Sale"],
-
-                            showAgent: false,
-
-                            hot: true,
-                        }} />
-                        <PropertyCardHorizontal data={{
-                            id: "prop-002",
-                            images: ["/img/real-estate/property-interior-2.webp"],
-                            title: "Urban Loft with Skyline Views",
-                            address: "Denver, CO 80203",
-                            city: "Denver",
-                            showAddress: false,
-                            bathrooms: 2,
-                            bedrooms: 2,
-                            landSize: 1450,
-                            buildingSize: 450,
-                            sizeUnit: "ft2",
-                            salePrice: 689000,
-                            saleCurrency: "IDR",
-                            description: "",
-
-                            propertyType: "apartment",
-                            status: ["For Sale"],
-
-                            showAgent: false,
-
-                            hot: true,
-                        }} />
-                        <PropertyCardHorizontal data={{
-                            id: "prop-002",
-                            images: ["/img/real-estate/property-interior-2.webp"],
-                            title: "Urban Loft with Skyline Views",
-                            address: "Denver, CO 80203",
-                            city: "Denver",
-                            showAddress: false,
-                            bathrooms: 2,
-                            bedrooms: 2,
-                            landSize: 1450,
-                            buildingSize: 450,
-                            sizeUnit: "ft2",
-                            salePrice: 689000,
-                            saleCurrency: "IDR",
-                            description: "",
-
-                            propertyType: "apartment",
-                            status: ["For Sale"],
-
-                            showAgent: false,
-
-                            hot: true,
-                        }} /> */}
-
                     </div>
                     {/* <!-- End Mini List --> */}
 
@@ -192,80 +96,6 @@ export default function Properties() {
                     {stack.map((property) => (
                         <PropertyCardVertical key={property.id} data={property} />
                     ))}
-                    {/* <PropertyCardVertical
-                        data={{
-                            id: "prop-002",
-                            images: ["/img/real-estate/property-exterior-6.webp"],
-                            title: "Seaside Villa with Infinity Pool",
-                            address: "Coronado, CA 92118",
-                            city: "Coronado",
-                            showAddress: false,
-                            bathrooms: 2,
-                            bedrooms: 2,
-                            landSize: 1450,
-                            sizeUnit: "ft2",
-                            salePrice: 3760000,
-                            saleCurrency: "IDR",
-                            description: "Praesent commodo cursus magna, fusce dapibus tellus ac cursus commodo, vestibulum id ligula porta felis euismod semper.",
-
-                            propertyType: "apartment",
-                            status: ["For Sale"],
-
-                            showAgent: false,
-
-                            exclusive: true,
-                        }}
-                    />
-                    <PropertyCardVertical
-                        data={{
-                            id: "prop-002",
-                            images: ["/img/real-estate/property-exterior-6.webp"],
-                            title: "Seaside Villa with Infinity Pool",
-                            address: "Coronado, CA 92118",
-                            city: "Coronado",
-                            showAddress: false,
-                            bathrooms: 2,
-                            bedrooms: 2,
-                            landSize: 1450,
-                            sizeUnit: "ft2",
-                            salePrice: 3760000,
-                            saleCurrency: "IDR",
-                            description: "Praesent commodo cursus magna, fusce dapibus tellus ac cursus commodo, vestibulum id ligula porta felis euismod semper.",
-
-                            propertyType: "apartment",
-                            status: ["For Sale"],
-
-                            showAgent: false,
-
-                            exclusive: true,
-                        }}
-                    />
-                    <PropertyCardVertical
-                        data={{
-                            id: "prop-002",
-                            images: ["/img/real-estate/property-exterior-6.webp"],
-                            title: "Seaside Villa with Infinity Pool",
-                            address: "Coronado, CA 92118",
-                            city: "Coronado",
-                            showAddress: false,
-                            bathrooms: 2,
-                            bedrooms: 2,
-                            landSize: 1450,
-                            sizeUnit: "ft2",
-                            salePrice: 3760000,
-                            saleCurrency: "IDR",
-                            description: "Praesent commodo cursus magna, fusce dapibus tellus ac cursus commodo, vestibulum id ligula porta felis euismod semper.",
-
-                            propertyType: "apartment",
-                            status: ["For Sale"],
-
-                            showAgent: false,
-
-                            exclusive: true,
-                        }}
-                    /> */}
-
-
                 </div>
 
                 <div className="row mt-5">
@@ -276,7 +106,7 @@ export default function Properties() {
                             style={{ background: "var(--accent-color)" }}
                             aria-label="Chat on WhatsApp"
                         >
-                            {/* <i className="bi bi-whatsapp me-2"></i> */}
+                            <i className="bi bi-house-door me-2"></i>
                             Explore More Properties
                         </Link>
                     </div>

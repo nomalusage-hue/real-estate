@@ -52,7 +52,7 @@
 import { createClient } from '@/lib/supabase/supabase';
 
 export async function checkIfAdmin(userId: string): Promise<boolean> {
-  console.log('checkIfAdmin - Checking for user:', userId);
+  // console.log('checkIfAdmin - Checking for user:', userId);
   
   const supabase = createClient();
   
@@ -62,7 +62,7 @@ export async function checkIfAdmin(userId: string): Promise<boolean> {
     .eq('id', userId)
     .single();
     
-  console.log('checkIfAdmin - Result:', { data, error });
+  // console.log('checkIfAdmin - Result:', { data, error });
   
   if (error || !data) {
     console.error('Error fetching user role:', error);
@@ -70,7 +70,7 @@ export async function checkIfAdmin(userId: string): Promise<boolean> {
   }
   
   const isAdmin = data.role === 'admin' || data.role === 'superadmin';
-  console.log('checkIfAdmin - Is admin?', isAdmin);
+  // console.log('checkIfAdmin - Is admin?', isAdmin);
   
   return isAdmin;
 }

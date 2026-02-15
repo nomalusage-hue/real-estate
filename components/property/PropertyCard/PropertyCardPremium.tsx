@@ -518,7 +518,7 @@ import { useState } from "react";
 import LoginRequiredModal from "@/components/modules/LoginRequiredModal";
 import ImageGalleryModal from "@/components/modules/ImageGalleryModal";
 import { getDisplayDate } from "@/src/utils/dateUtils";
-import { convertToUSD } from "@/utils/convertToUSD"; // <--- import our new helper
+import { convertToUSD } from "@/utils/convertToUSD";
 
 export default function PropertyCardPremium({
   data,
@@ -539,20 +539,29 @@ export default function PropertyCardPremium({
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [usdValue, setUsdValue] = useState<number | null>(null);
+  const [usdSaleValue, setUsdSaleValue] = useState<number | null>(null);
+  const [usdRentValue, setUsdRentValue] = useState<number | null>(null);
   const [usdLoading, setUsdLoading] = useState(false);
 
   const images = data.images && data.images.length > 0 ? data.images : ["/img/placeholder-property.jpg"];
-  const price = data.salePrice ?? data.rentPrice;
-  const currency = data.salePrice ? data.saleCurrency : data.rentCurrency;
+  const salePrice = data.salePrice;
+  const rentPrice = data.rentPrice;
+  const saleCurrency = data.salePrice ? data.saleCurrency : "USD";
+  const rentCurrency = data.rentPrice ? data.rentCurrency : "USD";
   const isRent = Boolean(data.rentPrice);
   const displayDate = getDisplayDate(data.createdAt);
 
   // Fetch USD value whenever price or currency changes
-  if (price && currency && currency !== "USD" && usdValue === null && !usdLoading) {
+  if (salePrice && saleCurrency && saleCurrency !== "USD" && usdSaleValue === null && !usdLoading) {
     setUsdLoading(true);
-    convertToUSD(price, currency)
-      .then((value) => setUsdValue(value))
+    convertToUSD(salePrice, saleCurrency)
+      .then((value) => setUsdSaleValue(value))
+      .finally(() => setUsdLoading(false));
+  }
+  if (rentPrice && rentCurrency && rentCurrency !== "USD" && usdRentValue === null && !usdLoading) {
+    setUsdLoading(true);
+    convertToUSD(rentPrice, rentCurrency)
+      .then((value) => setUsdRentValue(value))
       .finally(() => setUsdLoading(false));
   }
 
@@ -574,13 +583,13 @@ export default function PropertyCardPremium({
   const nextImage = () => setGalleryIndex((prev) => (prev + 1) % images.length);
   const prevImage = () => setGalleryIndex((prev) => (prev - 1 + images.length) % images.length);
 
-  const primaryBadge = data.status?.includes("Sold") ? "Sold" : data.status?.[0] || null;
+  // const primaryBadge = data.status?.includes("Sold") ? "Sold" : data.status?.[0] || null;
   const isPropertyFavorited = isFavorited(data.id);
 
   return (
     <div className={`${lgClass} col-md-6`}>
-      <div className="property-card">
-        <div className="property-image" style={{ height: "50%" }}>
+      <div className="property-card" style={{ "display": "grid", "gridTemplateRows": "auto 1fr" }}>
+        <div className="property-image" style={{ height: "100%" }}>
           <Image
             src={images[0]}
             alt={data.title}
@@ -594,11 +603,19 @@ export default function PropertyCardPremium({
           />
 
           <div className="property-badges">
-            {primaryBadge && (
+            {/* {primaryBadge && (
               <span className={`badge ${primaryBadge.toLowerCase().replace(" ", "-")}`}>
                 {primaryBadge}
               </span>
-            )}
+            )} */}
+            {data.status?.map((status) => (
+              <span
+                key={status}
+                className={`badge ${status.toLowerCase().replace(" ", "-")}`}
+              >
+                {status}
+              </span>
+            ))}
             {data.hot && <span className="badge hot">Hot</span>}
             {data.newListing && <span className="badge new">New</span>}
             {data.featured && <span className="badge featured">Featured</span>}
@@ -620,33 +637,67 @@ export default function PropertyCardPremium({
           </div>
         </div>
 
-        <div className="property-content d-flex flex-column align-items-start" style={{ height: "50%" }}>
+        <div className="property-content d-flex flex-column align-items-start" style={{ height: "100%" }}>
           <div className="property-price">
-            {!price || !currency ? (
-              "Price on request"
-            ) : (
-              <>
-                <div>
-                  {formatPrice(price, currency)}
-                  {isRent && "/month"}
-                </div>
-                {currency !== "USD" && (
+            {/* SALE PRICE */}
+            {salePrice && saleCurrency && (
+              <div className="mb-1">
+                <div>{formatPrice(salePrice, saleCurrency)}</div>
+
+                {saleCurrency !== "USD" && (
                   <div className="price-usd">
                     {usdLoading ? (
                       <span className="usd-loading">
                         ≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" />
                       </span>
                     ) : (
-                      usdValue && (
+                      usdSaleValue && (
+                        <>≈ {formatPrice(Math.round(usdSaleValue), "USD")}</>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* RENT PRICE */}
+            {rentPrice && rentCurrency && (
+              <div>
+                <div>
+                  {formatPrice(rentPrice, rentCurrency)}
+                  {isRent && data.rentPeriodLabel
+                    ? ` ${data.rentPeriodLabel.toLowerCase()}`
+                    : isRent
+                      ? " /month"
+                      : ""}
+                </div>
+
+                {rentCurrency !== "USD" && (
+                  <div className="price-usd">
+                    {usdLoading ? (
+                      <span className="usd-loading">
+                        ≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" />
+                      </span>
+                    ) : (
+                      usdRentValue && (
                         <>
-                          ≈ {formatPrice(Math.round(usdValue), "USD")}
-                          {isRent && "/month"}
+                          ≈ {formatPrice(Math.round(usdRentValue), "USD")}
+                          {isRent && data.rentPeriodLabel
+                            ? ` ${data.rentPeriodLabel.toLowerCase()}`
+                            : isRent
+                              ? " /month"
+                              : ""}
                         </>
                       )
                     )}
                   </div>
                 )}
-              </>
+              </div>
+            )}
+
+            {/* FALLBACK */}
+            {!salePrice && !rentPrice && (
+              <div>Price on request</div>
             )}
           </div>
 

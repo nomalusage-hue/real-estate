@@ -394,11 +394,11 @@ import { PropertyData } from "../../../types/property";
 import Link from "next/link";
 import { formatArea, formatPrice } from "@/utils/format";
 import { useFavorites } from "@/hooks/useFavorites";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ImageGalleryModal from "@/components/modules/ImageGalleryModal";
 import LoginRequiredModal from "@/components/modules/LoginRequiredModal";
 import { getDisplayDate } from "@/src/utils/dateUtils";
-import { convertToUSD } from "@/utils/convertToUSD"; // <- import the helper
+import { convertToUSD } from "@/utils/convertToUSD";
 
 export default function PropertyCardSimple({
   data,
@@ -422,10 +422,13 @@ export default function PropertyCardSimple({
   const [usdValue, setUsdValue] = useState<number | null>(null);
   const [usdLoading, setUsdLoading] = useState(false);
 
+
   const images = data.images && data.images.length > 0 ? data.images : ["/img/placeholder-property.jpg"];
-  const price = data.salePrice ?? data.rentPrice;
-  const currency = data.salePrice ? data.saleCurrency : data.rentCurrency;
-  const isRent = Boolean(data.rentPrice);
+  const hasSale = Boolean(data.salePrice);
+  const hasRent = Boolean(data.rentPrice);
+  const priceCount = (hasSale ? 1 : 0) + (hasRent ? 1 : 0);
+
+
 
   const primaryBadge = data.status?.includes("Sold") ? "Sold" : data.status?.[0] || null;
   const isPropertyFavorited = isFavorited(data.id);
@@ -437,13 +440,30 @@ export default function PropertyCardSimple({
     { show: data.exclusive, icon: "bi-stars", text: "Exclusive", className: "exclusive" },
   ];
 
-  // Fetch USD value once
-  if (price && currency && currency !== "USD" && usdValue === null && !usdLoading) {
-    setUsdLoading(true);
-    convertToUSD(price, currency)
-      .then((value) => setUsdValue(value))
-      .finally(() => setUsdLoading(false));
-  }
+  useEffect(() => {
+    if (priceCount !== 1) return; // Only convert if exactly one price exists
+
+    const price = data.salePrice ?? data.rentPrice;
+    const currency = data.salePrice ? data.saleCurrency : data.rentCurrency;
+
+    if (!price || !currency || currency === "USD") return;
+
+    async function convert() {
+      try {
+        setUsdLoading(true);
+        const value = await convertToUSD(price ?? 0, currency ?? 'USD');
+        setUsdValue(value);
+      } catch (err) {
+        console.error("Conversion failed", err);
+      } finally {
+        setUsdLoading(false);
+      }
+    }
+
+    convert();
+  }, [data, priceCount]);
+
+
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -487,7 +507,7 @@ export default function PropertyCardSimple({
             <i className={`bi ${label.icon}`}></i> {label.text}
           </span>
         ))} */}
-        
+
         <span className={`label ${labels[0].className}`} style={{ left: "70px" }}>
           <i className={`bi ${labels[0].icon}`}></i> {labels[0].text}
         </span>
@@ -534,36 +554,48 @@ export default function PropertyCardSimple({
 
         <div className="mini-foot">
           <div className="mini-price">
-            {!price || !currency ? (
-              "Price on request"
-            ) : (
+
+            {/* Case 1: Both Sale + Rent */}
+            {hasSale && hasRent && (
               <>
                 <div>
-                  {formatPrice(price, currency)}
-                  {isRent && "/month"}
+                  {formatPrice(data.salePrice!, data.saleCurrency!)}
                 </div>
-                {currency !== "USD" && (
+                <div>
+                  {formatPrice(data.rentPrice!, data.rentCurrency!)}{" "}
+                  {data.rentPeriodLabel}
+                </div>
+              </>
+            )}
+
+            {/* Case 2: Only ONE price */}
+            {priceCount === 1 && (
+              <>
+                <div>
+                  {formatPrice(
+                    data.salePrice ?? data.rentPrice!,
+                    data.salePrice ? data.saleCurrency! : data.rentCurrency!
+                  )}
+                  {data.rentPrice && data.rentPeriodLabel}
+                </div>
+
+                {/* Show conversion only if currency not USD */}
+                {usdValue && (
                   <div className="price-usd">
                     {usdLoading ? (
-                      <span className="usd-loading">
-                        ≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" />
-                      </span>
+                      <span>≈ USD loading…</span>
                     ) : (
-                      usdValue && (
-                        <>
-                          ≈ {formatPrice(Math.round(usdValue), "USD")}
-                          <i
-                            className="bi bi-info-circle ms-1"
-                            title="Approximate USD value based on current exchange rates"
-                          />
-                          {isRent && "/month"}
-                        </>
-                      )
+                      <>
+                        ≈ {formatPrice(Math.round(usdValue), "USD")}
+                        {data.rentPrice && " " + data.rentPeriodLabel}
+                      </>
                     )}
                   </div>
                 )}
               </>
             )}
+
+            {!hasSale && !hasRent && "Price on request"}
           </div>
 
           <Link href={`/properties/${data.id}`} className="mini-btn">

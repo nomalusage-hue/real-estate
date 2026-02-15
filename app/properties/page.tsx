@@ -499,6 +499,8 @@ export default function Properties() {
     pagination,
   } = useProperties();
 
+  // console.log("PropertiesPage render", { loading, error, pagination, hasMore });
+
   // const { isFavorited, toggleFavorite } = useFavorites();
 
 

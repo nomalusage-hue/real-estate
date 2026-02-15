@@ -379,7 +379,6 @@ export default function PropertyCardSimpleWide({
           <span><i className="bi bi-aspect-ratio"></i> {formatArea(data.landSize, data.sizeUnit)}</span>
         </div>
       </div>
-
       <div className="content">
         <div className="top">
           <div>
@@ -389,13 +388,27 @@ export default function PropertyCardSimpleWide({
           <div className="price">
             {!price || !currency ? "Price on request" : (
               <>
-                <div className="main-price">{formatPrice(price, currency)}{isRent && "/month"}</div>
+                {/* <div className="main-price">{formatPrice(price, currency)}{isRent && "/month"}</div>
                 {currency !== "USD" && (
                   <div className="price-usd">
-                    {usdLoading ? <span className="usd-loading">≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin"/></span> :
-                      usdValue && <>≈ {formatPrice(Math.round(usdValue), "USD")}{isRent && "/month"}<i className="bi bi-info-circle ms-1" title="Approximate USD value based on current exchange rates"/></>}
+                    {usdLoading ? <span className="usd-loading">≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" /></span> :
+                      usdValue && <>≈ {formatPrice(Math.round(usdValue), "USD")}{isRent && "/month"}<i className="bi bi-info-circle ms-1" title="Approximate USD value based on current exchange rates" /></>}
                   </div>
-                )}
+                )} */}
+<div className="main-price">
+  {formatPrice(price, currency)}
+  {isRent && data.rentPeriodLabel ? ` ${data.rentPeriodLabel.toLowerCase()}` : isRent && "/month"}
+</div>
+{currency !== "USD" && (
+  <div className="price-usd">
+    {usdLoading ? (
+      <span className="usd-loading">≈ USD loading…</span>
+    ) : (
+      usdValue && <>≈ {formatPrice(Math.round(usdValue), "USD")}{isRent && data.rentPeriodLabel ? ` ${data.rentPeriodLabel.toLowerCase()}` : isRent && "/month"}</>
+    )}
+  </div>
+)}
+
               </>
             )}
           </div>
@@ -414,8 +427,8 @@ export default function PropertyCardSimpleWide({
         </div>
       </div>
 
-      <ImageGalleryModal open={galleryOpen} images={images} index={galleryIndex} onClose={() => setGalleryOpen(false)} onNext={nextImage} onPrev={prevImage}/>
-      <LoginRequiredModal open={showLoginModal} onClose={() => setShowLoginModal(false)}/>
+      <ImageGalleryModal open={galleryOpen} images={images} index={galleryIndex} onClose={() => setGalleryOpen(false)} onNext={nextImage} onPrev={prevImage} />
+      <LoginRequiredModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </article>
   );
 }

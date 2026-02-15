@@ -1,6 +1,6 @@
 "use client";
 
-import { CONTACT } from "@/src/config/contact";
+// import { CONTACT } from "@/src/config/contact";
 import { openWhatsApp } from "@/src/utils/whatsapp";
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
@@ -110,12 +110,12 @@ export default function ContactPage() {
                             <div className="info-content">
                                 <h4>Email Address</h4>
                                 <p>
-                                    {/* <a href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`}>
+                                    <a href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`}>
                                         {process.env.NEXT_PUBLIC_CONTACT_EMAIL}
-                                    </a> */}
-                                    <a href={`mailto:${CONTACT.email}`}>
-                                        {CONTACT.email}
                                     </a>
+                                    {/* <a href={`mailto:${CONTACT.email}`}>
+                                        {CONTACT.email}
+                                    </a> */}
                                 </p>
                             </div>
                         </div>

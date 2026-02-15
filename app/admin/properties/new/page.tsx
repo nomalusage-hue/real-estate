@@ -2482,6 +2482,10 @@ export default function NewPropertyPage() {
     { category: 'Landscaping', features: ['Sprinkler System', 'Mature Trees', 'Fenced Yard', 'Garden Shed', 'Greenhouse'] },
   ];
 
+  const [rentPeriodValue, setRentPeriodValue] = useState(1);
+  const [rentPeriodUnit, setRentPeriodUnit] = useState<"day" | "week" | "month" | "year">("month");
+
+
   // Step validation rules
   const stepValidationRules = {
     1: (data: PropertyData) => {
@@ -3213,475 +3217,475 @@ export default function NewPropertyPage() {
   //   }
   // };
 
-// const submitProperty = async (e: FormEvent) => {
-//   e.preventDefault();
+  // const submitProperty = async (e: FormEvent) => {
+  //   e.preventDefault();
 
-//   const termsCheckbox = document.getElementById("terms-agreement") as HTMLInputElement;
-//   if (!termsCheckbox?.checked) {
-//     alert("Please agree to the Terms of Service before publishing.");
-//     termsCheckbox.focus();
-//     return;
-//   }
+  //   const termsCheckbox = document.getElementById("terms-agreement") as HTMLInputElement;
+  //   if (!termsCheckbox?.checked) {
+  //     alert("Please agree to the Terms of Service before publishing.");
+  //     termsCheckbox.focus();
+  //     return;
+  //   }
 
-//   // Validate all steps
-//   const allErrors: ValidationError[] = [];
-//   Object.values(stepValidationRules).forEach(validator => {
-//     if (validator) {
-//       allErrors.push(...validator(propertyData));
-//     }
-//   });
+  //   // Validate all steps
+  //   const allErrors: ValidationError[] = [];
+  //   Object.values(stepValidationRules).forEach(validator => {
+  //     if (validator) {
+  //       allErrors.push(...validator(propertyData));
+  //     }
+  //   });
 
-//   if (allErrors.length > 0) {
-//     setValidationErrors(allErrors);
-//     alert('Please fix all validation errors before submitting.');
-//     return;
-//   }
+  //   if (allErrors.length > 0) {
+  //     setValidationErrors(allErrors);
+  //     alert('Please fix all validation errors before submitting.');
+  //     return;
+  //   }
 
-//   if (selectedImages.length === 0) {
-//     alert('Please upload at least one property image.');
-//     return;
-//   }
+  //   if (selectedImages.length === 0) {
+  //     alert('Please upload at least one property image.');
+  //     return;
+  //   }
 
-//   setIsSubmitting(true);
-//   setUploadProgress(0);
+  //   setIsSubmitting(true);
+  //   setUploadProgress(0);
 
-//   const timeoutId = setTimeout(() => {
-//     console.error('Submission timeout after 120 seconds');
-//     alert('Submission is taking too long. Please check your connection and try again.');
-//     setIsSubmitting(false);
-//     setUploadProgress(0);
-//   }, 120000); // Reduced to 120 seconds
+  //   const timeoutId = setTimeout(() => {
+  //     console.error('Submission timeout after 120 seconds');
+  //     alert('Submission is taking too long. Please check your connection and try again.');
+  //     setIsSubmitting(false);
+  //     setUploadProgress(0);
+  //   }, 120000); // Reduced to 120 seconds
 
-//   try {
-//     console.log('=== STARTING PROPERTY SUBMISSION ===');
+  //   try {
+  //     console.log('=== STARTING PROPERTY SUBMISSION ===');
 
-//     /* 1️⃣ Upload images to ImgBB */
-//     const uploadedImageUrls: string[] = [];
+  //     /* 1️⃣ Upload images to ImgBB */
+  //     const uploadedImageUrls: string[] = [];
 
-//     console.log(`Uploading ${selectedImages.length} image(s)...`);
+  //     console.log(`Uploading ${selectedImages.length} image(s)...`);
 
-//     for (let i = 0; i < selectedImages.length; i++) {
-//       const file = selectedImages[i];
-//       try {
-//         const progress = Math.round(((i + 1) / selectedImages.length) * 100);
-//         setUploadProgress(progress);
-        
-//         console.log(`Uploading image ${i + 1}/${selectedImages.length}: ${file.name}`);
-//         const url = await imageService.upload(file);
-//         uploadedImageUrls.push(url);
-//         console.log(`✓ Image ${i + 1}/${selectedImages.length} uploaded: ${url.substring(0, 50)}...`);
-//       } catch (error: any) {
-//         console.error(`✗ Failed to upload image ${file.name}:`, error);
-//         throw new Error(`Image upload failed: ${error.message || 'Unknown error'}. Please try again.`);
-//       }
-//     }
+  //     for (let i = 0; i < selectedImages.length; i++) {
+  //       const file = selectedImages[i];
+  //       try {
+  //         const progress = Math.round(((i + 1) / selectedImages.length) * 100);
+  //         setUploadProgress(progress);
 
-//     console.log(`Successfully uploaded ${uploadedImageUrls.length} image(s)`);
+  //         console.log(`Uploading image ${i + 1}/${selectedImages.length}: ${file.name}`);
+  //         const url = await imageService.upload(file);
+  //         uploadedImageUrls.push(url);
+  //         console.log(`✓ Image ${i + 1}/${selectedImages.length} uploaded: ${url.substring(0, 50)}...`);
+  //       } catch (error: any) {
+  //         console.error(`✗ Failed to upload image ${file.name}:`, error);
+  //         throw new Error(`Image upload failed: ${error.message || 'Unknown error'}. Please try again.`);
+  //       }
+  //     }
 
-//     /* 2️⃣ Prepare final data */
-//     let agentData: any = null;
+  //     console.log(`Successfully uploaded ${uploadedImageUrls.length} image(s)`);
 
-//     if (propertyData.showAgent && propertyData.agent) {
-//       agentData = {
-//         name: propertyData.agent.name || '',
-//         title: propertyData.agent.title || '',
-//         phone: propertyData.agent.phone || '',
-//         email: propertyData.agent.email || '',
-//         photo: propertyData.agent.photo || ''
-//       };
-//     }
+  //     /* 2️⃣ Prepare final data */
+  //     let agentData: any = null;
 
-//     // Prepare utilities data
-//     const utilitiesData = {
-//       water: propertyData.utilities?.water || false,
-//       electricity: propertyData.utilities?.electricity || false,
-//       sewage: propertyData.utilities?.sewage || false,
-//       road_access: propertyData.utilities?.roadAccess || false
-//     };
+  //     if (propertyData.showAgent && propertyData.agent) {
+  //       agentData = {
+  //         name: propertyData.agent.name || '',
+  //         title: propertyData.agent.title || '',
+  //         phone: propertyData.agent.phone || '',
+  //         email: propertyData.agent.email || '',
+  //         photo: propertyData.agent.photo || ''
+  //       };
+  //     }
 
-//     // Debug: Log what we're about to send
-//     console.log('=== PREPARING DATA FOR SUPABASE ===');
-//     console.log('Property Type:', propertyData.propertyType);
-//     console.log('Status:', propertyData.status);
-//     console.log('Sale Price:', propertyData.salePrice);
-//     console.log('Rent Price:', propertyData.rentPrice);
-//     console.log('Image URLs count:', uploadedImageUrls.length);
+  //     // Prepare utilities data
+  //     const utilitiesData = {
+  //       water: propertyData.utilities?.water || false,
+  //       electricity: propertyData.utilities?.electricity || false,
+  //       sewage: propertyData.utilities?.sewage || false,
+  //       road_access: propertyData.utilities?.roadAccess || false
+  //     };
 
-//     const finalData = {
-//       title: propertyData.title || '',
-//       sale_currency: propertyData.saleCurrency || 'USD',
-//       rent_currency: propertyData.rentCurrency || 'USD',
-      
-//       description: propertyData.description || '',
-//       property_type: propertyData.propertyType || 'house',
-//       address: propertyData.address || '',
-//       city: propertyData.city || '',
+  //     // Debug: Log what we're about to send
+  //     console.log('=== PREPARING DATA FOR SUPABASE ===');
+  //     console.log('Property Type:', propertyData.propertyType);
+  //     console.log('Status:', propertyData.status);
+  //     console.log('Sale Price:', propertyData.salePrice);
+  //     console.log('Rent Price:', propertyData.rentPrice);
+  //     console.log('Image URLs count:', uploadedImageUrls.length);
 
-//       sale_price: propertyData.salePrice || null,
-//       rent_price: propertyData.rentPrice || null,
+  //     const finalData = {
+  //       title: propertyData.title || '',
+  //       sale_currency: propertyData.saleCurrency || 'USD',
+  //       rent_currency: propertyData.rentCurrency || 'USD',
 
-//       status: propertyData.status || [],
-//       show_address: propertyData.showAddress ?? true,
+  //       description: propertyData.description || '',
+  //       property_type: propertyData.propertyType || 'house',
+  //       address: propertyData.address || '',
+  //       city: propertyData.city || '',
 
-//       images: uploadedImageUrls,
+  //       sale_price: propertyData.salePrice || null,
+  //       rent_price: propertyData.rentPrice || null,
 
-//       bedrooms: propertyData.bedrooms || null,
-//       bathrooms: propertyData.bathrooms || null,
-//       building_size: propertyData.buildingSize || null,
-//       land_size: propertyData.landSize || null,
-//       size_unit: propertyData.sizeUnit || 'm2',
-//       year_built: propertyData.yearBuilt || null,
-//       garage: propertyData.garage || null,
-//       zoning: propertyData.zoning || null,
+  //       status: propertyData.status || [],
+  //       show_address: propertyData.showAddress ?? true,
 
-//       utilities: utilitiesData,
+  //       images: uploadedImageUrls,
 
-//       hot: selectedFeatures.has("hot") || false,
-//       new_listing: selectedFeatures.has("newListing") || false,
-//       featured: selectedFeatures.has("featured") || false,
-//       exclusive: selectedFeatures.has("exclusive") || false,
+  //       bedrooms: propertyData.bedrooms || null,
+  //       bathrooms: propertyData.bathrooms || null,
+  //       building_size: propertyData.buildingSize || null,
+  //       land_size: propertyData.landSize || null,
+  //       size_unit: propertyData.sizeUnit || 'm2',
+  //       year_built: propertyData.yearBuilt || null,
+  //       garage: propertyData.garage || null,
+  //       zoning: propertyData.zoning || null,
 
-//       interior_features: Array.from(interiorFeatures),
-//       exterior_features: Array.from(exteriorFeatures),
-//       custom_features: propertyData.customFeatures || [],
+  //       utilities: utilitiesData,
 
-//       video_url: propertyData.videoUrl || null,
-//       virtual_tour_url: propertyData.virtualTourUrl || null,
+  //       hot: selectedFeatures.has("hot") || false,
+  //       new_listing: selectedFeatures.has("newListing") || false,
+  //       featured: selectedFeatures.has("featured") || false,
+  //       exclusive: selectedFeatures.has("exclusive") || false,
 
-//       show_agent: propertyData.showAgent ?? true,
-//       agent: agentData,
+  //       interior_features: Array.from(interiorFeatures),
+  //       exterior_features: Array.from(exteriorFeatures),
+  //       custom_features: propertyData.customFeatures || [],
 
-//       published: true,
-//       draft: false
-//     };
+  //       video_url: propertyData.videoUrl || null,
+  //       virtual_tour_url: propertyData.virtualTourUrl || null,
 
-//     console.log('=== ATTEMPTING SUPABASE INSERT ===');
-//     console.time('SupabaseInsert');
+  //       show_agent: propertyData.showAgent ?? true,
+  //       agent: agentData,
 
-//     // Try direct insert with error handling
-//     const { data: result, error } = await supabase
-//       .from('properties')
-//       .insert(finalData)
-//       .select()
-//       .single();
+  //       published: true,
+  //       draft: false
+  //     };
 
-//     console.timeEnd('SupabaseInsert');
+  //     console.log('=== ATTEMPTING SUPABASE INSERT ===');
+  //     console.time('SupabaseInsert');
 
-//     if (error) {
-//       console.error('❌ SUPABASE INSERT ERROR:');
-//       console.error('Error Code:', error.code);
-//       console.error('Error Message:', error.message);
-//       console.error('Error Details:', error.details);
-//       console.error('Error Hint:', error.hint);
-//       console.error('Full Error Object:', error);
+  //     // Try direct insert with error handling
+  //     const { data: result, error } = await supabase
+  //       .from('properties')
+  //       .insert(finalData)
+  //       .select()
+  //       .single();
 
-//       // Check for specific error types
-//       if (error.code === '23502') {
-//         // NOT NULL violation - check which column
-//         const match = error.message.match(/column "([^"]+)"/);
-//         const column = match ? match[1] : 'unknown';
-//         throw new Error(`Missing required field: ${column}. Please fill all required information.`);
-//       } else if (error.code === '42703') {
-//         throw new Error(`Database column error. Please check your database schema.`);
-//       } else if (error.code === '42501') {
-//         throw new Error(`Permission denied. Check your RLS policies.`);
-//       } else {
-//         throw new Error(`Database error: ${error.message || 'Unknown error'}`);
-//       }
-//     }
+  //     console.timeEnd('SupabaseInsert');
 
-//     console.log('✅ SUPABASE INSERT SUCCESS!');
-//     console.log('Inserted property ID:', result?.id);
+  //     if (error) {
+  //       console.error('❌ SUPABASE INSERT ERROR:');
+  //       console.error('Error Code:', error.code);
+  //       console.error('Error Message:', error.message);
+  //       console.error('Error Details:', error.details);
+  //       console.error('Error Hint:', error.hint);
+  //       console.error('Full Error Object:', error);
 
-//     /* 4️⃣ Success - clean up and redirect */
-//     localStorage.removeItem('propertyDraft');
-//     clearTimeout(timeoutId);
+  //       // Check for specific error types
+  //       if (error.code === '23502') {
+  //         // NOT NULL violation - check which column
+  //         const match = error.message.match(/column "([^"]+)"/);
+  //         const column = match ? match[1] : 'unknown';
+  //         throw new Error(`Missing required field: ${column}. Please fill all required information.`);
+  //       } else if (error.code === '42703') {
+  //         throw new Error(`Database column error. Please check your database schema.`);
+  //       } else if (error.code === '42501') {
+  //         throw new Error(`Permission denied. Check your RLS policies.`);
+  //       } else {
+  //         throw new Error(`Database error: ${error.message || 'Unknown error'}`);
+  //       }
+  //     }
 
-//     // Clear form state
-//     setPropertyData({
-//       id: '',
-//       title: '',
-//       description: '',
-//       propertyType: 'house',
-//       salePrice: 0,
-//       rentPrice: 0,
-//       saleCurrency: 'USD',
-//       rentCurrency: 'USD',
-//       status: [],
-//       address: '',
-//       city: '',
-//       showAddress: true,
-//       images: [],
-//       sizeUnit: 'm2',
-//       utilities: {
-//         water: false,
-//         electricity: false,
-//         sewage: false,
-//         roadAccess: false
-//       },
-//       hot: false,
-//       newListing: false,
-//       featured: false,
-//       exclusive: false,
-//       interiorFeatures: [],
-//       exteriorFeatures: [],
-//       customFeatures: [],
-//       showAgent: true,
-//     });
-    
-//     setSelectedImages([]);
-//     setUploadedImages([]);
-//     setSelectedFeatures(new Set());
-//     setInteriorFeatures(new Set());
-//     setExteriorFeatures(new Set());
+  //     console.log('✅ SUPABASE INSERT SUCCESS!');
+  //     console.log('Inserted property ID:', result?.id);
 
-//     // Show success message with delay before redirect
-//     alert(`✅ Property "${propertyData.title}" published successfully with ${uploadedImageUrls.length} images!`);
-    
-//     // Short delay before redirect
-//     setTimeout(() => {
-//       router.push("/admin/properties");
-//       // Or use: router.push("/properties");
-//     }, 500);
+  //     /* 4️⃣ Success - clean up and redirect */
+  //     localStorage.removeItem('propertyDraft');
+  //     clearTimeout(timeoutId);
 
-//   } catch (error: any) {
-//     console.error("=== SUBMISSION FAILED ===", error);
-//     clearTimeout(timeoutId);
+  //     // Clear form state
+  //     setPropertyData({
+  //       id: '',
+  //       title: '',
+  //       description: '',
+  //       propertyType: 'house',
+  //       salePrice: 0,
+  //       rentPrice: 0,
+  //       saleCurrency: 'USD',
+  //       rentCurrency: 'USD',
+  //       status: [],
+  //       address: '',
+  //       city: '',
+  //       showAddress: true,
+  //       images: [],
+  //       sizeUnit: 'm2',
+  //       utilities: {
+  //         water: false,
+  //         electricity: false,
+  //         sewage: false,
+  //         roadAccess: false
+  //       },
+  //       hot: false,
+  //       newListing: false,
+  //       featured: false,
+  //       exclusive: false,
+  //       interiorFeatures: [],
+  //       exteriorFeatures: [],
+  //       customFeatures: [],
+  //       showAgent: true,
+  //     });
 
-//     let errorMessage = 'Failed to publish property. ';
-    
-//     if (error.message) {
-//       errorMessage += error.message;
-//     }
-    
-//     alert(errorMessage);
+  //     setSelectedImages([]);
+  //     setUploadedImages([]);
+  //     setSelectedFeatures(new Set());
+  //     setInteriorFeatures(new Set());
+  //     setExteriorFeatures(new Set());
 
-//     // Optionally save as draft
-//     const shouldSaveDraft = confirm('Would you like to save this as a draft and try again later?');
-//     if (shouldSaveDraft) {
-//       await saveAsDraft();
-//     }
+  //     // Show success message with delay before redirect
+  //     alert(`✅ Property "${propertyData.title}" published successfully with ${uploadedImageUrls.length} images!`);
 
-//   } finally {
-//     clearTimeout(timeoutId);
-//     setIsSubmitting(false);
-//     setUploadProgress(0);
-//     console.log('=== SUBMISSION PROCESS COMPLETED ===');
-//   }
-// };
-  
-const submitProperty = async (e: FormEvent) => {
-  e.preventDefault();
+  //     // Short delay before redirect
+  //     setTimeout(() => {
+  //       router.push("/admin/properties");
+  //       // Or use: router.push("/properties");
+  //     }, 500);
 
-  // Validate terms
-  const termsCheckbox = document.getElementById("terms-agreement") as HTMLInputElement;
-  if (!termsCheckbox?.checked) {
-    alert("Please agree to the Terms of Service before publishing.");
-    termsCheckbox.focus();
-    return;
-  }
+  //   } catch (error: any) {
+  //     console.error("=== SUBMISSION FAILED ===", error);
+  //     clearTimeout(timeoutId);
 
-  // Validate required fields
-  if (!propertyData.title?.trim()) {
-    alert('Property title is required.');
-    return;
-  }
-  
-  if (!propertyData.address?.trim()) {
-    alert('Address is required.');
-    return;
-  }
-  
-  if (!propertyData.city?.trim()) {
-    alert('City is required.');
-    return;
-  }
+  //     let errorMessage = 'Failed to publish property. ';
 
-  // CRITICAL: Validate currency fields
-  if (!propertyData.saleCurrency?.trim()) {
-    alert('Sale currency is required.');
-    return;
-  }
-  
-  if (!propertyData.rentCurrency?.trim()) {
-    alert('Rent currency is required.');
-    return;
-  }
+  //     if (error.message) {
+  //       errorMessage += error.message;
+  //     }
 
-  if (selectedImages.length === 0) {
-    alert('Please upload at least one property image.');
-    return;
-  }
+  //     alert(errorMessage);
 
-  setIsSubmitting(true);
-  console.log('🚀 Starting submission with currency fix...');
+  //     // Optionally save as draft
+  //     const shouldSaveDraft = confirm('Would you like to save this as a draft and try again later?');
+  //     if (shouldSaveDraft) {
+  //       await saveAsDraft();
+  //     }
 
-  try {
-    // 1. Upload images
-    console.log(`📤 Uploading ${selectedImages.length} images...`);
-    const uploadedImageUrls: string[] = [];
-    
-    for (let i = 0; i < selectedImages.length; i++) {
-      const file = selectedImages[i];
-      const progress = Math.round(((i + 1) / selectedImages.length) * 100);
-      setUploadProgress(progress);
-      
-      console.log(`  Uploading ${i + 1}/${selectedImages.length}`);
-      const url = await imageService.upload(file);
-      uploadedImageUrls.push(url);
+  //   } finally {
+  //     clearTimeout(timeoutId);
+  //     setIsSubmitting(false);
+  //     setUploadProgress(0);
+  //     console.log('=== SUBMISSION PROCESS COMPLETED ===');
+  //   }
+  // };
+
+  const submitProperty = async (e: FormEvent) => {
+    e.preventDefault();
+
+    // Validate terms
+    const termsCheckbox = document.getElementById("terms-agreement") as HTMLInputElement;
+    if (!termsCheckbox?.checked) {
+      alert("Please agree to the Terms of Service before publishing.");
+      termsCheckbox.focus();
+      return;
     }
-    
-    console.log(`✅ Uploaded ${uploadedImageUrls.length} images`);
 
-    // 2. Prepare data - MUST include required currencies
-    console.log('📝 Preparing data with required currencies...');
-    
-    const finalData = {
-      // REQUIRED FIELDS (is_nullable: NO)
-      title: propertyData.title.trim(),
-      sale_currency: (propertyData.saleCurrency || 'USD').trim(),
-      rent_currency: (propertyData.rentCurrency || 'USD').trim(),
-      
-      // Other fields
-      description: propertyData.description?.trim() || '',
-      property_type: propertyData.propertyType || 'house',
-      address: propertyData.address.trim(),
-      city: propertyData.city.trim(),
-      
-      // Prices
-      sale_price: propertyData.salePrice ? Number(propertyData.salePrice) : null,
-      rent_price: propertyData.rentPrice ? Number(propertyData.rentPrice) : null,
-      
-      // Status and flags
-      status: Array.isArray(propertyData.status) ? propertyData.status : [],
-      show_address: propertyData.showAddress !== false,
-      show_agent: propertyData.showAgent !== false,
-      
-      // Images
-      images: uploadedImageUrls,
-      
-      // Property details
-      bedrooms: propertyData.bedrooms ? Number(propertyData.bedrooms) : null,
-      bathrooms: propertyData.bathrooms ? Number(propertyData.bathrooms) : null,
-      building_size: propertyData.buildingSize ? Number(propertyData.buildingSize) : null,
-      land_size: propertyData.landSize ? Number(propertyData.landSize) : null,
-      size_unit: propertyData.sizeUnit || 'm2',
-      year_built: propertyData.yearBuilt ? Number(propertyData.yearBuilt) : null,
-      garage: propertyData.garage ? Number(propertyData.garage) : null,
-      zoning: propertyData.zoning?.trim() || null,
-      
-      // Utilities
-      utilities: propertyData.utilities ? {
-        water: !!propertyData.utilities.water,
-        electricity: !!propertyData.utilities.electricity,
-        sewage: !!propertyData.utilities.sewage,
-        road_access: !!propertyData.utilities.roadAccess
-      } : null,
-      
-      // Feature flags
-      hot: selectedFeatures.has("hot"),
-      new_listing: selectedFeatures.has("newListing"),
-      featured: selectedFeatures.has("featured"),
-      exclusive: selectedFeatures.has("exclusive"),
-      
-      // Features arrays
-      interior_features: Array.from(interiorFeatures),
-      exterior_features: Array.from(exteriorFeatures),
-      custom_features: propertyData.customFeatures || [],
-      
-      // Media URLs
-      video_url: propertyData.videoUrl?.trim() || null,
-      virtual_tour_url: propertyData.virtualTourUrl?.trim() || null,
-      
-      // Agent info
-      agent: propertyData.showAgent && propertyData.agent ? {
-        name: propertyData.agent.name?.trim() || '',
-        title: propertyData.agent.title?.trim() || '',
-        phone: propertyData.agent.phone?.trim() || '',
-        email: propertyData.agent.email?.trim() || '',
-        photo: propertyData.agent.photo?.trim() || ''
-      } : null,
-      
-      // Publication status
-      published: true,
-      draft: false
-    };
-    
-    // Debug: Log the critical required fields
-    console.log('🔍 CRITICAL FIELDS CHECK:');
-    console.log('Title:', finalData.title ? '✓' : '✗');
-    console.log('Sale Currency:', finalData.sale_currency ? '✓' : '✗', finalData.sale_currency);
-    console.log('Rent Currency:', finalData.rent_currency ? '✓' : '✗', finalData.rent_currency);
-    console.log('Address:', finalData.address ? '✓' : '✗');
-    console.log('City:', finalData.city ? '✓' : '✗');
+    // Validate required fields
+    if (!propertyData.title?.trim()) {
+      alert('Property title is required.');
+      return;
+    }
 
-    // 3. Insert into Supabase
-    console.log('💾 Saving to database...');
-    
-    const { data, error } = await supabase
-      .from('properties')
-      .insert(finalData)
-      .select()
-      .single();
+    if (!propertyData.address?.trim()) {
+      alert('Address is required.');
+      return;
+    }
 
-    if (error) {
-      console.error('❌ Database error:', error);
-      
-      // Provide specific error messages
-      if (error.code === '23502') {
-        // NOT NULL violation
-        const match = error.message.match(/column "([^"]+)"/);
-        const column = match ? match[1] : 'unknown column';
-        throw new Error(`Missing required field: ${column}. Please fill all required information.`);
-      } else if (error.code === '42703') {
-        throw new Error(`Invalid column name. Please check your form data.`);
-      } else {
-        throw new Error(`Database error: ${error.message || 'Unknown error'}`);
+    if (!propertyData.city?.trim()) {
+      alert('City is required.');
+      return;
+    }
+
+    // CRITICAL: Validate currency fields
+    if (!propertyData.saleCurrency?.trim()) {
+      alert('Sale currency is required.');
+      return;
+    }
+
+    if (!propertyData.rentCurrency?.trim()) {
+      alert('Rent currency is required.');
+      return;
+    }
+
+    if (selectedImages.length === 0) {
+      alert('Please upload at least one property image.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    console.log('🚀 Starting submission with currency fix...');
+
+    try {
+      // 1. Upload images
+      console.log(`📤 Uploading ${selectedImages.length} images...`);
+      const uploadedImageUrls: string[] = [];
+
+      for (let i = 0; i < selectedImages.length; i++) {
+        const file = selectedImages[i];
+        const progress = Math.round(((i + 1) / selectedImages.length) * 100);
+        setUploadProgress(progress);
+
+        console.log(`  Uploading ${i + 1}/${selectedImages.length}`);
+        const url = await imageService.upload(file);
+        uploadedImageUrls.push(url);
       }
-    }
 
-    console.log('✅ Success! Property ID:', data?.id);
+      console.log(`✅ Uploaded ${uploadedImageUrls.length} images`);
 
-    // Success
-    alert(`🎉 Property "${propertyData.title}" published successfully!`);
-    
-    // Clear form and redirect
-    localStorage.removeItem('propertyDraft');
-    setSelectedImages([]);
-    setUploadedImages([]);
-    setSelectedFeatures(new Set());
-    setInteriorFeatures(new Set());
-    setExteriorFeatures(new Set());
-    
-    setTimeout(() => {
-      router.push("/admin/properties");
-    }, 1000);
+      // 2. Prepare data - MUST include required currencies
+      console.log('📝 Preparing data with required currencies...');
 
-  } catch (error: any) {
-    console.error('💥 Submission failed:', error);
-    
-    let errorMessage = 'Failed to publish property. ';
-    
-    if (error.message.includes('Missing required field')) {
-      errorMessage = error.message;
-    } else if (error.message.includes('currency')) {
-      errorMessage = 'Currency information is required. Please select both sale and rent currencies.';
-    } else {
-      errorMessage += error.message || 'Unknown error occurred.';
+      const finalData = {
+        // REQUIRED FIELDS (is_nullable: NO)
+        title: propertyData.title.trim(),
+        sale_currency: (propertyData.saleCurrency || 'USD').trim(),
+        rent_currency: (propertyData.rentCurrency || 'USD').trim(),
+
+        // Other fields
+        description: propertyData.description?.trim() || '',
+        property_type: propertyData.propertyType || 'house',
+        address: propertyData.address.trim(),
+        city: propertyData.city.trim(),
+
+        // Prices
+        sale_price: propertyData.salePrice ? Number(propertyData.salePrice) : null,
+        rent_price: propertyData.rentPrice ? Number(propertyData.rentPrice) : null,
+
+        // Status and flags
+        status: Array.isArray(propertyData.status) ? propertyData.status : [],
+        show_address: propertyData.showAddress !== false,
+        show_agent: propertyData.showAgent !== false,
+
+        // Images
+        images: uploadedImageUrls,
+
+        // Property details
+        bedrooms: propertyData.bedrooms ? Number(propertyData.bedrooms) : null,
+        bathrooms: propertyData.bathrooms ? Number(propertyData.bathrooms) : null,
+        building_size: propertyData.buildingSize ? Number(propertyData.buildingSize) : null,
+        land_size: propertyData.landSize ? Number(propertyData.landSize) : null,
+        size_unit: propertyData.sizeUnit || 'm2',
+        year_built: propertyData.yearBuilt ? Number(propertyData.yearBuilt) : null,
+        garage: propertyData.garage ? Number(propertyData.garage) : null,
+        zoning: propertyData.zoning?.trim() || null,
+
+        // Utilities
+        utilities: propertyData.utilities ? {
+          water: !!propertyData.utilities.water,
+          electricity: !!propertyData.utilities.electricity,
+          sewage: !!propertyData.utilities.sewage,
+          road_access: !!propertyData.utilities.roadAccess
+        } : null,
+
+        // Feature flags
+        hot: selectedFeatures.has("hot"),
+        new_listing: selectedFeatures.has("newListing"),
+        featured: selectedFeatures.has("featured"),
+        exclusive: selectedFeatures.has("exclusive"),
+
+        // Features arrays
+        interior_features: Array.from(interiorFeatures),
+        exterior_features: Array.from(exteriorFeatures),
+        custom_features: propertyData.customFeatures || [],
+
+        // Media URLs
+        video_url: propertyData.videoUrl?.trim() || null,
+        virtual_tour_url: propertyData.virtualTourUrl?.trim() || null,
+
+        // Agent info
+        agent: propertyData.showAgent && propertyData.agent ? {
+          name: propertyData.agent.name?.trim() || '',
+          title: propertyData.agent.title?.trim() || '',
+          phone: propertyData.agent.phone?.trim() || '',
+          email: propertyData.agent.email?.trim() || '',
+          photo: propertyData.agent.photo?.trim() || ''
+        } : null,
+
+        // Publication status
+        published: true,
+        draft: false
+      };
+
+      // Debug: Log the critical required fields
+      console.log('🔍 CRITICAL FIELDS CHECK:');
+      console.log('Title:', finalData.title ? '✓' : '✗');
+      console.log('Sale Currency:', finalData.sale_currency ? '✓' : '✗', finalData.sale_currency);
+      console.log('Rent Currency:', finalData.rent_currency ? '✓' : '✗', finalData.rent_currency);
+      console.log('Address:', finalData.address ? '✓' : '✗');
+      console.log('City:', finalData.city ? '✓' : '✗');
+
+      // 3. Insert into Supabase
+      console.log('💾 Saving to database...');
+
+      const { data, error } = await supabase
+        .from('properties')
+        .insert(finalData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('❌ Database error:', error);
+
+        // Provide specific error messages
+        if (error.code === '23502') {
+          // NOT NULL violation
+          const match = error.message.match(/column "([^"]+)"/);
+          const column = match ? match[1] : 'unknown column';
+          throw new Error(`Missing required field: ${column}. Please fill all required information.`);
+        } else if (error.code === '42703') {
+          throw new Error(`Invalid column name. Please check your form data.`);
+        } else {
+          throw new Error(`Database error: ${error.message || 'Unknown error'}`);
+        }
+      }
+
+      console.log('✅ Success! Property ID:', data?.id);
+
+      // Success
+      alert(`🎉 Property "${propertyData.title}" published successfully!`);
+
+      // Clear form and redirect
+      localStorage.removeItem('propertyDraft');
+      setSelectedImages([]);
+      setUploadedImages([]);
+      setSelectedFeatures(new Set());
+      setInteriorFeatures(new Set());
+      setExteriorFeatures(new Set());
+
+      setTimeout(() => {
+        router.push("/admin/properties");
+      }, 1000);
+
+    } catch (error: any) {
+      console.error('💥 Submission failed:', error);
+
+      let errorMessage = 'Failed to publish property. ';
+
+      if (error.message.includes('Missing required field')) {
+        errorMessage = error.message;
+      } else if (error.message.includes('currency')) {
+        errorMessage = 'Currency information is required. Please select both sale and rent currencies.';
+      } else {
+        errorMessage += error.message || 'Unknown error occurred.';
+      }
+
+      alert(errorMessage);
+
+      // Offer to save as draft
+      if (confirm('Save as draft and try again later?')) {
+        await saveAsDraft();
+      }
+
+    } finally {
+      setIsSubmitting(false);
+      setUploadProgress(0);
     }
-    
-    alert(errorMessage);
-    
-    // Offer to save as draft
-    if (confirm('Save as draft and try again later?')) {
-      await saveAsDraft();
-    }
-    
-  } finally {
-    setIsSubmitting(false);
-    setUploadProgress(0);
-  }
-};
+  };
 
   // Save as draft
   const saveAsDraft = async () => {
@@ -3760,7 +3764,7 @@ const submitProperty = async (e: FormEvent) => {
       const admin = await checkIfAdmin(session.user.id);
 
       if (!admin) {
-        console.log('User is not admin:', session.user.id);
+        // console.log('User is not admin:', session.user.id);
         return;
       }
 
@@ -3779,7 +3783,7 @@ const submitProperty = async (e: FormEvent) => {
 
         const admin = await checkIfAdmin(session.user.id);
         if (!admin) {
-          console.log('User is not admin:', session.user.id);
+          // console.log('User is not admin:', session.user.id);
           return;
         }
 
@@ -4165,29 +4169,29 @@ const submitProperty = async (e: FormEvent) => {
             </div>
           )}
 
-{isSubmitting && (
-  <div className="alert alert-info">
-    <div className="d-flex align-items-center">
-      <div className="spinner-border spinner-border-sm me-2" role="status"></div>
-      <div>
-        <strong>Publishing Property...</strong>
-        {uploadProgress > 0 && uploadProgress < 100 && (
-          <div className="mt-2">
-            <div className="progress" style={{ height: '8px' }}>
-              <div 
-                className="progress-bar progress-bar-striped progress-bar-animated" 
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
+          {isSubmitting && (
+            <div className="alert alert-info">
+              <div className="d-flex align-items-center">
+                <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+                <div>
+                  <strong>Publishing Property...</strong>
+                  {uploadProgress > 0 && uploadProgress < 100 && (
+                    <div className="mt-2">
+                      <div className="progress" style={{ height: '8px' }}>
+                        <div
+                          className="progress-bar progress-bar-striped progress-bar-animated"
+                          style={{ width: `${uploadProgress}%` }}
+                        ></div>
+                      </div>
+                      <small className="text-muted">
+                        {uploadProgress < 100 ? 'Uploading images...' : 'Saving to database...'}
+                      </small>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-            <small className="text-muted">
-              {uploadProgress < 100 ? 'Uploading images...' : 'Saving to database...'}
-            </small>
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
-)}
+          )}
 
           {/* Validation Errors */}
           {validationErrors.length > 0 && (
@@ -4345,7 +4349,7 @@ const submitProperty = async (e: FormEvent) => {
                     </div>
                   )}
 
-                  {propertyData.status.includes('For Rent') && (
+                  {/* {propertyData.status.includes('For Rent') && (
                     <div className="col-md-6 mb-4">
                       <label htmlFor="rent-price" className="form-label required-label">
                         Rent Price <span className="text-danger">*</span>
@@ -4391,6 +4395,126 @@ const submitProperty = async (e: FormEvent) => {
                       {propertyData.rentPrice && (
                         <div className="form-text mt-2">
                           Formatted: {formatPrice(propertyData.rentPrice, propertyData.rentCurrency, true)}
+                        </div>
+                      )}
+                    </div>
+                  )} */}
+
+                  {propertyData.status.includes("For Rent") && (
+                    <div className="col-md-6 mb-4">
+                      <label className="form-label required-label">
+                        Rent Price <span className="text-danger">*</span>
+                      </label>
+
+                      {/* Price row */}
+                      <div className="row g-2 align-items-end">
+                        {/* Currency */}
+                        <div className="col-3">
+                          <select
+                            className="form-select"
+                            value={propertyData.rentCurrency || "USD"}
+                            onChange={(e) =>
+                              setPropertyData((prev) => ({
+                                ...prev,
+                                rentCurrency: e.target.value,
+                              }))
+                            }
+                          >
+                            {priorityCurrencies.map((currency) => (
+                              <option key={currency.code} value={currency.code}>
+                                {currency.code}
+                              </option>
+                            ))}
+                            <option disabled>──────────</option>
+                            {otherCurrencies.map((currency) => (
+                              <option key={currency.code} value={currency.code}>
+                                {currency.code}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Price */}
+                        <div className="col-5">
+                          <input
+                            type="number"
+                            className={`form-control ${validationErrors.some((e) => e.field === "rentPrice")
+                                ? "is-invalid"
+                                : ""
+                              }`}
+                            placeholder="0.00"
+                            min="0"
+                            step="0.01"
+                            value={propertyData.rentPrice || ""}
+                            onChange={handleInputChange}
+                            name="rentPrice"
+                          />
+                        </div>
+
+                        {/* Period Unit */}
+                        <div className="col-4">
+                          <select
+                            className="form-select"
+                            value={rentPeriodUnit}
+                            onChange={(e) => {
+                              const unit = e.target.value as any;
+                              setRentPeriodUnit(unit);
+
+                              setPropertyData((prev) => ({
+                                ...prev,
+                                rentPeriodLabel:
+                                  rentPeriodValue === 1
+                                    ? `/${unit}`
+                                    : `/${rentPeriodValue} ${unit}s`,
+                              }));
+                            }}
+                          >
+                            <option value="day">Per Day</option>
+                            <option value="week">Per Week</option>
+                            <option value="month">Per Month</option>
+                            <option value="year">Per Year</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Period number */}
+                      <div className="row g-2 mt-2">
+                        <div className="col-4">
+                          <input
+                            type="number"
+                            min="1"
+                            className="form-control"
+                            placeholder="1"
+                            value={rentPeriodValue}
+                            onChange={(e) => {
+                              const value = Number(e.target.value || 1);
+                              setRentPeriodValue(value);
+
+                              setPropertyData((prev) => ({
+                                ...prev,
+                                rentPeriodLabel:
+                                  value === 1
+                                    ? `/${rentPeriodUnit}`
+                                    : `/${value} ${rentPeriodUnit}s`,
+                              }));
+                            }}
+                          />
+                        </div>
+                        <div className="col-8 d-flex align-items-center">
+                          <small className="text-muted">
+                            Duration (e.g. 1 = monthly, 5 = 5 months)
+                          </small>
+                        </div>
+                      </div>
+
+                      {/* Preview */}
+                      {propertyData.rentPrice && propertyData.rentPeriodLabel && (
+                        <div className="form-text mt-2">
+                          Preview:{" "}
+                          <strong>
+                            {formatPrice(propertyData.rentPrice, propertyData.rentCurrency)}
+                            {propertyData.rentPeriodLabel}
+                          </strong>
                         </div>
                       )}
                     </div>

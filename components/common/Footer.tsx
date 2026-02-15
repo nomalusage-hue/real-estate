@@ -250,8 +250,8 @@ export default function Footer() {
                                 <div className="contact-info">
                                     <a
                                         style={{ "display": "flex", "alignItems": "center", "height": "40px" }}
-                                        href={`mailto:${CONTACT.email}`}>
-                                        {CONTACT.email}
+                                        href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`}>
+                                        {process.env.NEXT_PUBLIC_CONTACT_EMAIL}
                                     </a>
                                 </div>
                             </div>

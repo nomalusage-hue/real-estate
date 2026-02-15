@@ -680,7 +680,7 @@ export default function PropertyFilters({ filters, onChange, stats }: PropertyFi
 
   // Handle filter change
   const handleFilterChange = (key: keyof PropertyFilterOptions, value: any) => {
-    console.log(key, value);
+    // console.log(key, value);
     const newFilters = { ...filters, [key]: value };
 
     if (value === undefined || value === '' || (Array.isArray(value) && value.length === 0)) {

@@ -20,7 +20,7 @@
 
 //   if (!property) {
 //     return {
-//       title: "Property Not Found | {SITE.founderName} Properties",
+//       title: "Property Not Found | {process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties",
 //     };
 //   }
 
@@ -29,7 +29,7 @@
 //     "https://i.ibb.co/wZzgxMsY/Untitledasdfa.jpg";
 
 //   return {
-//     title: `${property.title} | {SITE.founderName} Properties`,
+//     title: `${property.title} | {process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties`,
 //     description: property.description?.slice(0, 160),
 //     openGraph: {
 //       title: property.title,
@@ -90,7 +90,7 @@
 
 //   if (!property) {
 //     return {
-//       title: "Property Not Found | {SITE.founderName} Properties",
+//       title: "Property Not Found | {process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties",
 //     };
 //   }
 
@@ -105,7 +105,7 @@
 //     "/og/logo.jpeg";
 
 //   return {
-//     title: `${property.title} | {SITE.founderName} Properties`,
+//     title: `${property.title} | {process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties`,
 //     description: property.description?.slice(0, 160),
 //     openGraph: {
 //       title: property.title,
@@ -170,7 +170,7 @@ export async function generateMetadata(
 
   if (!property) {
     return {
-      title: `Property Not Found | ${SITE.founderName} Properties`,
+      title: `Property Not Found | ${process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties`,
     };
   }
 
@@ -185,7 +185,7 @@ export async function generateMetadata(
     "/og/logo.jpeg";
 
   return {
-    title: `${property.title} | ${SITE.founderName} Properties`,
+    title: `${property.title} | ${process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties`,
     description: property.description?.slice(0, 160),
     openGraph: {
       title: property.title,

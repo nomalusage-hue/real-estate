@@ -345,7 +345,7 @@ export default function About() {
                 </div>
                 <h2>Professional Guidance for Smart Property Investments</h2>
                 <p className="lead-text">
-                  Hello, I&#39;m <strong>Dian Rebekah</strong>, a professional property agent in Bali and Sumba Island, Indonesia.
+                  Hello, I&#39;m <strong>{process.env.NEXT_PUBLIC_FOUNDER_NAME || "Dian Rebecca"}</strong>, a professional property agent in Bali and Sumba Island, Indonesia.
                   Since 2015, I&#39;ve assisted clients in buying and selling properties ranging from land and luxury homes to condominiums, hotels, and apartments.
                 </p>
                 <p>
@@ -362,12 +362,12 @@ export default function About() {
                   <div className="founder-image"
                     onContextMenu={(e) => e.preventDefault()}>
                     <Image
-                      src={SITE.founderAvatar || "/img/person/person-f-1.webp"}
-                      alt="Dian Rebekah"
+                      src={process.env.NEXT_PUBLIC_FOUNDER_AVATAR || "/img/founder-avatar/image-1.jpeg"}
+                      alt={process.env.NEXT_PUBLIC_FOUNDER_NAME || "Founder"}
                       className="img-fluid"
                       width={150}
                       height={150}
-                      // unoptimized
+                    // unoptimized
                     />
                   </div>
                   <div className="founder-info">
@@ -375,7 +375,7 @@ export default function About() {
                       &quot;Helping investors secure their future through smart property investments.&quot;
                     </blockquote>
                     <div className="founder-details">
-                      <h5>{SITE.founderName}</h5>
+                      <h5>{process.env.NEXT_PUBLIC_FOUNDER_NAME}</h5>
                       <span>Founder &amp; Professional Property Agent</span>
                     </div>
                   </div>
@@ -397,7 +397,7 @@ export default function About() {
                   />
                   <div className="experience-badge">
                     {/* <div className="badge-number">9+</div> */}
-                    <div className="badge-number">{new Date().getFullYear() - SITE.startingYear}+</div>
+                    <div className="badge-number">{new Date().getFullYear() - Number(process.env.NEXT_PUBLIC_FOUNDER_STARTING_YEAR)}+</div>
                     <div className="badge-text">Years of Experience</div>
                   </div>
                 </div>
@@ -425,7 +425,7 @@ export default function About() {
                   <div className="achievement-icon">
                     <i className="bi bi-key"></i>
                   </div>
-                  <div className="achievement-number" style={{"fontSize": "2.3rem"}}>Since 2015</div>
+                  <div className="achievement-number" style={{ "fontSize": "2.3rem" }}>Since 2015</div>
                   <div className="achievement-label">Active in Real Estate</div>
                 </div>
               </div>
@@ -435,7 +435,7 @@ export default function About() {
                   <div className="achievement-icon">
                     <i className="bi bi-geo-alt"></i>
                   </div>
-                  <div className="achievement-number" style={{"fontSize": "2.3rem"}}>Bali & Sumba</div>
+                  <div className="achievement-number" style={{ "fontSize": "2.3rem" }}>Bali & Sumba</div>
                   <div className="achievement-label">Primary Markets</div>
                 </div>
               </div>
@@ -445,7 +445,7 @@ export default function About() {
                   <div className="achievement-icon">
                     <i className="bi bi-shield-check"></i>
                   </div>
-                  <div className="achievement-number" style={{"fontSize": "2.3rem"}}>Foreign Clients</div>
+                  <div className="achievement-number" style={{ "fontSize": "2.3rem" }}>Foreign Clients</div>
                   <div className="achievement-label">Legal & Permit Assistance</div>
                 </div>
               </div>
@@ -455,7 +455,7 @@ export default function About() {
                   <div className="achievement-icon">
                     <i className="bi bi-briefcase"></i>
                   </div>
-                  <div className="achievement-number" style={{"fontSize": "2.3rem"}}>End-to-End</div>
+                  <div className="achievement-number" style={{ "fontSize": "2.3rem" }}>End-to-End</div>
                   <div className="achievement-label">Investment Support</div>
                 </div>
               </div>

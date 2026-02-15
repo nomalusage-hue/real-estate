@@ -10,9 +10,9 @@ import ScrollToTop from "@/components/layout/ScrollToTop";
 import { SITE } from "@/src/config/site";
 
 // Fonts
-const roboto = Roboto({ subsets: ["latin"], weight: ["100","300","400","500","700","900"], variable: "--font-roboto" });
-const montserrat = Montserrat({ subsets: ["latin"], weight: ["100","200","300","400","500","600","700","800","900"], variable: "--font-montserrat" });
-const raleway = Raleway({ subsets: ["latin"], weight: ["100","200","300","400","500","600","700","800","900"], variable: "--font-raleway" });
+const roboto = Roboto({ subsets: ["latin"], weight: ["100", "300", "400", "500", "700", "900"], variable: "--font-roboto" });
+const montserrat = Montserrat({ subsets: ["latin"], weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"], variable: "--font-montserrat" });
+const raleway = Raleway({ subsets: ["latin"], weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"], variable: "--font-raleway" });
 
 
 export const metadata: Metadata = {
@@ -21,8 +21,8 @@ export const metadata: Metadata = {
   ),
 
   title: {
-    default: `${SITE.founderName} Properties | Premium Real Estate`,
-    template: `%s | ${SITE.founderName} Properties`,
+    default: `${process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties | Premium Real Estate`,
+    template: `%s | ${process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties`,
   },
 
   description:
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
 
   openGraph: {
     type: "website",
-    siteName: `${SITE.founderName} Properties`,
-    title: `${SITE.founderName} Properties | Premium Real Estate`,
+    siteName: `${process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties`,
+    title: `${process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties | Premium Real Estate`,
     description:
       "Discover premium properties for sale and rent. Trusted real estate experts delivering value and quality.",
     images: [
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
         url: "/og/logo.jpeg",
         width: 1200,
         height: 630,
-        alt: `${SITE.founderName} Properties`,
+        alt: `${process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties`,
       },
     ],
   },

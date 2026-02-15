@@ -924,8 +924,11 @@ export default function PropertyPage({ id }: Props) {
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [usdValue, setUsdValue] = useState<number | null>(null);
+  // const [usdValue, setUsdValue] = useState<number | null>(null);
   const [usdLoading, setUsdLoading] = useState(false);
+  const [usdSale, setUsdSale] = useState<number | null>(null);
+  const [usdRent, setUsdRent] = useState<number | null>(null);
+
 
   // if (params){
   //   params.id = id;
@@ -1012,26 +1015,66 @@ export default function PropertyPage({ id }: Props) {
     };
   }, [property]);
 
+  // useEffect(() => {
+  //   if (!property) return;
+
+  //   async function fetchUSD() {
+  //     try {
+  //       setUsdLoading(true);
+  //       const price = property?.salePrice ?? property?.rentPrice ?? 0;
+  //       const currency = (property?.salePrice ? property?.saleCurrency : property?.rentCurrency) ?? "USD";
+  //       const value = await convertToUSD(price, currency);
+  //       setUsdValue(value);
+  //       // console.log("Converted USD value:", value);
+  //     } catch (err) {
+  //       console.error("USD conversion failed", err);
+  //     } finally{
+  //       setUsdLoading(false);
+  //     }
+  //   }
+
+  //   fetchUSD();
+  // }, [property]);
+
   useEffect(() => {
     if (!property) return;
 
     async function fetchUSD() {
       try {
         setUsdLoading(true);
-        const price = property?.salePrice ?? property?.rentPrice ?? 0;
-        const currency = (property?.salePrice ? property?.saleCurrency : property?.rentCurrency) ?? "USD";
-        const value = await convertToUSD(price, currency);
-        setUsdValue(value);
-        console.log("Converted USD value:", value);
+
+        // Convert sale price if exists and not USD
+        if (property?.salePrice && property?.saleCurrency !== "USD") {
+          const convertedSale = await convertToUSD(
+            property?.salePrice,
+            property?.saleCurrency ?? 'USD'
+          );
+          setUsdSale(convertedSale);
+        } else if (property?.salePrice) {
+          setUsdSale(property?.salePrice);
+        }
+
+        // Convert rent price if exists and not USD
+        if (property?.rentPrice && property?.rentCurrency !== "USD") {
+          const convertedRent = await convertToUSD(
+            property?.rentPrice,
+            property?.rentCurrency ?? 'USD'
+          );
+          setUsdRent(convertedRent);
+        } else if (property?.rentPrice) {
+          setUsdRent(property?.rentPrice);
+        }
+
       } catch (err) {
         console.error("USD conversion failed", err);
-      } finally{
+      } finally {
         setUsdLoading(false);
       }
     }
 
     fetchUSD();
   }, [property]);
+
 
 
   const driftInstanceRef = useRef<any>(null);
@@ -1189,12 +1232,19 @@ Could you please let me know available dates and times? Thank you.`;
     }
     if (property.status?.includes("For Rent") && property.rentPrice) {
       // return formatPrice(property.rentPrice) + "/month";
-      return formatPrice(property.rentPrice, property.rentCurrency) + "/month";
+      // return formatPrice(property.rentPrice, property.rentCurrency) + "/month";
+      return formatPrice(property.rentPrice, property.rentCurrency) + property.rentPeriodLabel;
     }
     if (property.status?.includes("Sold")) {
       return "Sold";
     }
     return "Price on request";
+  };
+  const getRentPrice = () => {
+    if (property.status?.includes("For Sale") && property.salePrice
+      && property.status?.includes("For Rent") && property.rentPrice) {
+      return formatPrice(property.rentPrice, property.rentCurrency) + ' ' + property.rentPeriodLabel;
+    }
   };
 
   // Get status text
@@ -1559,7 +1609,7 @@ Could you please let me know available dates and times? Thank you.`;
                       <i className={`bi ${isPropertyFavorited ? 'bi-heart-fill' : 'bi-heart'}`}></i>
                     </button>
                   </div>
-                  <div className="price-tag d-flex align-items-center justify-content-between">
+                  {/* <div className="price-tag d-flex align-items-center justify-content-between">
                     {(property?.salePrice ? property?.saleCurrency : property?.rentCurrency) !== "USD" && (
                       <div className="price-usd">
                         {usdLoading ? (
@@ -1570,13 +1620,61 @@ Could you please let me know available dates and times? Thank you.`;
                           usdValue && (
                             <>
                               ≈ {formatPrice(Math.round(usdValue), "USD")}
-                              {Boolean(property?.rentPrice) && "/month"}
+                              {Boolean(property?.rentPrice) && ' ' + property.rentPeriodLabel}
                             </>
                           )
                         )}
                       </div>
                     )}
+                  </div> */}
+                  <div className="price-tag d-flex align-items-center justify-content-between">
+
+                    {usdLoading && (
+                      <span className="usd-loading">
+                        ≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" />
+                      </span>
+                    )}
+
+                    {!usdLoading && (
+                      <>
+                        {usdSale && property?.saleCurrency !== "USD" && (
+                          <div className="price-usd">
+                            ≈ {formatPrice(Math.round(usdSale), "USD")}
+                          </div>
+                        )}
+
+                        {/* {usdRent && property?.rentCurrency !== "USD" && (
+                          <div className="price-usd">
+                            ≈ {formatPrice(Math.round(usdRent), "USD")}{" "}
+                            {property?.rentPeriodLabel}
+                          </div>
+                        )} */}
+                      </>
+                    )}
                   </div>
+                  <div className="price-tag d-flex align-items-center justify-content-between">
+                    {getRentPrice()}
+                  </div>
+                  <div className="price-tag d-flex align-items-center justify-content-between">
+
+                    {usdLoading && (
+                      <span className="usd-loading">
+                        ≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" />
+                      </span>
+                    )}
+
+                    {!usdLoading && (
+                      <>
+                        {usdRent && property?.rentCurrency !== "USD" && (
+                          <div className="price-usd">
+                            ≈ {formatPrice(Math.round(usdRent), "USD")}{" "}
+                            {property?.rentPeriodLabel}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+
                   <div
                     className={`property-status ${getStatusText()
                       .toLowerCase()
