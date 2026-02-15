@@ -131,7 +131,7 @@ export default function AdminConfigurationPage() {
                             onChange={e => setSiteConfig({ ...siteConfig, name: e.target.value })}
                             placeholder="Site Name"
                         />
-                        <input
+                        {/* <input
                             type="number"
                             className="form-control mb-2"
                             value={siteConfig.startingYear}
@@ -151,7 +151,7 @@ export default function AdminConfigurationPage() {
                             value={siteConfig.founderAvatar}
                             onChange={e => setSiteConfig({ ...siteConfig, founderAvatar: e.target.value })}
                             placeholder="Founder Avatar URL"
-                        />
+                        /> */}
 
                         <button
                             className="btn btn-primary mt-2"
@@ -167,7 +167,7 @@ export default function AdminConfigurationPage() {
                 <div className="card mb-4">
                     <div className="card-header">Contact Config</div>
                     <div className="card-body">
-                        <input
+                        {/* <input
                             type="text"
                             className="form-control mb-2"
                             value={contactConfig.email}
@@ -180,7 +180,7 @@ export default function AdminConfigurationPage() {
                             value={contactConfig.phone}
                             onChange={e => setContactConfig({ ...contactConfig, phone: e.target.value })}
                             placeholder="Phone"
-                        />
+                        /> */}
                         <input
                             type="text"
                             className="form-control mb-2"
