@@ -3658,7 +3658,8 @@ export default function NewPropertyPage() {
       setExteriorFeatures(new Set());
 
       setTimeout(() => {
-        router.push("/admin/properties");
+        // router.push("/admin/properties");
+        router.refresh();
       }, 1000);
 
     } catch (error: any) {

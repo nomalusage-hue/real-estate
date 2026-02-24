@@ -599,7 +599,7 @@ private convertToSnakeCase(obj: any): any {
       // console.log('getPaged - Final query executing...');
       const { data, count, error } = await query
         .order(orderBy, { ascending })
-        .range(from, to);
+        // .range(from, to);
 
       if (error) {
         console.error('getPaged - Supabase error details:', {

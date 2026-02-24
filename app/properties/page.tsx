@@ -984,7 +984,7 @@ export default function Properties() {
               {hasMore && hasVisibleProperties && !loading && (
                 <div className="text-center mt-5">
                   <button
-                    className="btn btn-primary"
+                    className="btn btn custom-button"
                     onClick={() => loadNextPage(filters)}
                   >
                     Load More ({pagination.pageSize} per page)
