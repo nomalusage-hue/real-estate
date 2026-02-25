@@ -36,7 +36,7 @@ export const metadata: Metadata = {
       "Discover premium properties for sale and rent. Trusted real estate experts delivering value and quality.",
     images: [
       {
-        url: "/og/logo.jpeg",
+        url: "/og/cover.png",
         width: 1200,
         height: 630,
         alt: `${process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties`,
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    images: ["/og/logo.jpeg"],
+    images: ["/og/cover.png"],
   },
 
   icons: {
