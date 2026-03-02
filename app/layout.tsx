@@ -7,7 +7,6 @@ import AOSWrapper from "@/components/layout/AOSWrapper";
 import NoSSRWrapper from "@/components/layout/NoSSRWrapper";
 import Scripts from "@/components/layout/Scripts";
 import ScrollToTop from "@/components/layout/ScrollToTop";
-import { SITE } from "@/src/config/site";
 
 // Fonts
 const roboto = Roboto({ subsets: ["latin"], weight: ["100", "300", "400", "500", "700", "900"], variable: "--font-roboto" });
@@ -15,43 +14,59 @@ const montserrat = Montserrat({ subsets: ["latin"], weight: ["100", "200", "300"
 const raleway = Raleway({ subsets: ["latin"], weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"], variable: "--font-raleway" });
 
 
-export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-  ),
+const baseUrl =
+  process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
-  title: {
-    default: `${process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties | Premium Real Estate`,
-    template: `%s | ${process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties`,
-  },
+export const metadata: Metadata = {
+  metadataBase: new URL(baseUrl),
+
+  title:
+    "Luxury Villas for Sale & Rent in Bali | Dian Rebecca Estates",
 
   description:
-    "Discover premium properties for sale and rent. Trusted real estate experts delivering value and quality.",
+    "Discover exclusive luxury villas, beachfront homes, apartments, and land for sale and rent in Bali, Indonesia. Dian Rebecca Estates specializes in high-end real estate across Canggu, Uluwatu, Seminyak, and prime Bali locations.",
+
+  keywords: [
+    "Dian Rebecca Estates",
+    "Luxury villas in Bali",
+    "Bali real estate agency",
+    "Premium Bali properties",
+  ],
+
+  alternates: {
+    canonical: baseUrl,
+  },
 
   openGraph: {
     type: "website",
-    siteName: `${process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties`,
-    title: `${process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties | Premium Real Estate`,
-    description:
-      "Discover premium properties for sale and rent. Trusted real estate experts delivering value and quality.",
+    url: baseUrl,
+    title: "Luxury Villas for Sale & Rent in Bali | Dian Rebecca Estates",
+    description: "Explore premium villas, apartments, and land for sale and rent with Dian Rebecca Estates in Bali’s most exclusive locations.",
     images: [
       {
-        url: "/og/cover.png",
+        url: `${baseUrl}/og/cover.jpg`,
         width: 1200,
         height: 630,
-        alt: `${process.env.NEXT_PUBLIC_FOUNDER_NAME} Properties`,
+        alt: "Luxury villa in Bali with private pool | Dian Rebecca Estates",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    images: ["/og/cover.png"],
+    title: "Luxury Villas for Sale & Rent in Bali | Dian Rebecca Estates",
+    description: "Explore premium villas and investment properties across Bali with Dian Rebecca Estates.",
+    images: [`${baseUrl}/og/cover.jpg`],
   },
 
   icons: {
-    icon: "/icon.png",
-    apple: "/apple-icon.png",
+    icon: [
+      { url: "/icon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon-48.png", sizes: "48x48", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
 };
 
