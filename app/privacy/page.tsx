@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import FavoritesPage from "../favorites/FavoriteClient";
+import PrivacyPage from "./PrivacyClient";
 
 export const metadata: Metadata = {
   title: `Privacy Policy | ${process.env.NEXT_PUBLIC_FOUNDER_NAME} Estates Bali`,
@@ -31,5 +31,5 @@ export const metadata: Metadata = {
 };
 
 export default function Privacy() {
-  return <FavoritesPage/>;
+  return <PrivacyPage/>;
 }
