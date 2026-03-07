@@ -1225,7 +1225,7 @@ Could you please let me know available dates and times? Thank you.`;
 
 
   // Get display price based on status
-  const getDisplayPrice = () => {
+  const getDisplayPrice = (return_price: boolean=false) => {
     if (property.status?.includes("For Sale") && property.salePrice) {
       // return formatPrice(property.salePrice);
       return formatPrice(property.salePrice, property.saleCurrency);
@@ -1236,6 +1236,11 @@ Could you please let me know available dates and times? Thank you.`;
       return formatPrice(property.rentPrice, property.rentCurrency) + property.rentPeriodLabel;
     }
     if (property.status?.includes("Sold")) {
+      if(return_price){
+        if(property.salePrice){
+          return formatPrice(property.salePrice, property.saleCurrency);
+        }
+      }
       return "Sold";
     }
     return "Price on request";
@@ -1598,9 +1603,15 @@ Could you please let me know available dates and times? Thank you.`;
                   data-aos-delay="200"
                 >
                   <div className="price-tag d-flex align-items-center justify-content-between">
-                    {/* <p>
-                    </p> */}
-                    {getDisplayPrice()}
+                    {property.status?.includes("Sold") ? (
+                      <p style={{"margin": "0", "textDecoration": "underline"}}>
+                        {getDisplayPrice()}
+                      </p>
+                    ) : (
+                      <p style={{"margin": "0"}}>
+                        {getDisplayPrice()}
+                      </p>
+                    )}
                     <button
                       className={`property-details favorite-btn ${isPropertyFavorited ? 'favorited' : ''}`}
                       onClick={handleFavoriteClick}
@@ -1627,8 +1638,16 @@ Could you please let me know available dates and times? Thank you.`;
                       </div>
                     )}
                   </div> */}
-                  <div className="price-tag d-flex align-items-center justify-content-between">
 
+                  {property.status?.includes("Sold") && (
+                    <div className="price-tag d-flex align-items-center justify-content-between">
+                      <div className="price-usd">
+                        {getDisplayPrice(true) !== "Sold" && getDisplayPrice(true) !== "Price on request" ? `${getDisplayPrice(true)}` : ""}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="price-tag d-flex align-items-center justify-content-between">
                     {usdLoading && (
                       <span className="usd-loading">
                         ≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" />
@@ -1811,79 +1830,67 @@ Could you please let me know available dates and times? Thank you.`;
 
 
                   {/* New Inquire Now Button */}
-                  {/* <div className="inquire-button mb-4">
-  <a
-    href={`https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(
-      `Hi, I'm interested in ${property.status?.includes("For Sale") ? "buying" : "renting"} this property: "${property.title || "Property"}". ${typeof window !== "undefined" ? window.location.href : ""}. Can you provide more details or help me proceed?`
-    )}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="btn btn-success btn-lg w-100"
-    aria-label="Inquire about this property on WhatsApp"
-  >
-    <i className="bi bi-whatsapp me-2"></i>
-    {property.status?.includes("For Sale") ? "Buy Now" : property.status?.includes("For Rent") ? "Rent Now" : "Inquire Now"}
-  </a>
-</div> */}
-                  {/* New Inquire Now Button */}
-                  <div className="inquire-button mb-4">
-                    <a
-                      style={{ "background": "var(--accent-color)" }}
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        const message = `Hi, I'm interested in ${property.status?.includes("For Sale") ? "buying" : "renting"} this property: "${property.title || "Property"}". ${typeof window !== "undefined" ? window.location.href : ""}. Can you provide more details or help me proceed?`;
-                        // const whatsappUrl = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-                        // window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-                        openWhatsApp(message);
-                      }}
-                      className="btn custom-button btn-lg w-100"
-                      aria-label="Inquire about this property on WhatsApp"
-                    >
-                      <i className="bi bi-whatsapp me-2"></i>
-                      {property.status?.includes("For Sale") ? "Buy Now" : property.status?.includes("For Rent") ? "Rent Now" : "Inquire Now"}
-                    </a>
-                  </div>
+                  {!property.status?.includes("Sold") && (
+                    <div className="inquire-button mb-4">
+                      <a
+                        style={{ "background": "var(--accent-color)" }}
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const message = `Hi, I'm interested in ${property.status?.includes("For Sale") ? "buying" : "renting"} this property: "${property.title || "Property"}". ${typeof window !== "undefined" ? window.location.href : ""}. Can you provide more details or help me proceed?`;
+                          // const whatsappUrl = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+                          // window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+                          openWhatsApp(message);
+                        }}
+                        className="btn custom-button btn-lg w-100"
+                        aria-label="Inquire about this property on WhatsApp"
+                      >
+                        <i className="bi bi-whatsapp me-2"></i>
+                        {property.status?.includes("For Sale") ? "Buy Now" : property.status?.includes("For Rent") ? "Rent Now" : "Inquire Now"}
+                      </a>
+                    </div>
+                  )}
 
                   {/* Contact Form */}
-                  <div className="contact-form">
-                    <h4>Schedule a Tour</h4>
-                    <form
-                      onSubmit={handleTourRequestSubmit}
-                      className="php-email-form"
-                    >
-                      <div className="row">
-                        <div className="col-12 form-group">
-                          <input
-                            type="text"
-                            name="name"
-                            className="form-control"
-                            placeholder="Your Name"
-                            required
-                            value={formData.name}
-                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                          />
-                        </div>
-                        <div className="col-12 form-group">
-                          <input
-                            type="email"
-                            name="email"
-                            className="form-control"
-                            placeholder="Your Email"
-                            required
-                            value={formData.email}
-                            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                          />
-                        </div>
-                        <div className="col-12 form-group">
-                          <InternationalPhoneInput
-                            value={phone}
-                            onChange={setPhone}
-                            required
-                            placeholder="Enter your phone number"
-                          />
-                        </div>
-                        {/* <div className="col-12 form-group">
+                  {!property.status?.includes("Sold") && (
+                    <div className="contact-form">
+                      <h4>Schedule a Tour</h4>
+                      <form
+                        onSubmit={handleTourRequestSubmit}
+                        className="php-email-form"
+                      >
+                        <div className="row">
+                          <div className="col-12 form-group">
+                            <input
+                              type="text"
+                              name="name"
+                              className="form-control"
+                              placeholder="Your Name"
+                              required
+                              value={formData.name}
+                              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                            />
+                          </div>
+                          <div className="col-12 form-group">
+                            <input
+                              type="email"
+                              name="email"
+                              className="form-control"
+                              placeholder="Your Email"
+                              required
+                              value={formData.email}
+                              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                            />
+                          </div>
+                          <div className="col-12 form-group">
+                            <InternationalPhoneInput
+                              value={phone}
+                              onChange={setPhone}
+                              required
+                              placeholder="Enter your phone number"
+                            />
+                          </div>
+                          {/* <div className="col-12 form-group">
                           <input
                             type="tel"
                             name="phone"
@@ -1891,41 +1898,42 @@ Could you please let me know available dates and times? Thank you.`;
                             placeholder="Your Phone"
                           />
                         </div> */}
-                        <div className="col-12 form-group">
-                          <input
-                            type="text"
-                            name="subject"
-                            className="form-control"
-                            placeholder="Schedule a Tour"
-                            defaultValue={`Schedule a Tour for: ${property.title || "Property"
-                              }`}
-                            readOnly
-                          />
-                        </div>
-                        <div className="col-12 form-group">
-                          <textarea
-                            className="form-control"
-                            name="message"
-                            rows={4}
-                            placeholder="Your Message (Optional)"
-                            maxLength={500}
-                            value={formData.message}
-                            onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
-                          ></textarea>
-                        </div>
-                        <div className="col-12 text-center">
-                          <div className="loading" style={{ display: isSubmitting ? 'block' : 'none' }}>Loading</div>
-                          <div className="error-message"></div>
-                          <div className="sent-message">
-                            Your message has been sent. Thank you!
+                          <div className="col-12 form-group">
+                            <input
+                              type="text"
+                              name="subject"
+                              className="form-control"
+                              placeholder="Schedule a Tour"
+                              defaultValue={`Schedule a Tour for: ${property.title || "Property"
+                                }`}
+                              readOnly
+                            />
                           </div>
-                          <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-                            {isSubmitting ? 'Submitting...' : 'Schedule Tour'}
-                          </button>
+                          <div className="col-12 form-group">
+                            <textarea
+                              className="form-control"
+                              name="message"
+                              rows={4}
+                              placeholder="Your Message (Optional)"
+                              maxLength={500}
+                              value={formData.message}
+                              onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                            ></textarea>
+                          </div>
+                          <div className="col-12 text-center">
+                            <div className="loading" style={{ display: isSubmitting ? 'block' : 'none' }}>Loading</div>
+                            <div className="error-message"></div>
+                            <div className="sent-message">
+                              Your message has been sent. Thank you!
+                            </div>
+                            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                              {isSubmitting ? 'Submitting...' : 'Schedule Tour'}
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    </form>
-                  </div>
+                      </form>
+                    </div>
+                  )}
                   {/* End Contact Form */}
 
                   {/* Social Share */}

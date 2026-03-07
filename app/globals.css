@@ -65,6 +65,10 @@ input[type="checkbox"]:checked {
   }
 }
 
+.sold{
+  background-color: #6c757d;
+  /* color: #fff; */
+}
 
 
 .form-control:focus,

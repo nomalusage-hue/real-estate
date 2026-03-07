@@ -638,6 +638,14 @@ export default function PropertiesClient() {
     if (savedView) setViewType(savedView);
   }, []);
 
+  // useEffect(() => {
+  //   const newFilters = { ...filters };
+  //   if (!filters.status || filters.status.length === 0) {
+  //     newFilters.status = ["For Sale", "For Rent"];
+  //     setFilters(newFilters);
+  //     refreshWithFilters(newFilters);
+  //   }
+  // });
   // Handle URL params for type and propertyType
   useEffect(() => {
     // const type = searchParams?.get('type');
