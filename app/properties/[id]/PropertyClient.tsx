@@ -762,7 +762,7 @@ import { PropertiesRepository } from "@/lib/repositories/PropertiesRepository";
 import AppLoader from "@/components/ui/AppLoader/AppLoader";
 import { InternationalPhoneInput } from "@/components/ui/forms/InternationalPhoneInput";
 import { openWhatsApp } from "@/src/utils/whatsapp";
-import { formatPrice } from "@/utils/format";
+import { formatArea, formatNumber, formatPrice, formatUnit } from "@/utils/format";
 import { useFavorites } from "@/hooks/useFavorites";
 import "./PropertyClient.css";
 import LoginRequiredModal from "@/components/modules/LoginRequiredModal";
@@ -898,6 +898,15 @@ function PropertyNotFound() {
       </div>
     </div>
   );
+}
+
+
+export function formatSoldDateShort(date: string) {
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 
@@ -1225,7 +1234,7 @@ Could you please let me know available dates and times? Thank you.`;
 
 
   // Get display price based on status
-  const getDisplayPrice = (return_price: boolean=false) => {
+  const getDisplayPrice = (return_price: boolean = false) => {
     if (property.status?.includes("For Sale") && property.salePrice) {
       // return formatPrice(property.salePrice);
       return formatPrice(property.salePrice, property.saleCurrency);
@@ -1236,8 +1245,8 @@ Could you please let me know available dates and times? Thank you.`;
       return formatPrice(property.rentPrice, property.rentCurrency) + property.rentPeriodLabel;
     }
     if (property.status?.includes("Sold")) {
-      if(return_price){
-        if(property.salePrice){
+      if (return_price) {
+        if (property.salePrice) {
           return formatPrice(property.salePrice, property.saleCurrency);
         }
       }
@@ -1263,7 +1272,8 @@ Could you please let me know available dates and times? Thank you.`;
   // Format size display
   const formatSizeDisplay = (size?: number, unit?: string) => {
     if (!size) return "";
-    return `${size.toLocaleString()} ${unit || "m²"}`;
+    // return `${size.toLocaleString()} ${unit || "m²"}`;
+    return `${size.toLocaleString()} ${formatUnit(unit as any) || "m²"}`;
   };
 
 
@@ -1604,11 +1614,11 @@ Could you please let me know available dates and times? Thank you.`;
                 >
                   <div className="price-tag d-flex align-items-center justify-content-between">
                     {property.status?.includes("Sold") ? (
-                      <p style={{"margin": "0", "textDecoration": "underline"}}>
-                        {getDisplayPrice()}
+                      <p style={{ "margin": "0" }}>
+                        {getDisplayPrice(true)}
                       </p>
                     ) : (
-                      <p style={{"margin": "0"}}>
+                      <p style={{ "margin": "0" }}>
                         {getDisplayPrice()}
                       </p>
                     )}
@@ -1639,13 +1649,6 @@ Could you please let me know available dates and times? Thank you.`;
                     )}
                   </div> */}
 
-                  {property.status?.includes("Sold") && (
-                    <div className="price-tag d-flex align-items-center justify-content-between">
-                      <div className="price-usd">
-                        {getDisplayPrice(true) !== "Sold" && getDisplayPrice(true) !== "Price on request" ? `${getDisplayPrice(true)}` : ""}
-                      </div>
-                    </div>
-                  )}
 
                   <div className="price-tag d-flex align-items-center justify-content-between">
                     {usdLoading && (
@@ -1671,28 +1674,41 @@ Could you please let me know available dates and times? Thank you.`;
                       </>
                     )}
                   </div>
-                  <div className="price-tag d-flex align-items-center justify-content-between">
-                    {getRentPrice()}
-                  </div>
-                  <div className="price-tag d-flex align-items-center justify-content-between">
+                  {property.rentPrice && (
+                    <>
+                      <div className="price-tag d-flex align-items-center justify-content-between">
+                        {getRentPrice()}
+                      </div>
+                      <div className="price-tag d-flex align-items-center justify-content-between">
 
-                    {usdLoading && (
-                      <span className="usd-loading">
-                        ≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" />
-                      </span>
-                    )}
-
-                    {!usdLoading && (
-                      <>
-                        {usdRent && property?.rentCurrency !== "USD" && (
-                          <div className="price-usd">
-                            ≈ {formatPrice(Math.round(usdRent), "USD")}{" "}
-                            {property?.rentPeriodLabel}
-                          </div>
+                        {usdLoading && (
+                          <span className="usd-loading">
+                            ≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" />
+                          </span>
                         )}
-                      </>
-                    )}
-                  </div>
+
+                        {!usdLoading && (
+                          <>
+                            {usdRent && property?.rentCurrency !== "USD" && (
+                              <div className="price-usd">
+                                ≈ {formatPrice(Math.round(usdRent), "USD")}{" "}
+                                {property?.rentPeriodLabel}
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </>
+                  )}
+
+                  {property.status?.includes("Sold") && (
+                    <div className="price-tag d-flex align-items-center justify-content-between"
+                          style={{"marginBottom": "25px"}}>
+                      <div className="price-usd">
+                        Sold on {getDisplayPrice(true) !== "Sold" && formatSoldDateShort(property.soldDate ?? "")}
+                      </div>
+                    </div>
+                  )}
 
                   <div
                     className={`property-status ${getStatusText()
@@ -1706,7 +1722,7 @@ Could you please let me know available dates and times? Thank you.`;
                   {property.createdAt && (
                     <div className="property-date text-muted small mb-2">
                       <i className="bi bi-calendar-event me-1"></i>
-                      {getDisplayDate(property.createdAt)}
+                      {"Listed on " + getDisplayDate(property.createdAt)}
                     </div>
                   )}
 
@@ -1749,9 +1765,11 @@ Could you please let me know available dates and times? Thank you.`;
                           <i className="bi bi-rulers"></i>
                           <div>
                             <span className="value">
-                              {property.buildingSize.toLocaleString()}
+                              {/* {property.buildingSize.toLocaleString()} */}
+                              {formatNumber(property.buildingSize)}
                             </span>
-                            <span className="label">{property.sizeUnit || "m²"}</span>
+                            {/* <span className="label">{(property.sizeUnit) || "m²"}</span> */}
+                            <span className="label" style={{"textTransform":"lowercase"}}>{formatUnit(property.sizeUnit) || "m²"}</span>
                           </div>
                         </div>
                       )}
@@ -1764,10 +1782,12 @@ Could you please let me know available dates and times? Thank you.`;
                           <div>
                             <span className="value">
                               {/* {calculateAcreage(property.landSize, property.sizeUnit)} */}
-                              {property.landSize}
+                              {/* {property.landSize} */}
+                              {formatNumber(property.landSize)}
                             </span>
                             {/* <span className="label">Acres</span> */}
-                            <span className="label">{property.sizeUnit || "m²"}</span>
+                            {/* <span className="label">{property.sizeUnit || "m²"}</span> */}
+                            <span className="label" style={{"textTransform":"lowercase"}}>{formatUnit(property.sizeUnit) || "m²"}</span>
                           </div>
                         </div>
                       )}

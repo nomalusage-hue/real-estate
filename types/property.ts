@@ -163,6 +163,7 @@ export interface PropertyData {
   // Timestamps
   createdAt?: string;
   updatedAt?: string;
+  soldDate?: string; 
   published?: boolean;
   draft?: boolean;  // For saved drafts
   

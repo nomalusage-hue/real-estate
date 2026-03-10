@@ -453,6 +453,15 @@ export default function PropertyCardSimple({ data }: { data: PropertyData }) {
             <li><i className="bi bi-door-open"></i> {data.bedrooms || 0}</li>
             <li><i className="bi bi-droplet"></i> {data.bathrooms || 0}</li>
             <li><i className="bi bi-aspect-ratio"></i> {formatArea(data.landSize, data.sizeUnit)}</li>
+            {/* {data.landSize? data.landSize : 0 > 0 ? (
+              <span>
+                <i className="bi bi-aspect-ratio"></i> {formatArea(data.landSize, data.sizeUnit)}
+              </span>
+            ) : data.buildingSize ? data.buildingSize : 0 > 0 ? (
+              <span>
+                <i className="bi bi-aspect-ratio"></i> {formatArea(data.buildingSize, data.sizeUnit)}
+              </span>
+            ) : null} */}
           </ul>
           <span>{displayDate}</span>
 

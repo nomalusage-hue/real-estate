@@ -835,13 +835,6 @@ export default function PropertiesClient() {
                 <Link href="/properties">Properties</Link>
               </li> */}
               <li className="current">Properties</li>
-              {filters.status && filters.status.length > 0 && (
-                <li className="current">
-                  {filters.status.length === 1
-                    ? filters.status[0]
-                    : `${filters.status.length} Types`}
-                </li>
-              )}
             </ol>
           </div>
         </nav>
