@@ -223,7 +223,7 @@ export default function FavoritesPage() {
                     Create an account or sign in to save your favorite properties and access them anytime.
                   </p>
                   <div className="d-flex justify-content-center gap-3">
-                    <Link href="/login" className="btn btn-lg custom-button">
+                    <Link href="/login?redirect=/favorites" className="btn btn-lg custom-button">
                       Login to Continue
                     </Link>
                   </div>

@@ -48,7 +48,8 @@ export default function LoginRequiredModal({
                                 className="btn custom-button"
                                 onClick={() => {
                                     onClose();
-                                    router.push("/login");
+                                    const currentPath = window.location.pathname + window.location.search;
+                                    router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
                                 }}
                             >
                                 Login Now
