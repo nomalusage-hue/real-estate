@@ -1,0 +1,23 @@
+/* app/admin/properties/management/management.css */
+/* Additional styling for the management page if needed */
+.dropdown-item i {
+  width: 1.2rem;
+  text-align: center;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.badge {
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .table-responsive {
+    font-size: 0.9rem;
+  }
+  .btn-sm i {
+    font-size: 1rem;
+  }
+}

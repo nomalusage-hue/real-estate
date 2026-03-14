@@ -762,12 +762,13 @@ import { PropertiesRepository } from "@/lib/repositories/PropertiesRepository";
 import AppLoader from "@/components/ui/AppLoader/AppLoader";
 import { InternationalPhoneInput } from "@/components/ui/forms/InternationalPhoneInput";
 import { openWhatsApp } from "@/src/utils/whatsapp";
-import { formatArea, formatNumber, formatPrice, formatUnit } from "@/utils/format";
+import { formatNumber, formatPrice, formatUnit } from "@/utils/format";
 import { useFavorites } from "@/hooks/useFavorites";
 import "./PropertyClient.css";
 import LoginRequiredModal from "@/components/modules/LoginRequiredModal";
 import { getDisplayDate } from "@/src/utils/dateUtils";
 import { convertToUSD } from "@/utils/convertToUSD";
+import PropertyViewTracker from "@/components/tracking/PropertyViewTracker";
 // import { convertToUSD } from "@/utils/convertToUSD";
 
 // Loading component
@@ -1281,7 +1282,10 @@ Could you please let me know available dates and times? Thank you.`;
 
   return (
     <>
-      <main className="main">
+      <main className="main">      
+        {/* Tracking the views of every sigle property */}
+        <PropertyViewTracker propertyId={id} />
+      
         {/* Page Title */}
         <div className="page-title">
           <div className="heading">

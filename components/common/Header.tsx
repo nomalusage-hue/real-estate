@@ -20,6 +20,7 @@ export default function Header() {
   const [isMobile, setIsMobile] = useState(false);
   const links = [
     { href: "/admin/properties/new", label: "Add New Property" },
+    { href: "/admin/properties/management", label: "Property Management" },
     { href: "/admin/configuration", label: "Manage Configs" },
   ];
   const isActive = links.some(link => pathname?.startsWith(link.href));
