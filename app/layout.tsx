@@ -8,6 +8,7 @@ import NoSSRWrapper from "@/components/layout/NoSSRWrapper";
 import Scripts from "@/components/layout/Scripts";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 import GuestTracker from "@/components/tracking/GuestTracker";
+import SessionTracker from "@/components/tracking/SessionTracker";
 
 // Fonts
 const roboto = Roboto({ subsets: ["latin"], weight: ["100", "300", "400", "500", "700", "900"], variable: "--font-roboto" });
@@ -76,6 +77,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${roboto.variable} ${montserrat.variable} ${raleway.variable}`}>
       <head />
       <body className="index-page">
+
+        <SessionTracker />
         <GuestTracker />
         
         <Header />
