@@ -21,6 +21,8 @@ export default function Header() {
   const links = [
     { href: "/admin/properties/new", label: "Add New Property" },
     { href: "/admin/properties/management", label: "Property Management" },
+    { href: "/admin/profiles", label: "Profiles Management" },
+    { href: "/admin/guests", label: "Guests Management" },
     { href: "/admin/configuration", label: "Manage Configs" },
   ];
   const isActive = links.some(link => pathname?.startsWith(link.href));

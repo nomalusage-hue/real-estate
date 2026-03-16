@@ -1,5 +1,8 @@
 // services/PropertyServiceSupabase.ts
-import { PropertiesRepository } from "@/lib/repositories/PropertiesRepository";
+import {
+  PropertiesRepository,
+  PropertyStatus,
+} from "@/lib/repositories/PropertiesRepository";
 import { PropertyData } from "@/types/property";
 
 export interface PropertyFilterOptions {
@@ -76,7 +79,7 @@ export class PropertyServiceSupabase {
 
   async update(
     id: string,
-    updates: Partial<PropertyData>
+    updates: Partial<PropertyData>,
   ): Promise<PropertyData> {
     return await this.repository.update(id, updates);
   }
@@ -90,226 +93,386 @@ export class PropertyServiceSupabase {
     return await this.repository.getAll();
   }
 
-  // Paginated query with filters
+  // // Paginated query with filters
+  // async getPaginated(
+  //   page: number = 1,
+  //   pageSize: number = 12,
+  //   filters: PropertyFilterOptions = {}
+  // ): Promise<PaginatedResult<PropertyData>> {
+  //   // console.log("getPaginated - Filters received:", filters);
+
+  //   // // Handle status filter separately if multiple statuses are selected
+  //   // let statusFilter: "For Sale" | "For Rent" | "Sold" | undefined;
+  //   // let additionalStatusFilter: string[] = [];
+
+  //   type PropertyStatus = "For Sale" | "For Rent" | "Sold";
+  //   let statusFilter: PropertyStatus[] | undefined;
+  //   let additionalStatusFilter: PropertyStatus[] = [];
+
+  //   // if (filters.status && filters.status.length > 0) {
+  //   //   // Use first status for Supabase query
+  //   //   statusFilter = filters.status[0] as "For Sale" | "For Rent" | "Sold";
+
+  //   //   // Store additional statuses for client-side filtering
+  //   //   if (filters.status.length > 1) {
+  //   //     additionalStatusFilter = filters.status.slice(1);
+  //   //   }
+  //   // }
+
+  //   if (filters.status && filters.status.length > 0) {
+  //     statusFilter = filters.status as PropertyStatus[];
+
+  //     if (filters.status.length > 1) {
+  //       additionalStatusFilter = filters.status as PropertyStatus[];
+  //     }
+  //   }
+
+  //   // const options = {
+  //   //   page,
+  //   //   pageSize,
+  //   //   city: filters.cities?.[0],
+  //   //   propertyType: filters.propertyTypes?.[0] as PropertyData["propertyType"],
+  //   //   status: statusFilter,
+  //   //   minPrice: filters.minSalePrice || filters.minRentPrice,
+  //   //   maxPrice: filters.maxSalePrice || filters.maxRentPrice,
+  //   //   featured: filters.featured,
+  //   //   orderBy:
+  //   //     filters.sortBy === "created_at"
+  //   //       ? "created_at"
+  //   //       : filters.sortBy === "price"
+  //   //       ? "salePrice"
+  //   //       : "created_at",
+  //   //   ascending: filters.sortOrder === "asc",
+  //   // };
+
+  //   const options = {
+  //     page,
+  //     pageSize,
+  //     city: filters.cities?.[0],
+  //     // propertyType: filters.propertyTypes?.[0] as PropertyData["propertyType"],
+  //     propertyTypes: filters.propertyTypes as PropertyData["propertyType"][],
+  //     // status: statusFilter,
+  //     status: filters.status as PropertyStatus[],
+  //     minPrice: filters.minSalePrice || filters.minRentPrice,
+  //     maxPrice: filters.maxSalePrice || filters.maxRentPrice,
+  //     featured: filters.featured,
+  //     orderBy:  filters.sortBy as "created_at" | "salePrice" | "rentPrice" | "views",
+  //     // orderBy:
+  //     //   filters.sortBy === "created_at"
+  //     //     ? "created_at"
+  //     //     : filters.sortBy === "price"
+  //     //     ? "salePrice"
+  //     //     : "created_at",
+  //     ascending: filters.sortOrder === "asc",
+  //   };
+
+  //   // "created_at" | "salePrice" | "rentPrice" | "views"
+
+  //   // console.log("getPaginated - Options for repository:", options);
+
+  //   let result;
+  //   try {
+  //     result = await this.repository.getPaged(options);
+  //   } catch (error) {
+  //     console.error(
+  //       "getPaginated - Repository error, trying without status filter:",
+  //       error
+  //     );
+
+  //     // Try without status filter if it fails
+  //     const retryOptions = { ...options, status: undefined };
+  //     result = await this.repository.getPaged(retryOptions);
+  //   }
+
+  //   // Apply additional filters that aren't handled by getPaged
+  //   let filteredData = result.data;
+
+  //   // Apply additional status filters client-side
+  //   if (additionalStatusFilter.length > 0) {
+  //     filteredData = filteredData.filter(
+  //       (p) =>
+  //         p.status &&
+  //         additionalStatusFilter.some((status) => p.status.includes(status))
+  //     );
+  //   }
+
+  //   // Filter by multiple statuses if specified
+  //   if (filters.status && filters.status.length > 0 && !statusFilter) {
+  //     filteredData = filteredData.filter(
+  //       (p) =>
+  //         p.status &&
+  //         filters.status!.some((status) => p.status.includes(status))
+  //     );
+  //   }
+
+  //   // Filter by property types if multiple selected
+  //   if (filters.propertyTypes && filters.propertyTypes.length > 1) {
+  //     filteredData = filteredData.filter(
+  //       (p) => p.propertyType && filters.propertyTypes!.includes(p.propertyType)
+  //     );
+  //   }
+
+  //   // Filter by multiple cities if specified
+  //   if (filters.cities && filters.cities.length > 1) {
+  //     filteredData = filteredData.filter(
+  //       (p) => p.city && filters.cities!.includes(p.city)
+  //     );
+  //   }
+
+  //   // Filter by bedrooms
+  //   if (filters.minBedrooms !== undefined) {
+  //     filteredData = filteredData.filter(
+  //       (p) => (p.bedrooms || 0) >= filters.minBedrooms!
+  //     );
+  //   }
+  //   if (filters.maxBedrooms !== undefined) {
+  //     filteredData = filteredData.filter(
+  //       (p) => (p.bedrooms || 0) <= filters.maxBedrooms!
+  //     );
+  //   }
+
+  //   // Filter by bathrooms
+  //   if (filters.minBathrooms !== undefined) {
+  //     filteredData = filteredData.filter(
+  //       (p) => (p.bathrooms || 0) >= filters.minBathrooms!
+  //     );
+  //   }
+  //   if (filters.maxBathrooms !== undefined) {
+  //     filteredData = filteredData.filter(
+  //       (p) => (p.bathrooms || 0) <= filters.maxBathrooms!
+  //     );
+  //   }
+
+  //   // Filter by building size
+  //   if (filters.minBuildingSize !== undefined) {
+  //     filteredData = filteredData.filter(
+  //       (p) => (p.buildingSize || 0) >= filters.minBuildingSize!
+  //     );
+  //   }
+  //   if (filters.maxBuildingSize !== undefined) {
+  //     filteredData = filteredData.filter(
+  //       (p) => (p.buildingSize || 0) <= filters.maxBuildingSize!
+  //     );
+  //   }
+
+  //   // Filter by land size
+  //   if (filters.minLandSize !== undefined) {
+  //     filteredData = filteredData.filter(
+  //       (p) => (p.landSize || 0) >= filters.minLandSize!
+  //     );
+  //   }
+  //   if (filters.maxLandSize !== undefined) {
+  //     filteredData = filteredData.filter(
+  //       (p) => (p.landSize || 0) <= filters.maxLandSize!
+  //     );
+  //   }
+
+  //   // Filter by features
+  //   if (filters.hot !== undefined) {
+  //     filteredData = filteredData.filter((p) => p.hot === filters.hot);
+  //   }
+  //   if (filters.newListing !== undefined) {
+  //     filteredData = filteredData.filter(
+  //       (p) => p.newListing === filters.newListing
+  //     );
+  //   }
+  //   if (filters.exclusive !== undefined) {
+  //     filteredData = filteredData.filter(
+  //       (p) => p.exclusive === filters.exclusive
+  //     );
+  //   }
+
+  //   // Filter by hasPool
+  //   if (filters.hasPool === true) {
+  //     filteredData = filteredData.filter(
+  //       (p) =>
+  //         p.exteriorFeatures?.includes("Swimming Pool") ||
+  //         p.customFeatures?.some((f) => f.toLowerCase().includes("pool"))
+  //     );
+  //   }
+
+  //   // Filter by hasGarage
+  //   if (filters.hasGarage === true) {
+  //     filteredData = filteredData.filter((p) => (p.garage || 0) > 0);
+  //   }
+
+  //   // Filter by hasGarden
+  //   if (filters.hasGarden === true) {
+  //     filteredData = filteredData.filter(
+  //       (p) =>
+  //         p.exteriorFeatures?.includes("Garden") ||
+  //         p.customFeatures?.some((f) => f.toLowerCase().includes("garden"))
+  //     );
+  //   }
+
+  //   // Filter by searchTerm
+  //   if (filters.searchTerm && filters.searchTerm.trim()) {
+  //     const searchTerm = filters.searchTerm.toLowerCase().trim();
+  //     filteredData = filteredData.filter((property) => {
+  //       const searchableText = [
+  //         property.title,
+  //         property.description,
+  //         property.address,
+  //         property.city,
+  //         ...(property.interiorFeatures || []),
+  //         ...(property.exteriorFeatures || []),
+  //         ...(property.customFeatures || []),
+  //       ]
+  //         .join(" ")
+  //         .toLowerCase();
+
+  //       return searchableText.includes(searchTerm);
+  //     });
+  //   }
+
+  //   // console.log("getPaginated - After filtering:", {
+  //   //   originalCount: result.data.length,
+  //   //   filteredCount: filteredData.length,
+  //   //   page,
+  //   //   pageSize,
+  //   // });
+
+  //   // Calculate hasMore based on filtered results
+  //   const startIndex = (page - 1) * pageSize;
+  //   const endIndex = startIndex + pageSize;
+  //   const paginatedItems = filteredData.slice(startIndex, endIndex);
+  //   const hasMore = filteredData.length > endIndex;
+
+  //   return {
+  //     items: paginatedItems,
+  //     total: filteredData.length,
+  //     hasMore,
+  //     page,
+  //     pageSize,
+  //   };
+  // }
+
   async getPaginated(
     page: number = 1,
     pageSize: number = 12,
-    filters: PropertyFilterOptions = {}
+    filters: PropertyFilterOptions = {},
   ): Promise<PaginatedResult<PropertyData>> {
-    // console.log("getPaginated - Filters received:", filters);
-
-    // // Handle status filter separately if multiple statuses are selected
-    // let statusFilter: "For Sale" | "For Rent" | "Sold" | undefined;
-    // let additionalStatusFilter: string[] = [];
-
-    type PropertyStatus = "For Sale" | "For Rent" | "Sold";
-    let statusFilter: PropertyStatus[] | undefined;
-    let additionalStatusFilter: PropertyStatus[] = [];
-
-
-
-    // if (filters.status && filters.status.length > 0) {
-    //   // Use first status for Supabase query
-    //   statusFilter = filters.status[0] as "For Sale" | "For Rent" | "Sold";
-
-    //   // Store additional statuses for client-side filtering
-    //   if (filters.status.length > 1) {
-    //     additionalStatusFilter = filters.status.slice(1);
-    //   }
-    // }
-
-    if (filters.status && filters.status.length > 0) {
-      statusFilter = filters.status as PropertyStatus[];
-
-      if (filters.status.length > 1) {
-        additionalStatusFilter = filters.status as PropertyStatus[];
-      }
-    }
-
-
-    // const options = {
-    //   page,
-    //   pageSize,
-    //   city: filters.cities?.[0],
-    //   propertyType: filters.propertyTypes?.[0] as PropertyData["propertyType"],
-    //   status: statusFilter,
-    //   minPrice: filters.minSalePrice || filters.minRentPrice,
-    //   maxPrice: filters.maxSalePrice || filters.maxRentPrice,
-    //   featured: filters.featured,
-    //   orderBy:
-    //     filters.sortBy === "created_at"
-    //       ? "created_at"
-    //       : filters.sortBy === "price"
-    //       ? "salePrice"
-    //       : "created_at",
-    //   ascending: filters.sortOrder === "asc",
-    // };
-
-    const options = {
-      page,
-      pageSize,
-      city: filters.cities?.[0],
-      // propertyType: filters.propertyTypes?.[0] as PropertyData["propertyType"],
+    // Build options for server‑side filters (the ones that can be handled by the repository)
+    const serverOptions = {
+      city: filters.cities?.[0], // only first city for server‑side (you may extend later)
       propertyTypes: filters.propertyTypes as PropertyData["propertyType"][],
-      // status: statusFilter,
       status: filters.status as PropertyStatus[],
       minPrice: filters.minSalePrice || filters.minRentPrice,
       maxPrice: filters.maxSalePrice || filters.maxRentPrice,
       featured: filters.featured,
-      orderBy:  filters.sortBy as "created_at" | "salePrice" | "rentPrice" | "views",
-      // orderBy:
-      //   filters.sortBy === "created_at"
-      //     ? "created_at"
-      //     : filters.sortBy === "price"
-      //     ? "salePrice"
-      //     : "created_at",
+      orderBy: filters.sortBy as
+        | "created_at"
+        | "salePrice"
+        | "rentPrice"
+        | "views",
       ascending: filters.sortOrder === "asc",
     };
 
-    // "created_at" | "salePrice" | "rentPrice" | "views"
+    // Fetch all properties that match the server‑side filters
+    const allProperties =
+      await this.repository.getAllWithFilters(serverOptions);
 
-    // console.log("getPaginated - Options for repository:", options);
+    // Apply client‑side filters that are not (yet) handled by the repository
+    let filteredData = allProperties;
 
-    let result;
-    try {
-      result = await this.repository.getPaged(options);
-    } catch (error) {
-      console.error(
-        "getPaginated - Repository error, trying without status filter:",
-        error
-      );
-
-      // Try without status filter if it fails
-      const retryOptions = { ...options, status: undefined };
-      result = await this.repository.getPaged(retryOptions);
-    }
-
-    // Apply additional filters that aren't handled by getPaged
-    let filteredData = result.data;
-
-    // Apply additional status filters client-side
-    if (additionalStatusFilter.length > 0) {
-      filteredData = filteredData.filter(
-        (p) =>
-          p.status &&
-          additionalStatusFilter.some((status) => p.status.includes(status))
-      );
-    }
-
-    // Filter by multiple statuses if specified
-    if (filters.status && filters.status.length > 0 && !statusFilter) {
-      filteredData = filteredData.filter(
-        (p) =>
-          p.status &&
-          filters.status!.some((status) => p.status.includes(status))
-      );
-    }
-
-    // Filter by property types if multiple selected
-    if (filters.propertyTypes && filters.propertyTypes.length > 1) {
-      filteredData = filteredData.filter(
-        (p) => p.propertyType && filters.propertyTypes!.includes(p.propertyType)
-      );
-    }
-
-    // Filter by multiple cities if specified
+    // Filter by multiple cities (if more than one)
     if (filters.cities && filters.cities.length > 1) {
       filteredData = filteredData.filter(
-        (p) => p.city && filters.cities!.includes(p.city)
+        (p) => p.city && filters.cities!.includes(p.city),
       );
     }
 
-    // Filter by bedrooms
+    // Bedrooms
     if (filters.minBedrooms !== undefined) {
       filteredData = filteredData.filter(
-        (p) => (p.bedrooms || 0) >= filters.minBedrooms!
+        (p) => (p.bedrooms || 0) >= filters.minBedrooms!,
       );
     }
     if (filters.maxBedrooms !== undefined) {
       filteredData = filteredData.filter(
-        (p) => (p.bedrooms || 0) <= filters.maxBedrooms!
+        (p) => (p.bedrooms || 0) <= filters.maxBedrooms!,
       );
     }
 
-    // Filter by bathrooms
+    // Bathrooms
     if (filters.minBathrooms !== undefined) {
       filteredData = filteredData.filter(
-        (p) => (p.bathrooms || 0) >= filters.minBathrooms!
+        (p) => (p.bathrooms || 0) >= filters.minBathrooms!,
       );
     }
     if (filters.maxBathrooms !== undefined) {
       filteredData = filteredData.filter(
-        (p) => (p.bathrooms || 0) <= filters.maxBathrooms!
+        (p) => (p.bathrooms || 0) <= filters.maxBathrooms!,
       );
     }
 
-    // Filter by building size
+    // Building size
     if (filters.minBuildingSize !== undefined) {
       filteredData = filteredData.filter(
-        (p) => (p.buildingSize || 0) >= filters.minBuildingSize!
+        (p) => (p.buildingSize || 0) >= filters.minBuildingSize!,
       );
     }
     if (filters.maxBuildingSize !== undefined) {
       filteredData = filteredData.filter(
-        (p) => (p.buildingSize || 0) <= filters.maxBuildingSize!
+        (p) => (p.buildingSize || 0) <= filters.maxBuildingSize!,
       );
     }
 
-    // Filter by land size
+    // Land size
     if (filters.minLandSize !== undefined) {
       filteredData = filteredData.filter(
-        (p) => (p.landSize || 0) >= filters.minLandSize!
+        (p) => (p.landSize || 0) >= filters.minLandSize!,
       );
     }
     if (filters.maxLandSize !== undefined) {
       filteredData = filteredData.filter(
-        (p) => (p.landSize || 0) <= filters.maxLandSize!
+        (p) => (p.landSize || 0) <= filters.maxLandSize!,
       );
     }
 
-    // Filter by features
+    // Feature flags
     if (filters.hot !== undefined) {
       filteredData = filteredData.filter((p) => p.hot === filters.hot);
     }
     if (filters.newListing !== undefined) {
       filteredData = filteredData.filter(
-        (p) => p.newListing === filters.newListing
+        (p) => p.newListing === filters.newListing,
       );
     }
     if (filters.exclusive !== undefined) {
       filteredData = filteredData.filter(
-        (p) => p.exclusive === filters.exclusive
+        (p) => p.exclusive === filters.exclusive,
       );
     }
 
-    // Filter by hasPool
+    // Has pool
     if (filters.hasPool === true) {
       filteredData = filteredData.filter(
         (p) =>
           p.exteriorFeatures?.includes("Swimming Pool") ||
-          p.customFeatures?.some((f) => f.toLowerCase().includes("pool"))
+          p.customFeatures?.some((f) => f.toLowerCase().includes("pool")),
       );
     }
 
-    // Filter by hasGarage
+    // Has garage
     if (filters.hasGarage === true) {
       filteredData = filteredData.filter((p) => (p.garage || 0) > 0);
     }
 
-    // Filter by hasGarden
+    // Has garden
     if (filters.hasGarden === true) {
       filteredData = filteredData.filter(
         (p) =>
           p.exteriorFeatures?.includes("Garden") ||
-          p.customFeatures?.some((f) => f.toLowerCase().includes("garden"))
+          p.customFeatures?.some((f) => f.toLowerCase().includes("garden")),
       );
     }
 
-    // Filter by searchTerm
+    // Search term
     if (filters.searchTerm && filters.searchTerm.trim()) {
-      const searchTerm = filters.searchTerm.toLowerCase().trim();
+      const term = filters.searchTerm.toLowerCase().trim();
       filteredData = filteredData.filter((property) => {
-        const searchableText = [
+        const searchable = [
           property.title,
           property.description,
           property.address,
@@ -320,19 +483,11 @@ export class PropertyServiceSupabase {
         ]
           .join(" ")
           .toLowerCase();
-
-        return searchableText.includes(searchTerm);
+        return searchable.includes(term);
       });
     }
 
-    // console.log("getPaginated - After filtering:", {
-    //   originalCount: result.data.length,
-    //   filteredCount: filteredData.length,
-    //   page,
-    //   pageSize,
-    // });
-
-    // Calculate hasMore based on filtered results
+    // Paginate
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedItems = filteredData.slice(startIndex, endIndex);
@@ -354,7 +509,8 @@ export class PropertyServiceSupabase {
       .filter((p) => p.featured && p.published && !p.draft)
       .sort(
         (a, b) =>
-          new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime()
+          new Date(b.createdAt || "").getTime() -
+          new Date(a.createdAt || "").getTime(),
       )
       .slice(0, limitCount);
   }
@@ -365,7 +521,8 @@ export class PropertyServiceSupabase {
       .filter((p) => p.hot && p.published && !p.draft)
       .sort(
         (a, b) =>
-          new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime()
+          new Date(b.createdAt || "").getTime() -
+          new Date(a.createdAt || "").getTime(),
       )
       .slice(0, limitCount);
   }
@@ -376,7 +533,8 @@ export class PropertyServiceSupabase {
       .filter((p) => p.published && !p.draft)
       .sort(
         (a, b) =>
-          new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime()
+          new Date(b.createdAt || "").getTime() -
+          new Date(a.createdAt || "").getTime(),
       )
       .slice(0, limitCount);
   }
@@ -457,7 +615,7 @@ export class PropertyServiceSupabase {
   async search(term: string, limitCount: number = 10): Promise<PropertyData[]> {
     const allProperties = await this.repository.getAll();
     const publishedProperties = allProperties.filter(
-      (p) => p.published && !p.draft
+      (p) => p.published && !p.draft,
     );
 
     const searchTerm = term.toLowerCase();

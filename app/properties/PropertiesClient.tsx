@@ -486,7 +486,20 @@ export default function PropertiesClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  // const [pageInitialized, setPageInitialized] = useState(false);
+
   const { stats } = usePropertyStats();
+
+  // const {
+  //   properties,
+  //   loading,
+  //   error,
+  //   hasMore,
+  //   total,
+  //   loadNextPage,
+  //   refreshWithFilters,
+  //   pagination,
+  // } = useProperties();
 
   const {
     properties,
@@ -495,6 +508,7 @@ export default function PropertiesClient() {
     hasMore,
     total,
     loadNextPage,
+    loadPage,           // add this
     refreshWithFilters,
     pagination,
   } = useProperties();
@@ -504,44 +518,105 @@ export default function PropertiesClient() {
   // const { isFavorited, toggleFavorite } = useFavorites();
 
 
+  // const handleFilterChange = useCallback(
+  //   (newFilters: PropertyFilterOptions) => {
+  //     setFilters(newFilters);
+  //     refreshWithFilters(newFilters);
+
+  //     // Update URL based on status
+  //     // const newSearchParams = new URLSearchParams(searchParams || undefined);
+  //     // if (newFilters.status) {
+  //     //   if (newFilters.status.includes('For Sale') && !newFilters.status.includes('For Rent')) {
+  //     //     newSearchParams.set('type', 'sale');
+  //     //   } else if (newFilters.status.includes('For Rent') && !newFilters.status.includes('For Sale')) {
+  //     //     newSearchParams.set('type', 'rent');
+  //     //   } else {
+  //     //     newSearchParams.delete('type');
+  //     //   }
+  //     // } else {
+  //     //   newSearchParams.delete('type');
+  //     // }
+
+  //     const newSearchParams = new URLSearchParams(searchParams || undefined);
+
+  //     // Update URL based on status (array)
+  //     if (newFilters.status && newFilters.status.length > 0) {
+  //       newSearchParams.set(
+  //         "status",
+  //         newFilters.status.join(",")
+  //       );
+  //     } else {
+  //       newSearchParams.delete("status");
+  //     }
+
+
+  //     // // Update URL based on propertyTypes
+  //     // if (newFilters.propertyTypes && newFilters.propertyTypes.length === 1) {
+  //     //   newSearchParams.set('propertyType', newFilters.propertyTypes[0].toLowerCase());
+  //     // } else {
+  //     //   newSearchParams.delete('propertyType');
+  //     // }
+
+  //     // Update URL based on propertyTypes
+  //     if (newFilters.propertyTypes && newFilters.propertyTypes.length > 0) {
+  //       newSearchParams.set(
+  //         'propertyType',
+  //         newFilters.propertyTypes.map(t => t.toLowerCase()).join(',')
+  //       );
+  //     } else {
+  //       newSearchParams.delete('propertyType');
+  //     }
+
+
+  //     // Update URL based on other filters
+  //     if (newFilters.searchTerm) {
+  //       newSearchParams.set('searchTerm', newFilters.searchTerm);
+  //     } else {
+  //       newSearchParams.delete('searchTerm');
+  //     }
+
+  //     if (newFilters.minSalePrice) {
+  //       newSearchParams.set('minSalePrice', newFilters.minSalePrice.toString());
+  //     } else {
+  //       newSearchParams.delete('minSalePrice');
+  //     }
+
+  //     if (newFilters.maxSalePrice) {
+  //       newSearchParams.set('maxSalePrice', newFilters.maxSalePrice.toString());
+  //     } else {
+  //       newSearchParams.delete('maxSalePrice');
+  //     }
+
+  //     if (newFilters.minBedrooms) {
+  //       newSearchParams.set('minBedrooms', newFilters.minBedrooms.toString());
+  //     } else {
+  //       newSearchParams.delete('minBedrooms');
+  //     }
+
+  //     if (newFilters.minBathrooms) {
+  //       newSearchParams.set('minBathrooms', newFilters.minBathrooms.toString());
+  //     } else {
+  //       newSearchParams.delete('minBathrooms');
+  //     }
+
+  //     router.replace(`?${newSearchParams.toString()}`, { scroll: false });
+  //   },
+  //   [refreshWithFilters, searchParams, router]
+  // );
+
   const handleFilterChange = useCallback(
     (newFilters: PropertyFilterOptions) => {
       setFilters(newFilters);
-      refreshWithFilters(newFilters);
-
-      // Update URL based on status
-      // const newSearchParams = new URLSearchParams(searchParams || undefined);
-      // if (newFilters.status) {
-      //   if (newFilters.status.includes('For Sale') && !newFilters.status.includes('For Rent')) {
-      //     newSearchParams.set('type', 'sale');
-      //   } else if (newFilters.status.includes('For Rent') && !newFilters.status.includes('For Sale')) {
-      //     newSearchParams.set('type', 'rent');
-      //   } else {
-      //     newSearchParams.delete('type');
-      //   }
-      // } else {
-      //   newSearchParams.delete('type');
-      // }
+      refreshWithFilters(newFilters); // This already loads page 1
 
       const newSearchParams = new URLSearchParams(searchParams || undefined);
 
-      // Update URL based on status (array)
+      // Update URL based on status
       if (newFilters.status && newFilters.status.length > 0) {
-        newSearchParams.set(
-          "status",
-          newFilters.status.join(",")
-        );
+        newSearchParams.set("status", newFilters.status.join(","));
       } else {
         newSearchParams.delete("status");
       }
-
-
-      // // Update URL based on propertyTypes
-      // if (newFilters.propertyTypes && newFilters.propertyTypes.length === 1) {
-      //   newSearchParams.set('propertyType', newFilters.propertyTypes[0].toLowerCase());
-      // } else {
-      //   newSearchParams.delete('propertyType');
-      // }
 
       // Update URL based on propertyTypes
       if (newFilters.propertyTypes && newFilters.propertyTypes.length > 0) {
@@ -552,7 +627,6 @@ export default function PropertiesClient() {
       } else {
         newSearchParams.delete('propertyType');
       }
-
 
       // Update URL based on other filters
       if (newFilters.searchTerm) {
@@ -584,6 +658,9 @@ export default function PropertiesClient() {
       } else {
         newSearchParams.delete('minBathrooms');
       }
+
+      // IMPORTANT: Remove page parameter when filters change (we're back to page 1)
+      newSearchParams.delete('page');
 
       router.replace(`?${newSearchParams.toString()}`, { scroll: false });
     },
@@ -647,118 +724,191 @@ export default function PropertiesClient() {
   //   }
   // });
   // Handle URL params for type and propertyType
-  useEffect(() => {
-    // const type = searchParams?.get('type');
-    const propertyType = searchParams?.get('propertyType')?.toLowerCase();
-    const searchTerm = searchParams?.get('searchTerm');
-    const minSalePrice = searchParams?.get('minSalePrice');
-    const maxSalePrice = searchParams?.get('maxSalePrice');
-    const minBedrooms = searchParams?.get('minBedrooms');
-    const minBathrooms = searchParams?.get('minBathrooms');
-    const newFilters = { ...filters };
+  // useEffect(() => {
+  //   // const type = searchParams?.get('type');
+  //   const propertyType = searchParams?.get('propertyType')?.toLowerCase();
+  //   const searchTerm = searchParams?.get('searchTerm');
+  //   const minSalePrice = searchParams?.get('minSalePrice');
+  //   const maxSalePrice = searchParams?.get('maxSalePrice');
+  //   const minBedrooms = searchParams?.get('minBedrooms');
+  //   const minBathrooms = searchParams?.get('minBathrooms');
+  //   const newFilters = { ...filters };
 
-    // if (type === 'sale') {
-    //   newFilters.status = ['For Sale'];
-    // } else if (type === 'rent') {
-    //   newFilters.status = ['For Rent'];
-    // } else if (type) {
-    //   // wrong type, remove it
-    //   const newSearchParams = new URLSearchParams(searchParams || undefined);
-    //   newSearchParams.delete('type');
-    //   router.replace(`?${newSearchParams.toString()}`, { scroll: false });
-    //   newFilters.status = undefined;
-    // }
+  //   // if (type === 'sale') {
+  //   //   newFilters.status = ['For Sale'];
+  //   // } else if (type === 'rent') {
+  //   //   newFilters.status = ['For Rent'];
+  //   // } else if (type) {
+  //   //   // wrong type, remove it
+  //   //   const newSearchParams = new URLSearchParams(searchParams || undefined);
+  //   //   newSearchParams.delete('type');
+  //   //   router.replace(`?${newSearchParams.toString()}`, { scroll: false });
+  //   //   newFilters.status = undefined;
+  //   // }
 
-    const statusParam = searchParams?.get("status");
+  //   const statusParam = searchParams?.get("status");
 
-    if (statusParam) {
-      const validStatuses = ["For Sale", "For Rent", "Sold"] as const;
+  //   if (statusParam) {
+  //     const validStatuses = ["For Sale", "For Rent", "Sold"] as const;
 
-      const parsedStatuses = statusParam
-        .split(",")
-        .map(s => s.trim())
-        .filter(
-          (s): s is typeof validStatuses[number] =>
-            validStatuses.includes(s as any)
-        );
+  //     const parsedStatuses = statusParam
+  //       .split(",")
+  //       .map(s => s.trim())
+  //       .filter(
+  //         (s): s is typeof validStatuses[number] =>
+  //           validStatuses.includes(s as any)
+  //       );
 
-      if (parsedStatuses.length > 0) {
-        newFilters.status = parsedStatuses;
-      } else {
-        // Invalid values → clean URL
-        const newSearchParams = new URLSearchParams(searchParams || undefined);
-        newSearchParams.delete("status");
-        router.replace(`?${newSearchParams.toString()}`, { scroll: false });
-        newFilters.status = undefined;
-      }
+  //     if (parsedStatuses.length > 0) {
+  //       newFilters.status = parsedStatuses;
+  //     } else {
+  //       // Invalid values → clean URL
+  //       const newSearchParams = new URLSearchParams(searchParams || undefined);
+  //       newSearchParams.delete("status");
+  //       router.replace(`?${newSearchParams.toString()}`, { scroll: false });
+  //       newFilters.status = undefined;
+  //     }
+  //   }
+
+
+  //   // Valid property types
+  //   // const validPropertyTypes = ['house', 'apartment', 'villa', 'commercial', 'land'];
+  //   // if (propertyType && validPropertyTypes.includes(propertyType)) {
+  //   //   newFilters.propertyTypes = [propertyType];
+  //   // } else if (propertyType) {
+  //   //   // wrong propertyType, remove it
+  //   //   const newSearchParams = new URLSearchParams(searchParams || undefined);
+  //   //   newSearchParams.delete('propertyType');
+  //   //   router.replace(`?${newSearchParams.toString()}`, { scroll: false });
+  //   //   newFilters.propertyTypes = undefined;
+  //   // }
+  //   const validPropertyTypes = [
+  //     'house',
+  //     'apartment',
+  //     'villa',
+  //     'commercial',
+  //     'land',
+  //   ] as const;
+
+  //   type ValidPropertyType = typeof validPropertyTypes[number];
+
+  //   if (propertyType) {
+  //     const parsedTypes = propertyType
+  //       .split(',')
+  //       .map(t => t.toLowerCase().trim())
+  //       .filter(
+  //         (t): t is ValidPropertyType =>
+  //           validPropertyTypes.includes(t as ValidPropertyType)
+  //       );
+
+  //     if (parsedTypes.length > 0) {
+  //       newFilters.propertyTypes = parsedTypes;
+  //     } else {
+  //       // All values invalid → clean URL
+  //       const newSearchParams = new URLSearchParams(searchParams || undefined);
+  //       newSearchParams.delete('propertyType');
+  //       router.replace(`?${newSearchParams.toString()}`, { scroll: false });
+  //       newFilters.propertyTypes = undefined;
+  //     }
+  //   }
+
+
+  //   if (searchTerm) {
+  //     newFilters.searchTerm = searchTerm;
+  //   }
+
+  //   if (minSalePrice) {
+  //     newFilters.minSalePrice = Number(minSalePrice);
+  //   }
+
+  //   if (maxSalePrice) {
+  //     newFilters.maxSalePrice = Number(maxSalePrice);
+  //   }
+
+  //   if (minBedrooms) {
+  //     newFilters.minBedrooms = Number(minBedrooms);
+  //   }
+
+  //   if (minBathrooms) {
+  //     newFilters.minBathrooms = Number(minBathrooms);
+  //   }
+
+  //   setFilters(newFilters);
+  //   refreshWithFilters(newFilters);
+  // }, [searchParams, router]);
+
+// Handle URL params for type and propertyType
+useEffect(() => {
+  const propertyType = searchParams?.get('propertyType')?.toLowerCase();
+  const searchTerm = searchParams?.get('searchTerm');
+  const minSalePrice = searchParams?.get('minSalePrice');
+  const maxSalePrice = searchParams?.get('maxSalePrice');
+  const minBedrooms = searchParams?.get('minBedrooms');
+  const minBathrooms = searchParams?.get('minBathrooms');
+  const statusParam = searchParams?.get("status");
+
+  // Start with a copy of current filters
+  const newFilters: PropertyFilterOptions = { ...filters };
+
+  // Update status from URL
+  if (statusParam) {
+    const validStatuses = ["For Sale", "For Rent", "Sold"] as const;
+    const parsedStatuses = statusParam
+      .split(",")
+      .map(s => s.trim())
+      .filter(
+        (s): s is typeof validStatuses[number] =>
+          validStatuses.includes(s as any)
+      );
+    if (parsedStatuses.length > 0) {
+      newFilters.status = parsedStatuses;
+    } else {
+      // Invalid values – clear status and clean URL
+      newFilters.status = undefined;
+      const newSearchParams = new URLSearchParams(searchParams || undefined);
+      newSearchParams.delete("status");
+      router.replace(`?${newSearchParams.toString()}`, { scroll: false });
     }
+  } else {
+    newFilters.status = undefined;
+  }
 
-
-    // Valid property types
-    // const validPropertyTypes = ['house', 'apartment', 'villa', 'commercial', 'land'];
-    // if (propertyType && validPropertyTypes.includes(propertyType)) {
-    //   newFilters.propertyTypes = [propertyType];
-    // } else if (propertyType) {
-    //   // wrong propertyType, remove it
-    //   const newSearchParams = new URLSearchParams(searchParams || undefined);
-    //   newSearchParams.delete('propertyType');
-    //   router.replace(`?${newSearchParams.toString()}`, { scroll: false });
-    //   newFilters.propertyTypes = undefined;
-    // }
-    const validPropertyTypes = [
-      'house',
-      'apartment',
-      'villa',
-      'commercial',
-      'land',
-    ] as const;
-
+  // Update property types
+  if (propertyType) {
+    const validPropertyTypes = ['house', 'apartment', 'villa', 'commercial', 'land'] as const;
     type ValidPropertyType = typeof validPropertyTypes[number];
-
-    if (propertyType) {
-      const parsedTypes = propertyType
-        .split(',')
-        .map(t => t.toLowerCase().trim())
-        .filter(
-          (t): t is ValidPropertyType =>
-            validPropertyTypes.includes(t as ValidPropertyType)
-        );
-
-      if (parsedTypes.length > 0) {
-        newFilters.propertyTypes = parsedTypes;
-      } else {
-        // All values invalid → clean URL
-        const newSearchParams = new URLSearchParams(searchParams || undefined);
-        newSearchParams.delete('propertyType');
-        router.replace(`?${newSearchParams.toString()}`, { scroll: false });
-        newFilters.propertyTypes = undefined;
-      }
+    const parsedTypes = propertyType
+      .split(',')
+      .map(t => t.toLowerCase().trim())
+      .filter(
+        (t): t is ValidPropertyType =>
+          validPropertyTypes.includes(t as ValidPropertyType)
+      );
+    if (parsedTypes.length > 0) {
+      newFilters.propertyTypes = parsedTypes;
+    } else {
+      newFilters.propertyTypes = undefined;
+      const newSearchParams = new URLSearchParams(searchParams || undefined);
+      newSearchParams.delete('propertyType');
+      router.replace(`?${newSearchParams.toString()}`, { scroll: false });
     }
+  } else {
+    newFilters.propertyTypes = undefined;
+  }
 
+  // Update other fields
+  newFilters.searchTerm = searchTerm || undefined;
+  newFilters.minSalePrice = minSalePrice ? Number(minSalePrice) : undefined;
+  newFilters.maxSalePrice = maxSalePrice ? Number(maxSalePrice) : undefined;
+  newFilters.minBedrooms = minBedrooms ? Number(minBedrooms) : undefined;
+  newFilters.minBathrooms = minBathrooms ? Number(minBathrooms) : undefined;
 
-    if (searchTerm) {
-      newFilters.searchTerm = searchTerm;
-    }
-
-    if (minSalePrice) {
-      newFilters.minSalePrice = Number(minSalePrice);
-    }
-
-    if (maxSalePrice) {
-      newFilters.maxSalePrice = Number(maxSalePrice);
-    }
-
-    if (minBedrooms) {
-      newFilters.minBedrooms = Number(minBedrooms);
-    }
-
-    if (minBathrooms) {
-      newFilters.minBathrooms = Number(minBathrooms);
-    }
-
+  // Only update if the filters actually changed
+  if (JSON.stringify(newFilters) !== JSON.stringify(filters)) {
     setFilters(newFilters);
     refreshWithFilters(newFilters);
-  }, [searchParams, router]);
+  }
+}, [searchParams, router, filters, refreshWithFilters]); // ✅ dependencies now complete
 
   // ✅ SINGLE SOURCE OF TRUTH FOR RENDERING
   const hasVisibleProperties = properties.length > 0;
@@ -778,6 +928,56 @@ export default function PropertiesClient() {
 
     return `${statusText} Properties`;
   };
+
+  // Calculate total pages
+  const totalPages = total ? Math.ceil(total / pagination.pageSize) : 0;
+
+  // Handle page change
+  // const handlePageChange = (newPage: number) => {
+  //   if (newPage < 1 || newPage > totalPages) return;
+  //   loadPage(newPage, filters);
+  // };
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+
+    // Update URL
+    const newParams = new URLSearchParams(searchParams || undefined);
+    newParams.set('page', newPage.toString());
+    router.push(`?${newParams.toString()}`, { scroll: false });
+
+    // Load the page
+    loadPage(newPage, filters);
+  };
+
+
+  useEffect(() => {
+    if (!total || total === 0) return; // total not yet known
+
+    const pageParam = searchParams?.get('page');
+    let pageNum = 1;
+    if (pageParam) {
+      const parsed = parseInt(pageParam, 10);
+      if (!isNaN(parsed) && parsed > 0 && parsed <= totalPages) {
+        pageNum = parsed;
+      } else {
+        // Invalid page number – redirect to page 1 by removing the param
+        const newParams = new URLSearchParams(searchParams || undefined);
+        newParams.delete('page');
+        router.replace(`?${newParams.toString()}`, { scroll: false });
+        // After redirect, we don't need to load anything; the effect will run again with the new URL
+        return;
+      }
+    }
+
+    // If the current page in pagination doesn't match the desired page, load it
+    if (pagination.page !== pageNum && !loading) {
+      loadPage(pageNum, filters);
+    }
+  }, [total, totalPages, searchParams, router, filters, loadPage, pagination.page, loading]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [pagination.page]);
 
 
   return (
@@ -982,7 +1182,7 @@ export default function PropertiesClient() {
               )}
 
               {/* LOAD MORE */}
-              {hasMore && hasVisibleProperties && !loading && (
+              {/* {hasMore && hasVisibleProperties && !loading && (
                 <div className="text-center mt-5">
                   <button
                     className="btn btn custom-button"
@@ -991,6 +1191,47 @@ export default function PropertiesClient() {
                     Load More ({pagination.pageSize} per page)
                   </button>
                 </div>
+              )} */}
+
+              {totalPages > 1 && (
+                // <nav className="mt-5" data-aos="fade-up" data-aos-delay="300">
+                <nav className="mt-5" data-aos-delay="300">
+                  <ul className="pagination justify-content-center">
+                    <li className={`page-item ${pagination.page === 1 ? 'disabled' : ''}`}>
+                      <button className="page-link" onClick={() => handlePageChange(pagination.page - 1)}>
+                        Previous
+                      </button>
+                    </li>
+                    {[...Array(totalPages)].map((_, i) => {
+                      const pageNum = i + 1;
+                      // Show first, last, and pages around current
+                      if (
+                        pageNum === 1 ||
+                        pageNum === totalPages ||
+                        (pageNum >= pagination.page - 1 && pageNum <= pagination.page + 1)
+                      ) {
+                        return (
+                          <li key={pageNum} className={`page-item ${pagination.page === pageNum ? 'active' : ''}`}>
+                            <button className="page-link" onClick={() => handlePageChange(pageNum)}>
+                              {pageNum}
+                            </button>
+                          </li>
+                        );
+                      } else if (
+                        (pageNum === 2 && pagination.page > 3) ||
+                        (pageNum === totalPages - 1 && pagination.page < totalPages - 2)
+                      ) {
+                        return <li key={pageNum} className="page-item disabled"><span className="page-link">…</span></li>;
+                      }
+                      return null;
+                    })}
+                    <li className={`page-item ${pagination.page === totalPages ? 'disabled' : ''}`}>
+                      <button className="page-link" onClick={() => handlePageChange(pagination.page + 1)}>
+                        Next
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               )}
             </div>
 
