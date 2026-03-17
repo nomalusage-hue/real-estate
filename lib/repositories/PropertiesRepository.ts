@@ -385,7 +385,14 @@ export class PropertiesRepository {
       query = query.or(`sale_price.lte.${maxPrice},rent_price.lte.${maxPrice}`);
     }
 
-    const { data, error } = await query.order(orderBy, { ascending });
+    // const { data, error } = await query.order(orderBy, { ascending });
+    
+    query = query.order('priority', { ascending: false, nullsFirst: false });
+    if (orderBy) {
+      query = query.order(orderBy, { ascending });
+    }
+    const { data, error } = await query;
+
     if (error) throw error;
     return data.map((item) => this.convertToCamelCase(item)) as PropertyData[];
   }
@@ -642,9 +649,16 @@ export class PropertiesRepository {
         // console.log('getPaged - Added maxPrice filter:', maxPrice);
       }
 
-      // console.log('getPaged - Final query executing...');
-      const { data, count, error } = await query.order(orderBy, { ascending });
-      // .range(from, to);
+      
+      // const { data, count, error } = await query.order(orderBy, { ascending });
+      
+      query = query.order('priority', { ascending: false, nullsFirst: false });
+      if (orderBy) {
+        query = query.order(orderBy, { ascending });
+      }
+
+      const { data, count, error } = await query;
+      
 
       if (error) {
         console.error("getPaged - Supabase error details:", {

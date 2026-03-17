@@ -170,6 +170,8 @@ export interface PropertyData {
   // Additional metadata
   views?: number;
   favorites?: number;
+
+  priority?: number;
 }
 
 // export interface PropertyWithId extends PropertyData {
