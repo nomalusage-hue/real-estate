@@ -1301,6 +1301,24 @@ export default function PropertyFilters({ filters, onChange, stats }: PropertyFi
     handleFilterChange('searchTerm', value || undefined);
   };
 
+  const isDefaultFilters = (): boolean => {
+    // Check if there are any extra keys beyond status
+    const keys = Object.keys(filters);
+    if (keys.length > 1) return false;
+    if (keys.length === 0) return false;
+
+    // Only key should be 'status' and it must equal ["For Sale", "For Rent"]
+    return (
+      keys.length === 1 &&
+      keys[0] === 'status' &&
+      Array.isArray(filters.status) &&
+      filters.status.length === 2 &&
+      filters.status.includes('For Sale') &&
+      filters.status.includes('For Rent')
+    );
+  };
+
+
   return (
     <div className="properties-sidebar">
       <div className="filter-widget">
@@ -1309,7 +1327,8 @@ export default function PropertyFilters({ filters, onChange, stats }: PropertyFi
           <button
             className="btn btn-sm btn-outline-secondary"
             onClick={handleReset}
-            disabled={Object.keys(filters).length === 0}
+            // disabled={Object.keys(filters).length === 0}
+            disabled={isDefaultFilters()}
           >
             Clear All
           </button>

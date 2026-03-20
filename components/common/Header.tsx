@@ -237,7 +237,7 @@ export default function Header() {
 
             {isAdmin && (
               <li className="dropdown">
-                <Link href="/admin" className={`${isActive ? "active" : ""}`}>
+                <Link href="/admin/dashboard" className={`${isActive ? "active" : ""}`}>
                   <span>Dashboard</span>
                   <i className="bi bi-chevron-down toggle-dropdown"></i>
                 </Link>

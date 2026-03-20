@@ -51,11 +51,12 @@ import "react-international-phone/style.css";
 import "./InternationalPhoneInput.css";
 
 export function InternationalPhoneInput(props: any) {
-  const [country, setCountry] = useState("us");
+  // const [country, setCountry] = useState("us");
+  const country = "us";
 
-  useEffect(() => {
-    getCountry().then(setCountry);
-  }, []);
+  // useEffect(() => {
+  //   getCountry().then(setCountry);
+  // }, []);
 
   return (
       <PhoneInput

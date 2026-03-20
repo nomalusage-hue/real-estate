@@ -1,12 +1,14 @@
 // app/favorites/page.tsx
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/supabase';
 import PropertyCardPremium from '@/components/property/PropertyCard/PropertyCardPremium';
 import { PropertyData } from '@/types/property';
 import AppLoader from '@/components/ui/AppLoader/AppLoader';
+import ImageGalleryModal from '@/components/modules/ImageGalleryModal';
+import LoginRequiredModal from '@/components/modules/LoginRequiredModal';
 
 export function convertToCamelCase<T = any>(obj: any): T {
   if (obj === null || obj === undefined) return obj;
@@ -47,6 +49,32 @@ export default function FavoritesPage() {
   const [favoritesLoading, setFavoritesLoading] = useState(false);
 
   const isPageLoading = authLoading || favoritesLoading;
+
+
+
+  // Modal states
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+
+  // Stable callbacks for modals
+  const handleOpenGallery = useCallback((images: string[], index: number) => {
+    setGalleryImages(images);
+    setGalleryIndex(index);
+    setGalleryOpen(true);
+  }, []);
+
+  const handleCloseGallery = useCallback(() => setGalleryOpen(false), []);
+  const handleOpenLoginModal = useCallback(() => setLoginModalOpen(true), []);
+  
+  const handleNextImage = useCallback(() => {
+    setGalleryIndex((prev) => (prev + 1) % galleryImages.length);
+  }, [galleryImages.length]);
+
+  const handlePrevImage = useCallback(() => {
+    setGalleryIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+  }, [galleryImages.length]);
 
 
   useEffect(() => {
@@ -312,7 +340,13 @@ export default function FavoritesPage() {
                     {favorites.map((property) => (
                       //   <div key={property.id} className="col-lg-6 col-md-6 mb-4">
                       //   </div>
-                      <PropertyCardPremium data={property} key={property.id} lgClass="col-lg-4" />
+                      <PropertyCardPremium
+                        data={property}
+                        key={property.id}
+                        lgClass="col-lg-4"
+                        onOpenGallery={handleOpenGallery}
+                        onOpenLoginModal={handleOpenLoginModal}
+                      />
                     ))}
                   </div>
                 </>
@@ -321,6 +355,18 @@ export default function FavoritesPage() {
           </div>
         </div>
       </section>
+
+      {/* Modals – rendered only once */}
+      <ImageGalleryModal
+        open={galleryOpen}
+        images={galleryImages}
+        index={galleryIndex}
+        onClose={handleCloseGallery}
+        onNext={handleNextImage}
+        onPrev={handlePrevImage}
+      />
+      {/* <LoginRequiredModal open={loginModalOpen} onClose={handleCloseLoginModal} /> */}
+
     </main>
   );
 }

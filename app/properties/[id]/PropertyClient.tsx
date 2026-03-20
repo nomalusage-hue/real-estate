@@ -769,6 +769,7 @@ import LoginRequiredModal from "@/components/modules/LoginRequiredModal";
 import { getDisplayDate } from "@/src/utils/dateUtils";
 import { convertToUSD } from "@/utils/convertToUSD";
 import PropertyViewTracker from "@/components/tracking/PropertyViewTracker";
+import { getCurrentGuestId } from "@/lib/guest";
 // import { convertToUSD } from "@/utils/convertToUSD";
 
 // Loading component
@@ -919,7 +920,7 @@ type Props = {
 };
 
 
-const supabase = createClient();
+// const supabase = createClient();
 // const propertiesRepo = new PropertiesRepository();
 
 
@@ -964,6 +965,31 @@ export default function PropertyPage({ id }: Props) {
 
     await toggleFavorite(id);
   };
+
+  const supabase = createClient();
+  const [copied, setCopied] = useState(false);
+
+  const trackShare = async (type: string) => {
+    try {
+      const guestId = getCurrentGuestId();
+      const { error } = await supabase.from('property_shares').insert({
+        property_id: id,
+        share_type: type,
+        guest_id: guestId,
+      });
+      if (error) console.error('Share tracking error:', error);
+    } catch (err) {
+      console.error('Failed to track share:', err);
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    trackShare('copy');
+  };
+
 
   useEffect(() => {
     async function fetchProperty() {
@@ -1282,10 +1308,10 @@ Could you please let me know available dates and times? Thank you.`;
 
   return (
     <>
-      <main className="main">      
+      <main className="main">
         {/* Tracking the views of every sigle property */}
         <PropertyViewTracker propertyId={id} />
-      
+
         {/* Page Title */}
         <div className="page-title">
           <div className="heading">
@@ -1707,7 +1733,7 @@ Could you please let me know available dates and times? Thank you.`;
 
                   {property.status?.includes("Sold") && (
                     <div className="price-tag d-flex align-items-center justify-content-between"
-                          style={{"marginBottom": "25px"}}>
+                      style={{ "marginBottom": "25px" }}>
                       <div className="price-usd">
                         Sold on {getDisplayPrice(true) !== "Sold" && formatSoldDateShort(property.soldDate ?? "")}
                       </div>
@@ -1773,7 +1799,7 @@ Could you please let me know available dates and times? Thank you.`;
                               {formatNumber(property.buildingSize)}
                             </span>
                             {/* <span className="label">{(property.sizeUnit) || "m²"}</span> */}
-                            <span className="label" style={{"textTransform":"lowercase"}}>{formatUnit(property.sizeUnit) || "m²"}</span>
+                            <span className="label" style={{ "textTransform": "lowercase" }}>{formatUnit(property.sizeUnit) || "m²"}</span>
                           </div>
                         </div>
                       )}
@@ -1791,7 +1817,7 @@ Could you please let me know available dates and times? Thank you.`;
                             </span>
                             {/* <span className="label">Acres</span> */}
                             {/* <span className="label">{property.sizeUnit || "m²"}</span> */}
-                            <span className="label" style={{"textTransform":"lowercase"}}>{formatUnit(property.sizeUnit) || "m²"}</span>
+                            <span className="label" style={{ "textTransform": "lowercase" }}>{formatUnit(property.sizeUnit) || "m²"}</span>
                           </div>
                         </div>
                       )}
@@ -1960,28 +1986,7 @@ Could you please let me know available dates and times? Thank you.`;
                   )}
                   {/* End Contact Form */}
 
-                  {/* Social Share */}
                   {/* <div className="social-share">
-                    <h5>Share This Property</h5>
-                    <div className="share-buttons">
-                      <a href="#" className="share-btn facebook">
-                        <i className="bi bi-facebook"></i>
-                      </a>
-                      <a href="#" className="share-btn twitter">
-                        <i className="bi bi-twitter"></i>
-                      </a>
-                      <a href="#" className="share-btn whatsapp">
-                        <i className="bi bi-whatsapp"></i>
-                      </a>
-                      <a href="#" className="share-btn email">
-                        <i className="bi bi-envelope"></i>
-                      </a>
-                      <a href="#" className="share-btn print">
-                        <i className="bi bi-printer"></i>
-                      </a>
-                    </div>
-                  </div> */}
-                  <div className="social-share">
                     <h5>Share This Property</h5>
 
                     <div className="share-buttons">
@@ -2020,6 +2025,65 @@ Could you please let me know available dates and times? Thank you.`;
                       >
                         <i className="bi bi-whatsapp"></i>
                       </a>
+                    </div>
+                  </div> */}
+
+
+                  <div className="social-share">
+                    <h5>Share This Property</h5>
+
+                    <div className="share-buttons">
+                      {/* Facebook */}
+                      <a
+                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                          typeof window !== 'undefined' ? window.location.href : ''
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="share-btn facebook"
+                        aria-label="Share on Facebook"
+                        onClick={() => trackShare('facebook')}
+                      >
+                        <i className="bi bi-facebook"></i>
+                      </a>
+
+                      {/* Twitter */}
+                      <a
+                        href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                          typeof window !== 'undefined' ? window.location.href : ''
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="share-btn twitter"
+                        aria-label="Share on X"
+                        onClick={() => trackShare('twitter')}
+                      >
+                        <i className="bi bi-twitter"></i>
+                      </a>
+
+                      {/* WhatsApp */}
+                      <a
+                        href={`https://wa.me/?text=${encodeURIComponent(
+                          typeof window !== 'undefined' ? window.location.href : ''
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="share-btn whatsapp"
+                        aria-label="Share on WhatsApp"
+                        onClick={() => trackShare('whatsapp')}
+                      >
+                        <i className="bi bi-whatsapp"></i>
+                      </a>
+
+                      {/* Copy Link */}
+                      <button
+                        className={`share-btn copy ${copied ? 'copied' : ''}`}
+                        onClick={copyToClipboard}
+                        aria-label="Copy link"
+                      >
+                        <i className="bi bi-link"></i>
+                        {copied && <span className="copied-tooltip">Copied!</span>}
+                      </button>
                     </div>
                   </div>
 

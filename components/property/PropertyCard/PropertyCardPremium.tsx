@@ -507,6 +507,234 @@
 
 
 
+// "use client";
+
+// import Image from "next/image";
+// import { PropertyData } from "../../../types/property";
+// import Link from "next/link";
+// import { formatPrice } from "@/utils/format";
+// import { useFavorites } from "@/hooks/useFavorites";
+// import { useState } from "react";
+// import LoginRequiredModal from "@/components/modules/LoginRequiredModal";
+// import ImageGalleryModal from "@/components/modules/ImageGalleryModal";
+// import { getDisplayDate } from "@/src/utils/dateUtils";
+// import { convertToUSD } from "@/utils/convertToUSD";
+// import "./css/PropertyCardPremium.css";
+
+// export default function PropertyCardPremium({
+//   data,
+//   isFavorited: propIsFavorited,
+//   toggleFavorite: propToggleFavorite,
+//   lgClass = "col-lg-6",
+//   priority = false,
+// }: {
+//   data: PropertyData;
+//   isFavorited?: (id: string) => boolean;
+//   toggleFavorite?: (id: string) => Promise<boolean>;
+//   lgClass?: string;
+//   priority?: boolean
+// }) {
+//   const { isFavorited: hookIsFavorited, toggleFavorite: hookToggleFavorite, user } = useFavorites();
+
+//   const isFavorited = propIsFavorited || hookIsFavorited;
+//   const toggleFavorite = propToggleFavorite || hookToggleFavorite;
+
+//   const [galleryOpen, setGalleryOpen] = useState(false);
+//   const [galleryIndex, setGalleryIndex] = useState(0);
+//   const [showLoginModal, setShowLoginModal] = useState(false);
+//   const [usdSaleValue, setUsdSaleValue] = useState<number | null>(null);
+//   const [usdRentValue, setUsdRentValue] = useState<number | null>(null);
+//   const [usdLoading, setUsdLoading] = useState(false);
+
+//   const images = data.images && data.images.length > 0 ? data.images : ["/img/placeholder-property.jpg"];
+//   const salePrice = data.salePrice;
+//   const rentPrice = data.rentPrice;
+//   const saleCurrency = data.salePrice ? data.saleCurrency : "USD";
+//   const rentCurrency = data.rentPrice ? data.rentCurrency : "USD";
+//   const isRent = Boolean(data.rentPrice);
+//   const displayDate = getDisplayDate(data.createdAt);
+
+//   // Fetch USD value whenever price or currency changes
+//   if (salePrice && saleCurrency && saleCurrency !== "USD" && usdSaleValue === null && !usdLoading) {
+//     setUsdLoading(true);
+//     convertToUSD(salePrice, saleCurrency)
+//       .then((value) => setUsdSaleValue(value))
+//       .finally(() => setUsdLoading(false));
+//   }
+//   if (rentPrice && rentCurrency && rentCurrency !== "USD" && usdRentValue === null && !usdLoading) {
+//     setUsdLoading(true);
+//     convertToUSD(rentPrice, rentCurrency)
+//       .then((value) => setUsdRentValue(value))
+//       .finally(() => setUsdLoading(false));
+//   }
+
+//   const handleFavoriteClick = async (e: React.MouseEvent) => {
+//     e.preventDefault();
+//     e.stopPropagation();
+//     if (!user) {
+//       setShowLoginModal(true);
+//       return;
+//     }
+//     await toggleFavorite(data.id);
+//   };
+
+//   // const openGallery = (index = 0) => setGalleryIndex(index) || setGalleryOpen(true);
+//   const openGallery = (index = 0) => {
+//     setGalleryIndex(index);
+//     setGalleryOpen(true);
+//   };
+//   const nextImage = () => setGalleryIndex((prev) => (prev + 1) % images.length);
+//   const prevImage = () => setGalleryIndex((prev) => (prev - 1 + images.length) % images.length);
+
+//   // const primaryBadge = data.status?.includes("Sold") ? "Sold" : data.status?.[0] || null;
+//   const isPropertyFavorited = isFavorited(data.id);
+
+//   return (
+//     <div className={`${lgClass} col-md-6`}>
+//       <div className={`property-card ${(data.priority ? data.priority : 0) > 0 ? "top" : ""}`} style={{ "display": "grid", "gridTemplateRows": "auto 1fr" }}>
+//         <div className="property-image" style={{ height: "100%" }}>
+//           <Image
+//             src={images[0]}
+//             alt={data.title}
+//             className="img-fluid"
+//             width={0}
+//             height={0}
+//             unoptimized
+//             style={{ width: "100%", height: "300px", objectFit: "cover" }}
+//             loading="eager"
+//             // priority
+//           />
+
+//           <div className="property-badges">
+//             {/* {primaryBadge && (
+//               <span className={`badge ${primaryBadge.toLowerCase().replace(" ", "-")}`}>
+//                 {primaryBadge}
+//               </span>
+//             )} */}
+//             {data.status?.map((status) => (
+//               <span
+//                 key={status}
+//                 className={`badge ${status.toLowerCase().replace(" ", "-")}`}
+//               >
+//                 {status}
+//               </span>
+//             ))}
+//             {data.hot && <span className="badge hot">Hot</span>}
+//             {data.newListing && <span className="badge new">New</span>}
+//             {data.featured && <span className="badge featured">Featured</span>}
+//             {data.exclusive && <span className="badge for-sale">Exclusive</span>}
+//           </div>
+
+//           <div className="property-overlay premium">
+//             <button
+//               className={`favorite-btn ${isPropertyFavorited ? "favorited" : ""}`}
+//               onClick={handleFavoriteClick}
+//               title={isPropertyFavorited ? "Remove from favorites" : "Add to favorites"}
+//             >
+//               <i className={`bi ${isPropertyFavorited ? "bi-heart-fill" : "bi-heart"}`}></i>
+//             </button>
+
+//             <button className="gallery-btn" onClick={() => openGallery(0)} data-count={images.length}>
+//               <i className="bi bi-images"></i>
+//             </button>
+//           </div>
+//         </div>
+
+//         <div className="property-content d-flex flex-column align-items-start" style={{ height: "100%" }}>
+//           <div className="property-price">
+//             {/* SALE PRICE */}
+//             {salePrice && saleCurrency && (
+//               <div className="mb-1">
+//                 <div>{formatPrice(salePrice, saleCurrency)}</div>
+
+//                 {saleCurrency !== "USD" && (
+//                   <div className="price-usd">
+//                     {usdLoading ? (
+//                       <span className="usd-loading">
+//                         ≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" />
+//                       </span>
+//                     ) : (
+//                       usdSaleValue && (
+//                         <>≈ {formatPrice(Math.round(usdSaleValue), "USD")}</>
+//                       )
+//                     )}
+//                   </div>
+//                 )}
+//               </div>
+//             )}
+
+//             {/* RENT PRICE */}
+//             {rentPrice && rentCurrency && (
+//               <div>
+//                 <div>
+//                   {formatPrice(rentPrice, rentCurrency)}
+//                   {isRent && data.rentPeriodLabel
+//                     ? ` ${data.rentPeriodLabel.toLowerCase()}`
+//                     : isRent
+//                       ? " /month"
+//                       : ""}
+//                 </div>
+
+//                 {rentCurrency !== "USD" && (
+//                   <div className="price-usd">
+//                     {usdLoading ? (
+//                       <span className="usd-loading">
+//                         ≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" />
+//                       </span>
+//                     ) : (
+//                       usdRentValue && (
+//                         <>
+//                           ≈ {formatPrice(Math.round(usdRentValue), "USD")}
+//                           {isRent && data.rentPeriodLabel
+//                             ? ` ${data.rentPeriodLabel.toLowerCase()}`
+//                             : isRent
+//                               ? " /month"
+//                               : ""}
+//                         </>
+//                       )
+//                     )}
+//                   </div>
+//                 )}
+//               </div>
+//             )}
+
+//             {/* FALLBACK */}
+//             {!salePrice && !rentPrice && (
+//               <div>Price on request</div>
+//             )}
+//           </div>
+
+//           <h4 className="property-title">{data.title}</h4>
+//           <p className="property-location">
+//             <i className="bi bi-geo-alt"></i>
+//             {data.showAddress ? data.address : data.city}
+//           </p>
+
+//           <div style={{ width: "100%", marginTop: "auto" }}>
+//             <p className="property-location">{displayDate}</p>
+//             <Link href={`/properties/${data.id}`} className="btn btn-primary w-100 mt-3 mt-auto">
+//               View Details
+//             </Link>
+//           </div>
+//         </div>
+//       </div>
+
+//       <ImageGalleryModal
+//         open={galleryOpen}
+//         images={images}
+//         index={galleryIndex}
+//         onClose={() => setGalleryOpen(false)}
+//         onNext={nextImage}
+//         onPrev={prevImage}
+//       />
+
+//       <LoginRequiredModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
+//     </div>
+//   );
+// }
+
+
+
 "use client";
 
 import Image from "next/image";
@@ -514,82 +742,106 @@ import { PropertyData } from "../../../types/property";
 import Link from "next/link";
 import { formatPrice } from "@/utils/format";
 import { useFavorites } from "@/hooks/useFavorites";
-import { useState } from "react";
-import LoginRequiredModal from "@/components/modules/LoginRequiredModal";
-import ImageGalleryModal from "@/components/modules/ImageGalleryModal";
+import { useState, useEffect, useCallback, memo, useMemo } from "react";
 import { getDisplayDate } from "@/src/utils/dateUtils";
 import { convertToUSD } from "@/utils/convertToUSD";
+import "./css/PropertyCardPremium.css";
 
-export default function PropertyCardPremium({
+const PropertyCardPremium = memo(({
   data,
   isFavorited: propIsFavorited,
   toggleFavorite: propToggleFavorite,
   lgClass = "col-lg-6",
+  priority = false,
+  onOpenGallery,
+  onOpenLoginModal,
 }: {
   data: PropertyData;
   isFavorited?: (id: string) => boolean;
   toggleFavorite?: (id: string) => Promise<boolean>;
   lgClass?: string;
-}) {
+  priority?: boolean;
+  onOpenGallery: (images: string[], index: number) => void;
+  onOpenLoginModal: () => void;
+}) => {
   const { isFavorited: hookIsFavorited, toggleFavorite: hookToggleFavorite, user } = useFavorites();
 
   const isFavorited = propIsFavorited || hookIsFavorited;
   const toggleFavorite = propToggleFavorite || hookToggleFavorite;
 
-  const [galleryOpen, setGalleryOpen] = useState(false);
-  const [galleryIndex, setGalleryIndex] = useState(0);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [usdSaleValue, setUsdSaleValue] = useState<number | null>(null);
   const [usdRentValue, setUsdRentValue] = useState<number | null>(null);
-  const [usdLoading, setUsdLoading] = useState(false);
+  const [usdSaleLoading, setUsdSaleLoading] = useState(false);
+  const [usdRentLoading, setUsdRentLoading] = useState(false);
 
-  const images = data.images && data.images.length > 0 ? data.images : ["/img/placeholder-property.jpg"];
+  const images = useMemo(() => 
+    data.images?.length ? data.images : ["/img/placeholder-property.jpg"],
+    [data.images]
+  );
+
   const salePrice = data.salePrice;
   const rentPrice = data.rentPrice;
-  const saleCurrency = data.salePrice ? data.saleCurrency : "USD";
-  const rentCurrency = data.rentPrice ? data.rentCurrency : "USD";
-  const isRent = Boolean(data.rentPrice);
-  const displayDate = getDisplayDate(data.createdAt);
+  const saleCurrency = data.saleCurrency || "USD";
+  const rentCurrency = data.rentCurrency || "USD";
+  const isRent = Boolean(rentPrice);
+  const displayDate = useMemo(() => getDisplayDate(data.createdAt), [data.createdAt]);
 
-  // Fetch USD value whenever price or currency changes
-  if (salePrice && saleCurrency && saleCurrency !== "USD" && usdSaleValue === null && !usdLoading) {
-    setUsdLoading(true);
-    convertToUSD(salePrice, saleCurrency)
-      .then((value) => setUsdSaleValue(value))
-      .finally(() => setUsdLoading(false));
-  }
-  if (rentPrice && rentCurrency && rentCurrency !== "USD" && usdRentValue === null && !usdLoading) {
-    setUsdLoading(true);
-    convertToUSD(rentPrice, rentCurrency)
-      .then((value) => setUsdRentValue(value))
-      .finally(() => setUsdLoading(false));
-  }
+  // Fetch USD conversion for sale price
+  useEffect(() => {
+    if (!salePrice || saleCurrency === "USD") return;
+    let cancelled = false;
+    async function fetchSaleUSD() {
+      setUsdSaleLoading(true);
+      try {
+        const value = await convertToUSD(salePrice ? salePrice : 0, saleCurrency);
+        if (!cancelled) setUsdSaleValue(value);
+      } finally {
+        if (!cancelled) setUsdSaleLoading(false);
+      }
+    }
+    fetchSaleUSD();
+    return () => { cancelled = true; };
+  }, [salePrice, saleCurrency]);
 
-  const handleFavoriteClick = async (e: React.MouseEvent) => {
+  // Fetch USD conversion for rent price
+  useEffect(() => {
+    if (!rentPrice || rentCurrency === "USD") return;
+    let cancelled = false;
+    async function fetchRentUSD() {
+      setUsdRentLoading(true);
+      try {
+        const value = await convertToUSD(rentPrice ? rentPrice : 0, rentCurrency);
+        if (!cancelled) setUsdRentValue(value);
+      } finally {
+        if (!cancelled) setUsdRentLoading(false);
+      }
+    }
+    fetchRentUSD();
+    return () => { cancelled = true; };
+  }, [rentPrice, rentCurrency]);
+
+  const handleFavoriteClick = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!user) {
-      setShowLoginModal(true);
+      onOpenLoginModal();
       return;
     }
     await toggleFavorite(data.id);
-  };
+  }, [user, toggleFavorite, data.id, onOpenLoginModal]);
 
-  // const openGallery = (index = 0) => setGalleryIndex(index) || setGalleryOpen(true);
-  const openGallery = (index = 0) => {
-    setGalleryIndex(index);
-    setGalleryOpen(true);
-  };
-  const nextImage = () => setGalleryIndex((prev) => (prev + 1) % images.length);
-  const prevImage = () => setGalleryIndex((prev) => (prev - 1 + images.length) % images.length);
+  const handleGalleryClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onOpenGallery(images, 0);
+  }, [images, onOpenGallery]);
 
-  // const primaryBadge = data.status?.includes("Sold") ? "Sold" : data.status?.[0] || null;
   const isPropertyFavorited = isFavorited(data.id);
 
   return (
     <div className={`${lgClass} col-md-6`}>
-      <div className="property-card" style={{ "display": "grid", "gridTemplateRows": "auto 1fr" }}>
-        <div className="property-image" style={{ height: "100%" }}>
+      <div className={`property-card ${data.priority ? "top" : ""}`}>
+        <div className="property-image">
           <Image
             src={images[0]}
             alt={data.title}
@@ -599,20 +851,11 @@ export default function PropertyCardPremium({
             unoptimized
             style={{ width: "100%", height: "300px", objectFit: "cover" }}
             loading="eager"
-            priority
+            priority={priority}
           />
-
           <div className="property-badges">
-            {/* {primaryBadge && (
-              <span className={`badge ${primaryBadge.toLowerCase().replace(" ", "-")}`}>
-                {primaryBadge}
-              </span>
-            )} */}
             {data.status?.map((status) => (
-              <span
-                key={status}
-                className={`badge ${status.toLowerCase().replace(" ", "-")}`}
-              >
+              <span key={status} className={`badge ${status.toLowerCase().replace(" ", "-")}`}>
                 {status}
               </span>
             ))}
@@ -621,35 +864,29 @@ export default function PropertyCardPremium({
             {data.featured && <span className="badge featured">Featured</span>}
             {data.exclusive && <span className="badge for-sale">Exclusive</span>}
           </div>
-
           <div className="property-overlay premium">
             <button
               className={`favorite-btn ${isPropertyFavorited ? "favorited" : ""}`}
               onClick={handleFavoriteClick}
               title={isPropertyFavorited ? "Remove from favorites" : "Add to favorites"}
             >
-              <i className={`bi ${isPropertyFavorited ? "bi-heart-fill" : "bi-heart"}`}></i>
+              <i className={`bi ${isPropertyFavorited ? "bi-heart-fill" : "bi-heart"}`} />
             </button>
-
-            <button className="gallery-btn" onClick={() => openGallery(0)} data-count={images.length}>
-              <i className="bi bi-images"></i>
+            <button className="gallery-btn" onClick={handleGalleryClick} data-count={images.length}>
+              <i className="bi bi-images" />
             </button>
           </div>
         </div>
 
-        <div className="property-content d-flex flex-column align-items-start" style={{ height: "100%" }}>
+        <div className="property-content d-flex flex-column align-items-start">
           <div className="property-price">
-            {/* SALE PRICE */}
-            {salePrice && saleCurrency && (
+            {salePrice && (
               <div className="mb-1">
                 <div>{formatPrice(salePrice, saleCurrency)}</div>
-
                 {saleCurrency !== "USD" && (
                   <div className="price-usd">
-                    {usdLoading ? (
-                      <span className="usd-loading">
-                        ≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" />
-                      </span>
+                    {usdSaleLoading ? (
+                      <span className="usd-loading">≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" /></span>
                     ) : (
                       usdSaleValue && (
                         <>≈ {formatPrice(Math.round(usdSaleValue), "USD")}</>
@@ -659,34 +896,21 @@ export default function PropertyCardPremium({
                 )}
               </div>
             )}
-
-            {/* RENT PRICE */}
-            {rentPrice && rentCurrency && (
+            {rentPrice && (
               <div>
                 <div>
                   {formatPrice(rentPrice, rentCurrency)}
-                  {isRent && data.rentPeriodLabel
-                    ? ` ${data.rentPeriodLabel.toLowerCase()}`
-                    : isRent
-                      ? " /month"
-                      : ""}
+                  {isRent && data.rentPeriodLabel ? ` ${data.rentPeriodLabel.toLowerCase()}` : isRent ? " /month" : ""}
                 </div>
-
                 {rentCurrency !== "USD" && (
                   <div className="price-usd">
-                    {usdLoading ? (
-                      <span className="usd-loading">
-                        ≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" />
-                      </span>
+                    {usdRentLoading ? (
+                      <span className="usd-loading">≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" /></span>
                     ) : (
                       usdRentValue && (
                         <>
                           ≈ {formatPrice(Math.round(usdRentValue), "USD")}
-                          {isRent && data.rentPeriodLabel
-                            ? ` ${data.rentPeriodLabel.toLowerCase()}`
-                            : isRent
-                              ? " /month"
-                              : ""}
+                          {isRent && data.rentPeriodLabel ? ` ${data.rentPeriodLabel.toLowerCase()}` : isRent ? " /month" : ""}
                         </>
                       )
                     )}
@@ -694,16 +918,12 @@ export default function PropertyCardPremium({
                 )}
               </div>
             )}
-
-            {/* FALLBACK */}
-            {!salePrice && !rentPrice && (
-              <div>Price on request</div>
-            )}
+            {!salePrice && !rentPrice && <div>Price on request</div>}
           </div>
 
           <h4 className="property-title">{data.title}</h4>
           <p className="property-location">
-            <i className="bi bi-geo-alt"></i>
+            <i className="bi bi-geo-alt" />
             {data.showAddress ? data.address : data.city}
           </p>
 
@@ -715,17 +935,257 @@ export default function PropertyCardPremium({
           </div>
         </div>
       </div>
-
-      <ImageGalleryModal
-        open={galleryOpen}
-        images={images}
-        index={galleryIndex}
-        onClose={() => setGalleryOpen(false)}
-        onNext={nextImage}
-        onPrev={prevImage}
-      />
-
-      <LoginRequiredModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </div>
   );
-}
+});
+
+PropertyCardPremium.displayName = "PropertyCardPremium";
+
+export default PropertyCardPremium;
+
+
+
+
+// "use client";
+
+// import Image from "next/image";
+// import { PropertyData } from "../../../types/property";
+// import Link from "next/link";
+// import { formatPrice } from "@/utils/format";
+// import { useFavorites } from "@/hooks/useFavorites";
+// import { useState, useEffect, useMemo } from "react";
+// import LoginRequiredModal from "@/components/modules/LoginRequiredModal";
+// import ImageGalleryModal from "@/components/modules/ImageGalleryModal";
+// import { getDisplayDate } from "@/src/utils/dateUtils";
+// import { convertToUSD } from "@/utils/convertToUSD";
+// import "./css/PropertyCardPremium.css";
+
+// export default function PropertyCardPremium({
+//   data,
+//   isFavorited: propIsFavorited,
+//   toggleFavorite: propToggleFavorite,
+//   lgClass = "col-lg-6",
+//   priority = false, // 👈 pass from parent for first items only
+// }: {
+//   data: PropertyData;
+//   isFavorited?: (id: string) => boolean;
+//   toggleFavorite?: (id: string) => Promise<boolean>;
+//   lgClass?: string;
+//   priority?: boolean;
+// }) {
+//   const { isFavorited: hookIsFavorited, toggleFavorite: hookToggleFavorite, user } = useFavorites();
+
+//   const isFavorited = propIsFavorited || hookIsFavorited;
+//   const toggleFavorite = propToggleFavorite || hookToggleFavorite;
+
+//   const [galleryOpen, setGalleryOpen] = useState(false);
+//   const [galleryIndex, setGalleryIndex] = useState(0);
+//   const [showLoginModal, setShowLoginModal] = useState(false);
+
+//   const [usdSaleValue, setUsdSaleValue] = useState<number | null>(null);
+//   const [usdRentValue, setUsdRentValue] = useState<number | null>(null);
+//   const [usdSaleLoading, setUsdSaleLoading] = useState(false);
+//   const [usdRentLoading, setUsdRentLoading] = useState(false);
+
+//   const images = useMemo(() => {
+//     return data.images?.length ? data.images : ["/img/placeholder-property.jpg"];
+//   }, [data.images]);
+
+//   const salePrice = data.salePrice;
+//   const rentPrice = data.rentPrice;
+//   const saleCurrency = data.saleCurrency || "USD";
+//   const rentCurrency = data.rentCurrency || "USD";
+//   const isRent = Boolean(rentPrice);
+
+//   const displayDate = useMemo(() => getDisplayDate(data.createdAt), [data.createdAt]);
+
+//   // ✅ SALE USD conversion
+//   useEffect(() => {
+//     if (!salePrice || saleCurrency === "USD") return;
+
+//     let cancelled = false;
+
+//     async function fetchSaleUSD() {
+//       setUsdSaleLoading(true);
+//       try {
+//         const value = await convertToUSD(salePrice ? salePrice : 0, saleCurrency);
+//         if (!cancelled) setUsdSaleValue(value);
+//       } finally {
+//         if (!cancelled) setUsdSaleLoading(false);
+//       }
+//     }
+
+//     fetchSaleUSD();
+
+//     return () => {
+//       cancelled = true;
+//     };
+//   }, [salePrice, saleCurrency]);
+
+//   // ✅ RENT USD conversion
+//   useEffect(() => {
+//     if (!rentPrice || rentCurrency === "USD") return;
+
+//     let cancelled = false;
+
+//     async function fetchRentUSD() {
+//       setUsdRentLoading(true);
+//       try {
+//         const value = await convertToUSD(rentPrice ? rentPrice : 0, rentCurrency);
+//         if (!cancelled) setUsdRentValue(value);
+//       } finally {
+//         if (!cancelled) setUsdRentLoading(false);
+//       }
+//     }
+
+//     fetchRentUSD();
+
+//     return () => {
+//       cancelled = true;
+//     };
+//   }, [rentPrice, rentCurrency]);
+
+//   const handleFavoriteClick = async (e: React.MouseEvent) => {
+//     e.preventDefault();
+//     e.stopPropagation();
+
+//     if (!user) {
+//       setShowLoginModal(true);
+//       return;
+//     }
+
+//     await toggleFavorite(data.id);
+//   };
+
+//   const openGallery = (index = 0) => {
+//     setGalleryIndex(index);
+//     setGalleryOpen(true);
+//   };
+
+//   const nextImage = () => setGalleryIndex((prev) => (prev + 1) % images.length);
+//   const prevImage = () => setGalleryIndex((prev) => (prev - 1 + images.length) % images.length);
+
+//   const isPropertyFavorited = isFavorited(data.id);
+
+//   return (
+//     <div className={`${lgClass} col-md-6`}>
+//       <div className={`property-card ${data.priority ? "top" : ""}`}>
+//         {/* IMAGE */}
+//         <div className="property-image">
+//           {/* <Image
+//               src={images[0]}
+//               alt={data.title}
+//               // width={450}
+//               // height={300}
+//               // style={{ width: "100%", height: "300px", objectFit: "cover" }}
+//               width={450}
+//               height={300}
+//               style={{ width: "100%", height: "300px" }}
+//               priority={priority}
+//             /> */}
+//           <Image
+//             src={data.images && data.images.length > 0 ? data.images[0] : "/img/placeholder-property.jpg"}
+//             alt={data.title}
+//             className="img-fluid"
+//             width={0}
+//             height={0}
+//             unoptimized
+//             style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
+//             priority={priority}
+//           />
+//           <div className="property-badges">
+//             {data.status?.map((status) => (
+//               <span key={status} className={`badge ${status.toLowerCase().replace(" ", "-")}`}>
+//                 {status}
+//               </span>
+//             ))}
+//             {data.hot && <span className="badge hot">Hot</span>}
+//             {data.newListing && <span className="badge new">New</span>}
+//             {data.featured && <span className="badge featured">Featured</span>}
+//             {data.exclusive && <span className="badge for-sale">Exclusive</span>}
+//           </div>
+
+//           <div className="property-overlay premium">
+//             <button
+//               className={`favorite-btn ${isPropertyFavorited ? "favorited" : ""}`}
+//               onClick={handleFavoriteClick}
+//             >
+//               <i className={`bi ${isPropertyFavorited ? "bi-heart-fill" : "bi-heart"}`} />
+//             </button>
+
+//             <button className="gallery-btn" onClick={() => openGallery(0)}>
+//               <i className="bi bi-images" />
+//             </button>
+//           </div>
+//         </div>
+
+//         {/* CONTENT */}
+//         <div className="property-content d-flex flex-column">
+//           <div className="property-price">
+//             {/* SALE */}
+//             {salePrice && (
+//               <div className="mb-1">
+//                 <div>{formatPrice(salePrice, saleCurrency)}</div>
+
+//                 {saleCurrency !== "USD" && (
+//                   <div className="price-usd">
+//                     {usdSaleLoading ? "≈ USD loading..." :
+//                       usdSaleValue && `≈ ${formatPrice(Math.round(usdSaleValue), "USD")}`}
+//                   </div>
+//                 )}
+//               </div>
+//             )}
+
+//             {/* RENT */}
+//             {rentPrice && (
+//               <div>
+//                 <div>
+//                   {formatPrice(rentPrice, rentCurrency)}
+//                   {isRent ? " /month" : ""}
+//                 </div>
+
+//                 {rentCurrency !== "USD" && (
+//                   <div className="price-usd">
+//                     {usdRentLoading ? "≈ USD loading..." :
+//                       usdRentValue && `≈ ${formatPrice(Math.round(usdRentValue), "USD")}`}
+//                   </div>
+//                 )}
+//               </div>
+//             )}
+
+//             {!salePrice && !rentPrice && <div>Price on request</div>}
+//           </div>
+
+//           <h4 className="property-title">{data.title}</h4>
+
+//           <p className="property-location">
+//             <i className="bi bi-geo-alt" />
+//             {data.showAddress ? data.address : data.city}
+//           </p>
+
+//           <div style={{ marginTop: "auto" }}>
+//             <p className="property-location">{displayDate}</p>
+
+//             <Link href={`/properties/${data.id}`} className="btn btn-primary w-100 mt-3">
+//               View Details
+//             </Link>
+//           </div>
+//         </div>
+//       </div>
+
+//       <ImageGalleryModal
+//         open={galleryOpen}
+//         images={images}
+//         index={galleryIndex}
+//         onClose={() => setGalleryOpen(false)}
+//         onNext={nextImage}
+//         onPrev={prevImage}
+//       />
+
+//       <LoginRequiredModal
+//         open={showLoginModal}
+//         onClose={() => setShowLoginModal(false)}
+//       />
+//     </div>
+//   );
+// }

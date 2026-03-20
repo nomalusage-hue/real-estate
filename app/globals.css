@@ -65,7 +65,7 @@ input[type="checkbox"]:checked {
   }
 }
 
-.sold{
+.sold {
   background-color: #6c757d;
   /* color: #fff; */
 }
@@ -89,7 +89,7 @@ input[type="checkbox"]:checked {
 
 
 
-.page-link:focus{
+.page-link:focus {
   box-shadow: 0 0 0 .25rem #2c7a7b3b !important;
 }
 
@@ -117,31 +117,40 @@ input[type="checkbox"]:checked {
 }
 
 
+.properties .property-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
 @media (max-width:430px) {
-  .btn-getstarted{
+  .btn-getstarted {
     display: none !important;
   }
 }
+
 @media (max-width: 595px) {
-  .secondary-image{
+  .secondary-image {
     top: -10px !important;
     left: -10px !important;
   }
 }
 
 @media (max-width: 575px) {
-  .property-overlay .heart-gallery{
+  .property-overlay .heart-gallery {
     flex-direction: column !important;
   }
+
   .featured-properties .mini-list .mini-card .thumb img {
     height: 250px !important;
   }
 }
+
 @media (max-width: 520px) {
   .featured-properties .mini-list .mini-card .mini-body .mini-foot {
     flex-direction: column !important;
     align-items: flex-start !important;
   }
+
   .featured-properties .mini-list .mini-card .thumb img {
     height: 100% !important;
   }

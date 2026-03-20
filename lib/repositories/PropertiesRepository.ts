@@ -200,6 +200,25 @@
 // }
 
 // lib/repositories/PropertiesRepository.ts
+
+// import { createClient } from "@/lib/supabase/supabase";
+// import { PropertyData } from "@/types/property";
+
+// export type PropertyStatus = "For Sale" | "For Rent" | "Sold";
+
+// export interface PropertyStats {
+//   totalProperties: number;
+//   forSaleCount: number;
+//   forRentCount: number;
+//   soldCount: number;
+//   averageSalePrice: number;
+//   averageRentPrice: number;
+//   cities: string[];
+//   propertyTypes: Record<string, number>;
+//   cityCounts: Record<string, number>;
+// }
+
+// lib/repositories/PropertiesRepository.ts
 import { createClient } from "@/lib/supabase/supabase";
 import { PropertyData } from "@/types/property";
 
@@ -215,6 +234,65 @@ export interface PropertyStats {
   cities: string[];
   propertyTypes: Record<string, number>;
   cityCounts: Record<string, number>;
+}
+
+export interface PropertyStats {
+  totalProperties: number;
+  forSaleCount: number;
+  forRentCount: number;
+  soldCount: number;
+  averageSalePrice: number;
+  averageRentPrice: number;
+  cities: string[];
+  propertyTypes: Record<string, number>;
+  cityCounts: Record<string, number>;
+}
+
+export interface RepositoryFilterOptions {
+  // Pagination
+  page?: number;
+  pageSize?: number;
+
+  // Location
+  cities?: string[];
+
+  // Property details
+  propertyTypes?: string[];
+  status?: PropertyStatus[];
+
+  // Price ranges (sale OR rent)
+  minPrice?: number;
+  maxPrice?: number;
+
+  // Sizes
+  minBuildingSize?: number;
+  maxBuildingSize?: number;
+  minLandSize?: number;
+  maxLandSize?: number;
+
+  // Rooms
+  minBedrooms?: number;
+  maxBedrooms?: number;
+  minBathrooms?: number;
+  maxBathrooms?: number;
+
+  // Boolean flags
+  featured?: boolean;
+  hot?: boolean;
+  newListing?: boolean;
+  exclusive?: boolean;
+  hasPool?: boolean; // true = properties with pool
+  hasGarage?: boolean; // true = garage > 0
+  hasGarden?: boolean; // true = exterior_features contains "Garden"
+  published?: boolean;
+  draft?: boolean;
+
+  // Search term
+  searchTerm?: string;
+
+  // Sorting
+  orderBy?: string;
+  ascending?: boolean;
 }
 
 export class PropertiesRepository {
@@ -368,6 +446,7 @@ export class PropertiesRepository {
       .select("*")
       .eq("published", true)
       .eq("draft", false);
+    // .limit(12);
 
     if (city) query = query.eq("city", city);
     if (propertyTypes && propertyTypes.length > 0) {
@@ -386,8 +465,8 @@ export class PropertiesRepository {
     }
 
     // const { data, error } = await query.order(orderBy, { ascending });
-    
-    query = query.order('priority', { ascending: false, nullsFirst: false });
+
+    query = query.order("priority", { ascending: false, nullsFirst: false });
     if (orderBy) {
       query = query.order(orderBy, { ascending });
     }
@@ -540,176 +619,601 @@ export class PropertiesRepository {
   //   };
   // }
 
-  async getPaged(options: {
-    page?: number;
-    pageSize?: number;
-    city?: string;
-    // propertyType?: PropertyData["propertyType"];
-    propertyTypes?: PropertyData["propertyType"][];
-    // status?: "For Sale" | "For Rent" | "Sold";
-    status?: PropertyStatus[];
-    minPrice?: number;
-    maxPrice?: number;
-    featured?: boolean;
-    orderBy?: "created_at" | "salePrice" | "rentPrice" | "views";
-    ascending?: boolean;
-  }) {
+  // async getPaged(options: {
+  //   page?: number;
+  //   pageSize?: number;
+  //   city?: string;
+  //   // propertyType?: PropertyData["propertyType"];
+  //   propertyTypes?: PropertyData["propertyType"][];
+  //   // status?: "For Sale" | "For Rent" | "Sold";
+  //   status?: PropertyStatus[];
+  //   minPrice?: number;
+  //   maxPrice?: number;
+  //   featured?: boolean;
+  //   orderBy?: "created_at" | "salePrice" | "rentPrice" | "views";
+  //   ascending?: boolean;
+  // }) {
+  //   const {
+  //     page = 1,
+  //     pageSize = 12,
+  //     city,
+  //     // propertyType,
+  //     propertyTypes,
+  //     status,
+  //     minPrice,
+  //     maxPrice,
+  //     featured,
+  //     orderBy = "created_at",
+  //     ascending = false,
+  //   } = options;
+
+  //   // console.log('getPaged - Options:', options);
+
+  //   const from = (page - 1) * pageSize;
+  //   const to = from + pageSize - 1;
+
+  //   try {
+  //     let query = this.supabase
+  //       .from(this.table)
+  //       .select("*", { count: "exact" });
+  //     // .eq("published", true)
+  //     // .eq("draft", false);
+
+  //     // console.log('getPaged - Initial query built');
+
+  //     if (city) {
+  //       query = query.eq("city", city);
+  //       // console.log('getPaged - Added city filter:', city);
+  //     }
+
+  //     // if (propertyType) {
+  //     //   query = query.eq("property_type", propertyType);
+  //     //   // console.log('getPaged - Added property_type filter:', propertyType);
+  //     // }
+  //     if (propertyTypes && propertyTypes.length > 0) {
+  //       query = query.in("property_type", propertyTypes);
+  //     }
+
+  //     if (featured !== undefined) {
+  //       query = query.eq("featured", featured);
+  //       // console.log('getPaged - Added featured filter:', featured);
+  //     }
+
+  //     // Fix for status filter - Supabase array contains
+  //     // if (status) {
+  //     //   // // console.log('getPaged - Adding status filter:', status);
+  //     //   // // First, let's check what's actually in the database
+  //     //   // const testQuery = this.supabase
+  //     //   //   .from(this.table)
+  //     //   //   .select("status")
+  //     //   //   .limit(5);
+
+  //     //   // const { data: testData } = await testQuery;
+  //     //   // // console.log('getPaged - Sample status data:', testData);
+
+  //     //   // Try different approaches for status filtering
+  //     //   try {
+  //     //     // Approach 1: Use contains for array
+  //     //     query = query.contains("status", [status]);
+  //     //     // console.log('getPaged - Using contains for status');
+  //     //   } catch (statusError) {
+  //     //     console.error('getPaged - Status filter error, trying alternative:', statusError);
+  //     //     // If contains doesn't work, we'll filter client-side later
+  //     //     query = query; // no filter
+  //     //   }
+  //     // }
+
+  //     // if (status && status.length > 0) {
+  //     //   query = query.contains("status", status);
+  //     // }
+
+  //     if (status && status.length > 0) {
+  //       const orConditions = status.map((s) => `status.cs.{${s}}`).join(",");
+
+  //       query = query.or(orConditions);
+  //     }
+
+  //     // Price filtering - check both sale and rent prices
+  //     if (minPrice !== undefined) {
+  //       query = query.or(
+  //         `sale_price.gte.${minPrice},rent_price.gte.${minPrice}`,
+  //       );
+  //       // console.log('getPaged - Added minPrice filter:', minPrice);
+  //     }
+
+  //     if (maxPrice !== undefined) {
+  //       query = query.or(
+  //         `sale_price.lte.${maxPrice},rent_price.lte.${maxPrice}`,
+  //       );
+  //       // console.log('getPaged - Added maxPrice filter:', maxPrice);
+  //     }
+
+  //     // const { data, count, error } = await query.order(orderBy, { ascending });
+
+  //     query = query.order('priority', { ascending: false, nullsFirst: false });
+  //     if (orderBy) {
+  //       query = query.order(orderBy, { ascending });
+  //     }
+
+  //     const { data, count, error } = await query;
+
+  //     if (error) {
+  //       console.error("getPaged - Supabase error details:", {
+  //         message: error.message,
+  //         details: error.details,
+  //         hint: error.hint,
+  //         code: error.code,
+  //         fullError: error,
+  //       });
+  //       throw error;
+  //     }
+
+  //     // console.log('getPaged - Query successful, data count:', data?.length);
+
+  //     // Convert snake_case to camelCase
+  //     const camelCaseData = data.map((item) =>
+  //       this.convertToCamelCase(item),
+  //     ) as PropertyData[];
+
+  //     // // If we have a status filter but couldn't apply it server-side, filter client-side
+  //     // if (status && data?.length > 0) {
+  //     //   const filteredData = camelCaseData.filter(item =>
+  //     //     item.status && item.status.includes(status)
+  //     //   );
+  //     //   // console.log('getPaged - Client-side status filtering:', {
+  //     //   //   before: camelCaseData.length,
+  //     //   //   after: filteredData.length,
+  //     //   //   status
+  //     //   // });
+
+  //     //   return {
+  //     //     data: filteredData,
+  //     //     page,
+  //     //     pageSize,
+  //     //     total: filteredData.length, // Note: this is filtered total, not full total
+  //     //     totalPages: Math.ceil(filteredData.length / pageSize),
+  //     //   };
+  //     // }
+
+  //     return {
+  //       data: camelCaseData,
+  //       page,
+  //       pageSize,
+  //       total: count ?? 0,
+  //       totalPages: Math.ceil((count ?? 0) / pageSize),
+  //     };
+  //   } catch (error: any) {
+  //     console.error("getPaged - Unexpected error:", error);
+  //     throw error;
+  //   }
+  // }
+
+  // /* =========================
+  //    PAGINATION + FILTERING (Database side)
+  // ========================== */
+  // async getPaged(options: RepositoryFilterOptions = {}) {
+  //   const {
+  //     page = 1,
+  //     pageSize = 12,
+  //     cities,
+  //     propertyTypes,
+  //     status,
+  //     minPrice,
+  //     maxPrice,
+  //     minBuildingSize,
+  //     maxBuildingSize,
+  //     minLandSize,
+  //     maxLandSize,
+  //     minBedrooms,
+  //     maxBedrooms,
+  //     minBathrooms,
+  //     maxBathrooms,
+  //     featured,
+  //     hot,
+  //     newListing,
+  //     exclusive,
+  //     published = true,
+  //     draft = false,
+  //     searchTerm,
+  //     orderBy = "created_at",
+  //     ascending = false,
+  //   } = options;
+
+  //   const from = (page - 1) * pageSize;
+  //   const to = from + pageSize - 1;
+
+  //   let query = this.supabase
+  //     .from(this.table)
+  //     .select("*", { count: "exact" });
+
+  //   // Always filter by published/draft status
+  //   query = query.eq("published", published).eq("draft", draft);
+
+  //   // Location
+  //   if (cities && cities.length) {
+  //     query = query.in("city", cities);
+  //   }
+
+  //   // Property types
+  //   if (propertyTypes && propertyTypes.length) {
+  //     query = query.in("property_type", propertyTypes);
+  //   }
+
+  //   // Status – array column: match any of the given statuses
+  //   if (status && status.length) {
+  //     query = query.overlaps("status", status);
+  //   }
+
+  //   // Price ranges (sale OR rent)
+  //   if (minPrice !== undefined) {
+  //     query = query.or(`sale_price.gte.${minPrice},rent_price.gte.${minPrice}`);
+  //   }
+  //   if (maxPrice !== undefined) {
+  //     query = query.or(`sale_price.lte.${maxPrice},rent_price.lte.${maxPrice}`);
+  //   }
+
+  //   // Size ranges
+  //   if (minBuildingSize !== undefined) {
+  //     query = query.gte("building_size", minBuildingSize);
+  //   }
+  //   if (maxBuildingSize !== undefined) {
+  //     query = query.lte("building_size", maxBuildingSize);
+  //   }
+  //   if (minLandSize !== undefined) {
+  //     query = query.gte("land_size", minLandSize);
+  //   }
+  //   if (maxLandSize !== undefined) {
+  //     query = query.lte("land_size", maxLandSize);
+  //   }
+
+  //   // Bedrooms / Bathrooms
+  //   if (minBedrooms !== undefined) {
+  //     query = query.gte("bedrooms", minBedrooms);
+  //   }
+  //   if (maxBedrooms !== undefined) {
+  //     query = query.lte("bedrooms", maxBedrooms);
+  //   }
+  //   if (minBathrooms !== undefined) {
+  //     query = query.gte("bathrooms", minBathrooms);
+  //   }
+  //   if (maxBathrooms !== undefined) {
+  //     query = query.lte("bathrooms", maxBathrooms);
+  //   }
+
+  //   // Boolean flags
+  //   if (featured !== undefined) {
+  //     query = query.eq("featured", featured);
+  //   }
+  //   if (hot !== undefined) {
+  //     query = query.eq("hot", hot);
+  //   }
+  //   if (newListing !== undefined) {
+  //     query = query.eq("new_listing", newListing);
+  //   }
+  //   if (exclusive !== undefined) {
+  //     query = query.eq("exclusive", exclusive);
+  //   }
+
+  //   // Search term (title, description, address, city)
+  //   if (searchTerm && searchTerm.trim()) {
+  //     const term = `%${searchTerm.trim().toLowerCase()}%`;
+  //     query = query.or(
+  //       `title.ilike.${term},description.ilike.${term},address.ilike.${term},city.ilike.${term}`
+  //     );
+  //   }
+
+  //   // Sorting
+  //   query = query.order("priority", { ascending: false, nullsFirst: false });
+  //   if (orderBy) {
+  //     query = query.order(orderBy, { ascending });
+  //   }
+
+  //   const { data, count, error } = await query.range(from, to);
+
+  //   if (error) {
+  //     console.error("getPaged error:", error);
+  //     throw error;
+  //   }
+
+  //   return {
+  //     data: data.map((item) => this.convertToCamelCase(item)) as PropertyData[],
+  //     page,
+  //     pageSize,
+  //     total: count ?? 0,
+  //     totalPages: Math.ceil((count ?? 0) / pageSize),
+  //   };
+  // }
+
+  // /* =========================
+  //      PAGINATION + FILTERING (Database side)
+  //   ========================== */
+  //   async getPaged(options: RepositoryFilterOptions = {}) {
+  //     const {
+  //       page = 1,
+  //       pageSize = 12,
+  //       cities,
+  //       propertyTypes,
+  //       status,
+  //       minPrice,
+  //       maxPrice,
+  //       minBuildingSize,
+  //       maxBuildingSize,
+  //       minLandSize,
+  //       maxLandSize,
+  //       minBedrooms,
+  //       maxBedrooms,
+  //       minBathrooms,
+  //       maxBathrooms,
+  //       featured,
+  //       hot,
+  //       newListing,
+  //       exclusive,
+  //       hasPool,
+  //       hasGarage,
+  //       hasGarden,
+  //       published = true,
+  //       draft = false,
+  //       searchTerm,
+  //       orderBy = "created_at",
+  //       ascending = false,
+  //     } = options;
+
+  //     const from = (page - 1) * pageSize;
+  //     const to = from + pageSize - 1;
+
+  //     let query = this.supabase
+  //       .from(this.table)
+  //       .select("*", { count: "exact" });
+
+  //     // Always filter by published/draft status
+  //     query = query.eq("published", published).eq("draft", draft);
+
+  //     // Location
+  //     if (cities && cities.length) {
+  //       query = query.in("city", cities);
+  //     }
+
+  //     // Property types
+  //     if (propertyTypes && propertyTypes.length) {
+  //       query = query.in("property_type", propertyTypes);
+  //     }
+
+  //     // Status – array column: match any of the given statuses
+  //     if (status && status.length) {
+  //       query = query.overlaps("status", status);
+  //     }
+
+  //     // Price ranges (sale OR rent)
+  //     if (minPrice !== undefined) {
+  //       query = query.or(`sale_price.gte.${minPrice},rent_price.gte.${minPrice}`);
+  //     }
+  //     if (maxPrice !== undefined) {
+  //       query = query.or(`sale_price.lte.${maxPrice},rent_price.lte.${maxPrice}`);
+  //     }
+
+  //     // Size ranges
+  //     if (minBuildingSize !== undefined) {
+  //       query = query.gte("building_size", minBuildingSize);
+  //     }
+  //     if (maxBuildingSize !== undefined) {
+  //       query = query.lte("building_size", maxBuildingSize);
+  //     }
+  //     if (minLandSize !== undefined) {
+  //       query = query.gte("land_size", minLandSize);
+  //     }
+  //     if (maxLandSize !== undefined) {
+  //       query = query.lte("land_size", maxLandSize);
+  //     }
+
+  //     // Bedrooms / Bathrooms
+  //     if (minBedrooms !== undefined) {
+  //       query = query.gte("bedrooms", minBedrooms);
+  //     }
+  //     if (maxBedrooms !== undefined) {
+  //       query = query.lte("bedrooms", maxBedrooms);
+  //     }
+  //     if (minBathrooms !== undefined) {
+  //       query = query.gte("bathrooms", minBathrooms);
+  //     }
+  //     if (maxBathrooms !== undefined) {
+  //       query = query.lte("bathrooms", maxBathrooms);
+  //     }
+
+  //     // Boolean flags
+  //     if (featured !== undefined) query = query.eq("featured", featured);
+  //     if (hot !== undefined) query = query.eq("hot", hot);
+  //     if (newListing !== undefined) query = query.eq("new_listing", newListing);
+  //     if (exclusive !== undefined) query = query.eq("exclusive", exclusive);
+  //     if (hasPool !== undefined) query = query.eq("has_pool", hasPool);
+  //     if (hasGarage !== undefined) query = query.eq("has_garage", hasGarage);
+  //     if (hasGarden !== undefined) query = query.eq("has_garden", hasGarden);
+
+  //     // Search term (title, description, address, city)
+  //     if (searchTerm && searchTerm.trim()) {
+  //       const term = `%${searchTerm.trim().toLowerCase()}%`;
+  //       query = query.or(
+  //         `title.ilike.${term},description.ilike.${term},address.ilike.${term},city.ilike.${term}`
+  //       );
+  //     }
+
+  //     // Sorting
+  //     query = query.order("priority", { ascending: false, nullsFirst: false });
+  //     if (orderBy) {
+  //       query = query.order(orderBy, { ascending });
+  //     }
+
+  //     const { data, count, error } = await query.range(from, to);
+
+  //     if (error) {
+  //       console.error("getPaged error:", error);
+  //       throw error;
+  //     }
+
+  //     return {
+  //       data: data.map((item) => this.convertToCamelCase(item)) as PropertyData[],
+  //       page,
+  //       pageSize,
+  //       total: count ?? 0,
+  //       totalPages: Math.ceil((count ?? 0) / pageSize),
+  //     };
+  //   }
+
+  /* =========================
+     PAGINATION + FILTERING (Database side)
+  ========================== */
+  async getPaged(options: RepositoryFilterOptions = {}) {
     const {
       page = 1,
       pageSize = 12,
-      city,
-      // propertyType,
+      cities,
       propertyTypes,
       status,
       minPrice,
       maxPrice,
+      minBuildingSize,
+      maxBuildingSize,
+      minLandSize,
+      maxLandSize,
+      minBedrooms,
+      maxBedrooms,
+      minBathrooms,
+      maxBathrooms,
       featured,
+      hot,
+      newListing,
+      exclusive,
+      hasPool,
+      hasGarage,
+      hasGarden,
+      published = true,
+      draft = false,
+      searchTerm,
       orderBy = "created_at",
       ascending = false,
     } = options;
 
-    // console.log('getPaged - Options:', options);
-
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    try {
-      let query = this.supabase
-        .from(this.table)
-        .select("*", { count: "exact" });
-      // .eq("published", true)
-      // .eq("draft", false);
+    let query = this.supabase.from(this.table).select("*", { count: "exact" });
 
-      // console.log('getPaged - Initial query built');
+    // Always filter by published/draft status
+    query = query.eq("published", published).eq("draft", draft);
 
-      if (city) {
-        query = query.eq("city", city);
-        // console.log('getPaged - Added city filter:', city);
-      }
+    // Location
+    if (cities && cities.length) {
+      query = query.in("city", cities);
+    }
 
-      // if (propertyType) {
-      //   query = query.eq("property_type", propertyType);
-      //   // console.log('getPaged - Added property_type filter:', propertyType);
-      // }
-      if (propertyTypes && propertyTypes.length > 0) {
-        query = query.in("property_type", propertyTypes);
-      }
+    // Property types
+    if (propertyTypes && propertyTypes.length) {
+      query = query.in("property_type", propertyTypes);
+    }
 
-      if (featured !== undefined) {
-        query = query.eq("featured", featured);
-        // console.log('getPaged - Added featured filter:', featured);
-      }
+    // Status – array column: match any of the given statuses
+    if (status && status.length) {
+      query = query.overlaps("status", status);
+    }
 
-      // Fix for status filter - Supabase array contains
-      // if (status) {
-      //   // // console.log('getPaged - Adding status filter:', status);
-      //   // // First, let's check what's actually in the database
-      //   // const testQuery = this.supabase
-      //   //   .from(this.table)
-      //   //   .select("status")
-      //   //   .limit(5);
+    // Price ranges (sale OR rent)
+    if (minPrice !== undefined) {
+      query = query.or(`sale_price.gte.${minPrice},rent_price.gte.${minPrice}`);
+    }
+    if (maxPrice !== undefined) {
+      query = query.or(`sale_price.lte.${maxPrice},rent_price.lte.${maxPrice}`);
+    }
 
-      //   // const { data: testData } = await testQuery;
-      //   // // console.log('getPaged - Sample status data:', testData);
+    // Size ranges
+    if (minBuildingSize !== undefined) {
+      query = query.gte("building_size", minBuildingSize);
+    }
+    if (maxBuildingSize !== undefined) {
+      query = query.lte("building_size", maxBuildingSize);
+    }
+    if (minLandSize !== undefined) {
+      query = query.gte("land_size", minLandSize);
+    }
+    if (maxLandSize !== undefined) {
+      query = query.lte("land_size", maxLandSize);
+    }
 
-      //   // Try different approaches for status filtering
-      //   try {
-      //     // Approach 1: Use contains for array
-      //     query = query.contains("status", [status]);
-      //     // console.log('getPaged - Using contains for status');
-      //   } catch (statusError) {
-      //     console.error('getPaged - Status filter error, trying alternative:', statusError);
-      //     // If contains doesn't work, we'll filter client-side later
-      //     query = query; // no filter
-      //   }
-      // }
+    // Bedrooms / Bathrooms
+    if (minBedrooms !== undefined) {
+      query = query.gte("bedrooms", minBedrooms);
+    }
+    if (maxBedrooms !== undefined) {
+      query = query.lte("bedrooms", maxBedrooms);
+    }
+    if (minBathrooms !== undefined) {
+      query = query.gte("bathrooms", minBathrooms);
+    }
+    if (maxBathrooms !== undefined) {
+      query = query.lte("bathrooms", maxBathrooms);
+    }
 
-      // if (status && status.length > 0) {
-      //   query = query.contains("status", status);
-      // }
+    // Boolean flags
+    if (featured !== undefined) query = query.eq("featured", featured);
+    if (hot !== undefined) query = query.eq("hot", hot);
+    if (newListing !== undefined) query = query.eq("new_listing", newListing);
+    if (exclusive !== undefined) query = query.eq("exclusive", exclusive);
 
-      if (status && status.length > 0) {
-        const orConditions = status.map((s) => `status.cs.{${s}}`).join(",");
+    // Feature filters (using existing columns)
+    if (hasPool === true) {
+      // Pool: exterior_features contains "Swimming Pool" OR any element contains "pool" (case‑insensitive)
+      query = query.or(
+        `exterior_features.cs.{"Swimming Pool"},exterior_features::text.ilike.%pool%`,
+      );
+    }
+    if (hasGarage === true) {
+      // Garage: garage > 0
+      query = query.gt("garage", 0);
+    }
+    if (hasGarden === true) {
+      // Garden: exterior_features contains "Garden" OR any element contains "garden"
+      query = query.or(
+        `exterior_features.cs.{"Garden"},exterior_features::text.ilike.%garden%`,
+      );
+    }
 
-        query = query.or(orConditions);
-      }
+    // Search term (title, description, address, city)
+    if (searchTerm && searchTerm.trim()) {
+      const term = `%${searchTerm.trim().toLowerCase()}%`;
+      query = query.or(
+        `title.ilike.${term},description.ilike.${term},address.ilike.${term},city.ilike.${term}`,
+      );
+    }
 
-      // Price filtering - check both sale and rent prices
-      if (minPrice !== undefined) {
-        query = query.or(
-          `sale_price.gte.${minPrice},rent_price.gte.${minPrice}`,
-        );
-        // console.log('getPaged - Added minPrice filter:', minPrice);
-      }
+    // Sorting
+    query = query.order("priority", { ascending: false, nullsFirst: false });
+    if (orderBy) {
+      query = query.order(orderBy, { ascending });
+    }
 
-      if (maxPrice !== undefined) {
-        query = query.or(
-          `sale_price.lte.${maxPrice},rent_price.lte.${maxPrice}`,
-        );
-        // console.log('getPaged - Added maxPrice filter:', maxPrice);
-      }
+    const { data, count, error } = await query.range(from, to);
 
-      
-      // const { data, count, error } = await query.order(orderBy, { ascending });
-      
-      query = query.order('priority', { ascending: false, nullsFirst: false });
-      if (orderBy) {
-        query = query.order(orderBy, { ascending });
-      }
-
-      const { data, count, error } = await query;
-      
-
-      if (error) {
-        console.error("getPaged - Supabase error details:", {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code,
-          fullError: error,
-        });
-        throw error;
-      }
-
-      // console.log('getPaged - Query successful, data count:', data?.length);
-
-      // Convert snake_case to camelCase
-      const camelCaseData = data.map((item) =>
-        this.convertToCamelCase(item),
-      ) as PropertyData[];
-
-      // // If we have a status filter but couldn't apply it server-side, filter client-side
-      // if (status && data?.length > 0) {
-      //   const filteredData = camelCaseData.filter(item =>
-      //     item.status && item.status.includes(status)
-      //   );
-      //   // console.log('getPaged - Client-side status filtering:', {
-      //   //   before: camelCaseData.length,
-      //   //   after: filteredData.length,
-      //   //   status
-      //   // });
-
-      //   return {
-      //     data: filteredData,
-      //     page,
-      //     pageSize,
-      //     total: filteredData.length, // Note: this is filtered total, not full total
-      //     totalPages: Math.ceil(filteredData.length / pageSize),
-      //   };
-      // }
-
-      return {
-        data: camelCaseData,
-        page,
-        pageSize,
-        total: count ?? 0,
-        totalPages: Math.ceil((count ?? 0) / pageSize),
-      };
-    } catch (error: any) {
-      console.error("getPaged - Unexpected error:", error);
+    if (error) {
+      console.error("getPaged error:", error);
       throw error;
     }
+
+    return {
+      data: data.map((item) => this.convertToCamelCase(item)) as PropertyData[],
+      page,
+      pageSize,
+      total: count ?? 0,
+      totalPages: Math.ceil((count ?? 0) / pageSize),
+    };
   }
+
+  // // Optional: get all with filters (no pagination) – can use getPaged with large pageSize
+  // async getAllWithFilters(options: Omit<RepositoryFilterOptions, "page" | "pageSize"> = {}) {
+  //   const result = await this.getPaged({
+  //     ...options,
+  //     page: 1,
+  //     pageSize: 100000, // large number to get all
+  //   });
+  //   return result.data;
+  // }
 
   async getStats(): Promise<PropertyStats> {
     const { data: stats, error } = await this.supabase
