@@ -934,9 +934,15 @@ export default function PropertiesClient() {
   // Condition to know if the current displayed data matches the desired page
   const isPageReady = pagination.page === effectiveDesiredPage && !loading && (properties.length > 0 || total === 0);
 
+  const [currentPage, setCurrentPage] = useState(pageParam ? pageParam : 1);
+
   // Handle page change
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages || loading) return;
+
+
+    if (currentPage == newPage) return;
+    setCurrentPage(newPage);
 
     // Update URL
     const newParams = new URLSearchParams(searchParams || undefined);

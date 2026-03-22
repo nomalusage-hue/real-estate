@@ -308,11 +308,13 @@ import "./css/PropertyCardVerticalWide.css";
 export default function PropertyCardSimpleWide({
   data,
   isFavorited: propIsFavorited,
-  toggleFavorite: propToggleFavorite
+  toggleFavorite: propToggleFavorite,
+  priority = false,
 }: {
   data: PropertyData,
   isFavorited?: (id: string) => boolean,
-  toggleFavorite?: (id: string) => Promise<boolean>
+  toggleFavorite?: (id: string) => Promise<boolean>,
+  priority?: boolean
 }) {
   const { isFavorited: hookIsFavorited, toggleFavorite: hookToggleFavorite, user } = useFavorites();
   const isFavorited = propIsFavorited || hookIsFavorited;
@@ -358,7 +360,7 @@ export default function PropertyCardSimpleWide({
   const isPropertyFavorited = isFavorited(data.id);
 
   return (
-    <article className="highlight-card">
+    <article className={`highlight-card ${priority ? "priority" : ""}`}>
       <div className="media">
         <div className="badge-set">
           {primaryBadge && <span className="flag featured">{primaryBadge}</span>}
@@ -367,7 +369,7 @@ export default function PropertyCardSimpleWide({
         </div>
 
         <Link href={`/properties/${data.id}`} className="image-link">
-          <Image src={images[0]} alt={data.title} className="img-fluid" width={0} height={0} unoptimized/>
+          <Image src={images[0]} alt={data.title} className="img-fluid" width={0} height={0} unoptimized />
           <button className={`favorite-btn favorite-btn-custom ${isPropertyFavorited ? 'favorited' : ''}`} onClick={handleFavoriteClick} title={isPropertyFavorited ? 'Remove from favorites' : 'Add to favorites'}>
             <i className={`bi ${isPropertyFavorited ? 'bi-heart-fill' : 'bi-heart'}`}></i>
           </button>
@@ -388,26 +390,19 @@ export default function PropertyCardSimpleWide({
           <div className="price">
             {!price || !currency ? "Price on request" : (
               <>
-                {/* <div className="main-price">{formatPrice(price, currency)}{isRent && "/month"}</div>
+                <div className="main-price">
+                  {formatPrice(price, currency)}
+                  {isRent && data.rentPeriodLabel ? ` ${data.rentPeriodLabel.toLowerCase()}` : isRent && "/month"}
+                </div>
                 {currency !== "USD" && (
                   <div className="price-usd">
-                    {usdLoading ? <span className="usd-loading">≈ USD loading… <i className="bi bi-arrow-repeat ms-1 spin" /></span> :
-                      usdValue && <>≈ {formatPrice(Math.round(usdValue), "USD")}{isRent && "/month"}<i className="bi bi-info-circle ms-1" title="Approximate USD value based on current exchange rates" /></>}
+                    {usdLoading ? (
+                      <span className="usd-loading">≈ USD loading…</span>
+                    ) : (
+                      usdValue && <>≈ {formatPrice(Math.round(usdValue), "USD")}{isRent && data.rentPeriodLabel ? ` ${data.rentPeriodLabel.toLowerCase()}` : isRent && "/month"}</>
+                    )}
                   </div>
-                )} */}
-<div className="main-price">
-  {formatPrice(price, currency)}
-  {isRent && data.rentPeriodLabel ? ` ${data.rentPeriodLabel.toLowerCase()}` : isRent && "/month"}
-</div>
-{currency !== "USD" && (
-  <div className="price-usd">
-    {usdLoading ? (
-      <span className="usd-loading">≈ USD loading…</span>
-    ) : (
-      usdValue && <>≈ {formatPrice(Math.round(usdValue), "USD")}{isRent && data.rentPeriodLabel ? ` ${data.rentPeriodLabel.toLowerCase()}` : isRent && "/month"}</>
-    )}
-  </div>
-)}
+                )}
 
               </>
             )}
@@ -418,7 +413,7 @@ export default function PropertyCardSimpleWide({
         <p className="excerpt">{data.description?.substring(0, 250)}...</p>
 
         <div className="cta">
-          <Link href={`/properties/${data.id}`} className="btn-main">Arrange Visit</Link>
+          <Link href={`/properties/${data.id}`} className="btn-main" style={{ "textAlign": "center" }}>Arrange Visit</Link>
           <button className="btn-soft" onClick={() => openGallery(0)} data-count={images.length} style={{ backgroundColor: "transparent" }}>More Photos</button>
           <div className="meta">
             <span className={`status ${data.status?.toString().toLowerCase().replace(' ', '-')}`}>{data.status}</span>

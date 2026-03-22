@@ -1,6 +1,7 @@
 .featured-properties .mini-list.expand-image .mini-card{
     /* grid-template-columns: 220px 1fr; */
-    grid-template-columns: minmax(100px, 220px) 1fr;
+    /* grid-template-columns: minmax(100px, 220px) 1fr; */
+    grid-template-columns: minmax(100px, 170px) 1fr;
 }
 
 button.btn-outline-primary{
@@ -12,6 +13,10 @@ button.btn-outline-primary{
 button.btn-outline-primary:hover{
     background-color: var(--accent-color) !important;
 
+}
+
+.featured-properties .mini-list .mini-card .thumb img{
+    height: 100% !important;
 }
 
 @media (max-width: 992px) {

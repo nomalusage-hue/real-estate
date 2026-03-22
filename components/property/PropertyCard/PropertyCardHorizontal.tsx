@@ -405,11 +405,13 @@ export default function PropertyCardSimple({
   className,
   isFavorited: propIsFavorited,
   toggleFavorite: propToggleFavorite,
+  priority = false,
 }: {
   data: PropertyData;
   className?: string;
   isFavorited?: (id: string) => boolean;
   toggleFavorite?: (id: string) => Promise<boolean>;
+  priority?: boolean
 }) {
   const { isFavorited: hookIsFavorited, toggleFavorite: hookToggleFavorite, user } = useFavorites();
 
@@ -484,7 +486,7 @@ export default function PropertyCardSimple({
   const prevImage = () => setGalleryIndex((prev) => (prev - 1 + images.length) % images.length);
 
   return (
-    <article className={`mini-card ${className || ""}`} data-aos="fade-up" data-aos-delay="200">
+    <article className={`mini-card ${className || ""} ${priority ? "priority" : ""}`} data-aos="fade-up" data-aos-delay="200">
       <div className="thumb">
         <Image
           src={images[0]}

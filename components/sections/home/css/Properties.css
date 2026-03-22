@@ -1,0 +1,7 @@
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.priority {
+    border-style: solid;
+    border-color: #2c7a7b;
+    border-width: 2px !important;
+}

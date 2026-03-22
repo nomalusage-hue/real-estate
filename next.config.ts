@@ -19,24 +19,49 @@
 // export default nextConfig;
 
 
+// import type { NextConfig } from "next";
+
+// const nextConfig: NextConfig = {
+//   async redirects() {
+//     return [
+//       {
+//         source: '/admin',
+//         destination: '/admin/properties/new',
+//         permanent: true,
+//       },
+//     ]
+//   }
+// };
+
+// export default nextConfig;
+
+
+
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: '/admin',
-        destination: '/admin/properties/new',
+        source: "/admin",
+        destination: "/admin/properties/new",
         permanent: true,
       },
-    ]
-  }
+    ];
+  },
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "i.ibb.co",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
-
-
-
 
 
 // // next.config.js
