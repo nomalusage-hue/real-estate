@@ -777,7 +777,7 @@ export default function PropertiesClient() {
     loadPage,
     refreshWithFilters,
     pagination,
-  } = useProperties();
+  } = useProperties(true); 
 
   // Refs to track initial sync and current filters
   const hasSynced = useRef(false);
@@ -817,15 +817,20 @@ export default function PropertiesClient() {
   useEffect(() => {
     const newFilters = getFiltersFromSearchParams(searchParams);
 
-    // Only update if filters actually changed
-    if (JSON.stringify(newFilters) !== JSON.stringify(currentFiltersRef.current)) {
+    const filtersChanged = JSON.stringify(newFilters) !== JSON.stringify(currentFiltersRef.current);
+    if (filtersChanged) {
       setFilters(newFilters);
-      // Do NOT call refreshWithFilters here – let the page handling effect load the data
     }
 
-    // Mark initial sync as done (after first run)
+    const wasSynced = hasSynced.current;
     hasSynced.current = true;
-  }, [searchParams]);
+
+    // On first sync, load the properties with the filters from URL
+    if (!wasSynced && filtersChanged) {
+      refreshWithFilters(newFilters);
+    }
+  }, [searchParams, refreshWithFilters]);
+
 
   const handleFilterChange = useCallback(
     (newFilters: PropertyFilterOptions) => {
