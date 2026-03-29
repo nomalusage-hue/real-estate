@@ -212,6 +212,7 @@ export default function GuestsPage() {
                       <th>Created</th>
                       <th>Profile</th>
                       <th>Actions</th>
+                      <th>View</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -258,6 +259,11 @@ export default function GuestsPage() {
                             >
                               <i className="bi bi-trash"></i>
                             </button>
+                          </td>
+                          <td>
+                            <Link href={`/admin/guests/${guest.id}`} className="btn btn-sm btn-outline-primary">
+                              <i className="bi bi-eye"></i> Details
+                            </Link>
                           </td>
                         </tr>
                       ))

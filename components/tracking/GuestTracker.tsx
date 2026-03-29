@@ -89,41 +89,161 @@
 
 
 
+
+
+
+// "use client";
+
+// import { useEffect, useRef } from "react";
+// import { UAParser } from "ua-parser-js";
+
+// // Cross‑browser UUID v4 generator (same as before)
+// function generateUUID(): string {
+//   if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+//     const buf = new Uint8Array(16);
+//     crypto.getRandomValues(buf);
+//     buf[6] = (buf[6] & 0x0f) | 0x40; // version 4
+//     buf[8] = (buf[8] & 0x3f) | 0x80; // variant
+//     const hex = Array.from(buf, b => b.toString(16).padStart(2, '0')).join('');
+//     return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+//   }
+//   // Fallback
+//   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+//     const r = Math.random() * 16 | 0;
+//     const v = c === 'x' ? r : (r & 0x3 | 0x8);
+//     return v.toString(16);
+//   });
+// }
+
+// // Helper to parse UTM params from URL
+// function getUTMParams(): Record<string, string> {
+//   if (typeof window === 'undefined') return {};
+//   const urlParams = new URLSearchParams(window.location.search);
+//   const utm: Record<string, string> = {};
+//   ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach(key => {
+//     const val = urlParams.get(key);
+//     if (val) utm[key] = val;
+//   });
+//   return utm;
+// }
+
+// export default function GuestTracker() {
+//   const ran = useRef(false);
+
+//   useEffect(() => {
+//     if (ran.current) return;
+//     ran.current = true;
+
+//     async function trackGuest() {
+//       // 1. Get or create guest ID
+//       let guestId = localStorage.getItem("guest_id");
+//       if (!guestId) {
+//         guestId = generateUUID();
+//         localStorage.setItem("guest_id", guestId);
+//       }
+
+//       // 2. Set cookie for server‑side access
+//       document.cookie = `guest_id=${guestId}; path=/; max-age=31536000; SameSite=Lax`;
+
+//       // 3. Collect all client‑side data
+//       const parser = new UAParser();
+//       const result = parser.getResult();
+
+//       // Device info
+//       const deviceData = {
+//         language: navigator.language,
+//         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+//         device_type: result.device.type || "desktop",
+//         os: result.os.name,
+//         browser: result.browser.name,
+//         screen_width: window.screen.width,
+//         screen_height: window.screen.height,
+//         pixel_ratio: window.devicePixelRatio,
+//       };
+
+//       // Additional analytics
+//       const connection = (navigator as any).connection?.effectiveType || null; // '4g', '3g', etc.
+//       const memory = (navigator as any).deviceMemory || null; // in GB, approx
+//       const touchSupport = 'ontouchstart' in window;
+//       const orientation = window.screen.orientation?.type || null;
+//       const referrer = document.referrer || null;
+//       const currentUrl = window.location.href;
+//       const utmParams = getUTMParams();
+
+//       // 4. Send to server endpoint
+//       try {
+//         await fetch('/api/track-guest', {
+//           method: 'POST',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({
+//             guestId,
+//             ...deviceData,
+//             connection,
+//             memory,
+//             touchSupport,
+//             orientation,
+//             referrer,
+//             currentUrl,
+//             utm: utmParams,
+//           }),
+//         });
+//       } catch (err) {
+//         console.error('Failed to send tracking data:', err);
+//       }
+
+//       // 5. (Optional) Direct Supabase upsert as fallback
+//       // You could still attempt direct upsert here, but the API is preferred.
+//     }
+
+//     trackGuest();
+//   }, []);
+
+//   return null;
+// }
+
+
+
+
+
+
+
+
+
 "use client";
 
 import { useEffect, useRef } from "react";
 import { UAParser } from "ua-parser-js";
 
-// Cross‑browser UUID v4 generator (same as before)
+// ─── UUID generator ───────────────────────────────────────────────────────────
 function generateUUID(): string {
-  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
     const buf = new Uint8Array(16);
     crypto.getRandomValues(buf);
     buf[6] = (buf[6] & 0x0f) | 0x40; // version 4
     buf[8] = (buf[8] & 0x3f) | 0x80; // variant
-    const hex = Array.from(buf, b => b.toString(16).padStart(2, '0')).join('');
-    return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+    const hex = Array.from(buf, (b) => b.toString(16).padStart(2, "0")).join("");
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
   }
-  // Fallback
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }
 
-// Helper to parse UTM params from URL
+// ─── UTM params ───────────────────────────────────────────────────────────────
 function getUTMParams(): Record<string, string> {
-  if (typeof window === 'undefined') return {};
+  if (typeof window === "undefined") return {};
   const urlParams = new URLSearchParams(window.location.search);
   const utm: Record<string, string> = {};
-  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach(key => {
+  ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"].forEach((key) => {
     const val = urlParams.get(key);
     if (val) utm[key] = val;
   });
   return utm;
 }
 
+// ─── Component ────────────────────────────────────────────────────────────────
 export default function GuestTracker() {
   const ran = useRef(false);
 
@@ -132,22 +252,25 @@ export default function GuestTracker() {
     ran.current = true;
 
     async function trackGuest() {
-      // 1. Get or create guest ID
+      // 1. Get or create guest ID — this MUST happen synchronously and finish
+      //    before SessionTracker tries to reference the guest in the DB.
+      //    Writing to localStorage is instant, so SessionTracker can read it
+      //    immediately. The /api/track-guest call runs in parallel.
       let guestId = localStorage.getItem("guest_id");
       if (!guestId) {
         guestId = generateUUID();
         localStorage.setItem("guest_id", guestId);
       }
 
-      // 2. Set cookie for server‑side access
+      // 2. Set cookie for server-side middleware access
       document.cookie = `guest_id=${guestId}; path=/; max-age=31536000; SameSite=Lax`;
 
-      // 3. Collect all client‑side data
+      // 3. Collect device + analytics data
       const parser = new UAParser();
       const result = parser.getResult();
 
-      // Device info
-      const deviceData = {
+      const payload = {
+        guestId,
         language: navigator.language,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         device_type: result.device.type || "desktop",
@@ -156,43 +279,52 @@ export default function GuestTracker() {
         screen_width: window.screen.width,
         screen_height: window.screen.height,
         pixel_ratio: window.devicePixelRatio,
+        connection: (navigator as any).connection?.effectiveType || null,
+        memory: (navigator as any).deviceMemory || null,
+        touchSupport: "ontouchstart" in window,
+        orientation: window.screen.orientation?.type || null,
+        referrer: document.referrer || null,
+        currentUrl: window.location.href,
+        utm: getUTMParams(),
       };
 
-      // Additional analytics
-      const connection = (navigator as any).connection?.effectiveType || null; // '4g', '3g', etc.
-      const memory = (navigator as any).deviceMemory || null; // in GB, approx
-      const touchSupport = 'ontouchstart' in window;
-      const orientation = window.screen.orientation?.type || null;
-      const referrer = document.referrer || null;
-      const currentUrl = window.location.href;
-      const utmParams = getUTMParams();
-
-      // 4. Send to server endpoint
+      // 4. Send to your server-side API route (handles IP + geo via server)
       try {
-        await fetch('/api/track-guest', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            guestId,
-            ...deviceData,
-            connection,
-            memory,
-            touchSupport,
-            orientation,
-            referrer,
-            currentUrl,
-            utm: utmParams,
-          }),
+        await fetch("/api/track-guest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
         });
       } catch (err) {
-        console.error('Failed to send tracking data:', err);
+        console.error("[GuestTracker] Failed to send tracking data:", err);
       }
-
-      // 5. (Optional) Direct Supabase upsert as fallback
-      // You could still attempt direct upsert here, but the API is preferred.
     }
 
     trackGuest();
+
+    // 5. Update `last_seen` on the guest record whenever the user comes BACK
+    //    to the tab after switching away. This keeps last_seen accurate and
+    //    also gives you a rough sense of returning engagement.
+    function handleVisibilityChange() {
+      if (document.visibilityState !== "visible") return;
+      const guestId = localStorage.getItem("guest_id");
+      if (!guestId) return;
+
+      // Fire-and-forget — update last_seen through the same API route
+      fetch("/api/track-guest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // Only send the minimal update; your API should handle partial payloads
+        body: JSON.stringify({ guestId, updateLastSeenOnly: true }),
+      }).catch(() => {
+        // Silent fail is fine here — this is a nice-to-have update
+      });
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   return null;
